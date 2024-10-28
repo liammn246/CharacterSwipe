@@ -6,25 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		762ED0E72CCADCE300FF6215 /* CSGameInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762ED0E62CCADCE300FF6215 /* CSGameInfo.swift */; };
-		762ED0E92CCADCF500FF6215 /* CSGameLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762ED0E82CCADCF500FF6215 /* CSGameLayout.swift */; };
-		762ED0EB2CCADDAB00FF6215 /* CSGameContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762ED0EA2CCADDAB00FF6215 /* CSGameContext.swift */; };
-		762ED0ED2CCADDB200FF6215 /* CSGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762ED0EC2CCADDB200FF6215 /* CSGameScene.swift */; };
-		762ED0F22CCAE65A00FF6215 /* PPNeueMontreal-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 762ED0F12CCAE65A00FF6215 /* PPNeueMontreal-SemiBold.ttf */; };
-		762ED0FA2CCAE67A00FF6215 /* PPNeueMontreal-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 762ED0F52CCAE67A00FF6215 /* PPNeueMontreal-Italic.otf */; };
-		762ED0FC2CCAE67A00FF6215 /* PPNeueMontreal-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = 762ED0F92CCAE67A00FF6215 /* PPNeueMontreal-Thin.otf */; };
-		762ED0FD2CCAE67A00FF6215 /* PPNeueMontreal-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = 762ED0F42CCAE67A00FF6215 /* PPNeueMontreal-Book.otf */; };
-		762ED0FE2CCAE67A00FF6215 /* PPNeueMontreal-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 762ED0F62CCAE67A00FF6215 /* PPNeueMontreal-Medium.otf */; };
-		762ED0FF2CCAE67A00FF6215 /* PPNeueMontreal-SemiBolditalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 762ED0F82CCAE67A00FF6215 /* PPNeueMontreal-SemiBolditalic.otf */; };
-		762ED1002CCAE67A00FF6215 /* PPNeueMontreal-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 762ED0F32CCAE67A00FF6215 /* PPNeueMontreal-Bold.otf */; };
-		7643D12F2CC9DA180084E0C7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7643D12B2CC9DA180084E0C7 /* Assets.xcassets */; };
-		7643D13D2CC9DA380084E0C7 /* GameModeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7643D13A2CC9DA380084E0C7 /* GameModeType.swift */; };
-		7643D13E2CC9DA380084E0C7 /* GameContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7643D1392CC9DA380084E0C7 /* GameContext.swift */; };
-		7643D13F2CC9DA380084E0C7 /* Dependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7643D1382CC9DA380084E0C7 /* Dependencies.swift */; };
-		7643D1402CC9DA380084E0C7 /* GameType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7643D13B2CC9DA380084E0C7 /* GameType.swift */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXContainerItemProxy section */
 		761218302CC9D0F200F485D2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -46,22 +27,6 @@
 		7612181F2CC9D0F100F485D2 /* CharacterSwipe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CharacterSwipe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7612182F2CC9D0F200F485D2 /* CharacterSwipeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CharacterSwipeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		761218392CC9D0F300F485D2 /* CharacterSwipeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CharacterSwipeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		762ED0E62CCADCE300FF6215 /* CSGameInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSGameInfo.swift; sourceTree = "<group>"; };
-		762ED0E82CCADCF500FF6215 /* CSGameLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSGameLayout.swift; sourceTree = "<group>"; };
-		762ED0EA2CCADDAB00FF6215 /* CSGameContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSGameContext.swift; sourceTree = "<group>"; };
-		762ED0EC2CCADDB200FF6215 /* CSGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSGameScene.swift; sourceTree = "<group>"; };
-		762ED0F12CCAE65A00FF6215 /* PPNeueMontreal-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PPNeueMontreal-SemiBold.ttf"; sourceTree = "<group>"; };
-		762ED0F32CCAE67A00FF6215 /* PPNeueMontreal-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PPNeueMontreal-Bold.otf"; sourceTree = "<group>"; };
-		762ED0F42CCAE67A00FF6215 /* PPNeueMontreal-Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PPNeueMontreal-Book.otf"; sourceTree = "<group>"; };
-		762ED0F52CCAE67A00FF6215 /* PPNeueMontreal-Italic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PPNeueMontreal-Italic.otf"; sourceTree = "<group>"; };
-		762ED0F62CCAE67A00FF6215 /* PPNeueMontreal-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PPNeueMontreal-Medium.otf"; sourceTree = "<group>"; };
-		762ED0F82CCAE67A00FF6215 /* PPNeueMontreal-SemiBolditalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PPNeueMontreal-SemiBolditalic.otf"; sourceTree = "<group>"; };
-		762ED0F92CCAE67A00FF6215 /* PPNeueMontreal-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PPNeueMontreal-Thin.otf"; sourceTree = "<group>"; };
-		7643D12B2CC9DA180084E0C7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		7643D1382CC9DA380084E0C7 /* Dependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dependencies.swift; sourceTree = "<group>"; };
-		7643D1392CC9DA380084E0C7 /* GameContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameContext.swift; sourceTree = "<group>"; };
-		7643D13A2CC9DA380084E0C7 /* GameModeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModeType.swift; sourceTree = "<group>"; };
-		7643D13B2CC9DA380084E0C7 /* GameType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameType.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -78,6 +43,16 @@
 		7612183C2CC9D0F300F485D2 /* CharacterSwipeUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = CharacterSwipeUITests;
+			sourceTree = "<group>";
+		};
+		763E56AE2CD014E000831B5B /* Assets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		763E56C62CD014FB00831B5B /* Code */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Code;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -110,12 +85,11 @@
 		761218162CC9D0F100F485D2 = {
 			isa = PBXGroup;
 			children = (
-				7643D1422CC9DA600084E0C7 /* Assets */,
-				7643D1412CC9DA530084E0C7 /* Code */,
-				7643D13C2CC9DA380084E0C7 /* Base */,
+				7612183C2CC9D0F300F485D2 /* CharacterSwipeUITests */,
+				763E56AE2CD014E000831B5B /* Assets */,
+				763E56C62CD014FB00831B5B /* Code */,
 				761218212CC9D0F100F485D2 /* CharacterSwipe */,
 				761218322CC9D0F200F485D2 /* CharacterSwipeTests */,
-				7612183C2CC9D0F300F485D2 /* CharacterSwipeUITests */,
 				761218202CC9D0F100F485D2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -128,67 +102,6 @@
 				761218392CC9D0F300F485D2 /* CharacterSwipeUITests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		762ED0E42CCADC0900FF6215 /* States */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = States;
-			sourceTree = "<group>";
-		};
-		762ED0E52CCADC9C00FF6215 /* Helpers */ = {
-			isa = PBXGroup;
-			children = (
-				762ED0E62CCADCE300FF6215 /* CSGameInfo.swift */,
-				762ED0E82CCADCF500FF6215 /* CSGameLayout.swift */,
-				762ED0EA2CCADDAB00FF6215 /* CSGameContext.swift */,
-				762ED0EC2CCADDB200FF6215 /* CSGameScene.swift */,
-			);
-			path = Helpers;
-			sourceTree = "<group>";
-		};
-		762ED0EE2CCAE62E00FF6215 /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				762ED0F32CCAE67A00FF6215 /* PPNeueMontreal-Bold.otf */,
-				762ED0F42CCAE67A00FF6215 /* PPNeueMontreal-Book.otf */,
-				762ED0F52CCAE67A00FF6215 /* PPNeueMontreal-Italic.otf */,
-				762ED0F62CCAE67A00FF6215 /* PPNeueMontreal-Medium.otf */,
-				762ED0F82CCAE67A00FF6215 /* PPNeueMontreal-SemiBolditalic.otf */,
-				762ED0F92CCAE67A00FF6215 /* PPNeueMontreal-Thin.otf */,
-				762ED0F12CCAE65A00FF6215 /* PPNeueMontreal-SemiBold.ttf */,
-			);
-			path = Fonts;
-			sourceTree = "<group>";
-		};
-		7643D13C2CC9DA380084E0C7 /* Base */ = {
-			isa = PBXGroup;
-			children = (
-				7643D1382CC9DA380084E0C7 /* Dependencies.swift */,
-				7643D1392CC9DA380084E0C7 /* GameContext.swift */,
-				7643D13A2CC9DA380084E0C7 /* GameModeType.swift */,
-				7643D13B2CC9DA380084E0C7 /* GameType.swift */,
-			);
-			path = Base;
-			sourceTree = "<group>";
-		};
-		7643D1412CC9DA530084E0C7 /* Code */ = {
-			isa = PBXGroup;
-			children = (
-				762ED0E52CCADC9C00FF6215 /* Helpers */,
-				762ED0E42CCADC0900FF6215 /* States */,
-			);
-			path = Code;
-			sourceTree = "<group>";
-		};
-		7643D1422CC9DA600084E0C7 /* Assets */ = {
-			isa = PBXGroup;
-			children = (
-				7643D12B2CC9DA180084E0C7 /* Assets.xcassets */,
-				762ED0EE2CCAE62E00FF6215 /* Fonts */,
-			);
-			path = Assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -208,6 +121,8 @@
 			);
 			fileSystemSynchronizedGroups = (
 				761218212CC9D0F100F485D2 /* CharacterSwipe */,
+				763E56AE2CD014E000831B5B /* Assets */,
+				763E56C62CD014FB00831B5B /* Code */,
 			);
 			name = CharacterSwipe;
 			packageProductDependencies = (
@@ -311,14 +226,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				762ED0FA2CCAE67A00FF6215 /* PPNeueMontreal-Italic.otf in Resources */,
-				762ED0FC2CCAE67A00FF6215 /* PPNeueMontreal-Thin.otf in Resources */,
-				762ED0FD2CCAE67A00FF6215 /* PPNeueMontreal-Book.otf in Resources */,
-				762ED0FE2CCAE67A00FF6215 /* PPNeueMontreal-Medium.otf in Resources */,
-				762ED0FF2CCAE67A00FF6215 /* PPNeueMontreal-SemiBolditalic.otf in Resources */,
-				762ED1002CCAE67A00FF6215 /* PPNeueMontreal-Bold.otf in Resources */,
-				7643D12F2CC9DA180084E0C7 /* Assets.xcassets in Resources */,
-				762ED0F22CCAE65A00FF6215 /* PPNeueMontreal-SemiBold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -343,14 +250,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				762ED0EB2CCADDAB00FF6215 /* CSGameContext.swift in Sources */,
-				762ED0E72CCADCE300FF6215 /* CSGameInfo.swift in Sources */,
-				762ED0E92CCADCF500FF6215 /* CSGameLayout.swift in Sources */,
-				7643D13D2CC9DA380084E0C7 /* GameModeType.swift in Sources */,
-				7643D13E2CC9DA380084E0C7 /* GameContext.swift in Sources */,
-				7643D13F2CC9DA380084E0C7 /* Dependencies.swift in Sources */,
-				762ED0ED2CCADDB200FF6215 /* CSGameScene.swift in Sources */,
-				7643D1402CC9DA380084E0C7 /* GameType.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
