@@ -45,16 +45,6 @@
 			path = CharacterSwipeUITests;
 			sourceTree = "<group>";
 		};
-		763E56AE2CD014E000831B5B /* Assets */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Assets;
-			sourceTree = "<group>";
-		};
-		763E56C62CD014FB00831B5B /* Code */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Code;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,12 +75,8 @@
 		761218162CC9D0F100F485D2 = {
 			isa = PBXGroup;
 			children = (
-				7612183C2CC9D0F300F485D2 /* CharacterSwipeUITests */,
-				763E56AE2CD014E000831B5B /* Assets */,
-				763E56C62CD014FB00831B5B /* Code */,
 				761218212CC9D0F100F485D2 /* CharacterSwipe */,
-				761218322CC9D0F200F485D2 /* CharacterSwipeTests */,
-				761218202CC9D0F100F485D2 /* Products */,
+				76D76EE12CD1791F0051C268 /* Do we need these? */,
 			);
 			sourceTree = "<group>";
 		};
@@ -102,6 +88,16 @@
 				761218392CC9D0F300F485D2 /* CharacterSwipeUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		76D76EE12CD1791F0051C268 /* Do we need these? */ = {
+			isa = PBXGroup;
+			children = (
+				7612183C2CC9D0F300F485D2 /* CharacterSwipeUITests */,
+				761218322CC9D0F200F485D2 /* CharacterSwipeTests */,
+				761218202CC9D0F100F485D2 /* Products */,
+			);
+			path = "Do we need these?";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -121,8 +117,6 @@
 			);
 			fileSystemSynchronizedGroups = (
 				761218212CC9D0F100F485D2 /* CharacterSwipe */,
-				763E56AE2CD014E000831B5B /* Assets */,
-				763E56C62CD014FB00831B5B /* Code */,
 			);
 			name = CharacterSwipe;
 			packageProductDependencies = (
