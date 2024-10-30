@@ -5,13 +5,18 @@
 //  Created by Liam Nagel on 10/29/24.
 //
 
-import Foundation
+import SpriteKit
+import GameplayKit
 
 
 class CSGameState: GKState  {
     
     unowned let gameScene: CSGameScene
     
+    init(gameScene: CSGameScene) {
+        self.gameScene = gameScene
+        super.init()
+    }
 }
 
 class CSStartState: CSGameState {

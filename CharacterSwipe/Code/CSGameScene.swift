@@ -3,8 +3,8 @@
 import SpriteKit
 
 class CSGameScene: SKScene {
+    
 
-    unowned let context: CSGameContext
 }
 
 //uh oh

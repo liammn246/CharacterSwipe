@@ -5,9 +5,11 @@
 //  Created by Liam Nagel on 10/29/24.
 //
 
-import Foundation
+import GameplayKit
+import SpriteKit
 
-class CSGameState: CSGameState {
+
+class CSGameplayState: CSGameState {
     override func didEnter(from previousState: GKState?) {
         class gameBoard {
             var gameBoard = [[0, 0, 0, 0],

@@ -22,7 +22,7 @@ class CSGameContext {
     func configureStates() {
         stateMachine = GKStateMachine(
             states: [
-                CSGameState(gameScene: scene),
+                CSGameplayState(gameScene: scene),
                 CSLoseState(gameScene: scene),
                 CSStartState(gameScene: scene)
             ]
