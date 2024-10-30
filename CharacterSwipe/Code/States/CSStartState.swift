@@ -6,3 +6,14 @@
 //
 
 import Foundation
+
+
+class CSGameState: GKState  {
+    
+    unowned let gameScene: CSGameScene
+    
+}
+
+class CSStartState: CSGameState {
+
+}

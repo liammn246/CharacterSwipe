@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+class CSLoseState: CSGameState {
+    override func didEnter(from previousState: GKState?) {
+
+        
+    }
+}
