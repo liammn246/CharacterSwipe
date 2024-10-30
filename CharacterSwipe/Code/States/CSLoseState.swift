@@ -1,5 +1,5 @@
 //
-//  CSLoseScreen.swift
+//  CSLoseState.swift
 //  CharacterSwipe
 //
 //  Created by Liam Nagel on 10/29/24.

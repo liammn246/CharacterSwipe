@@ -1,4 +1,9 @@
-// screen that users see when playing game
+
+//  CSGameScene.swift
+//  CharacterSwipe
+//
+//  Created by Liam Nagel on 10/24/24.
+//
 
 import SpriteKit
 

@@ -1,5 +1,5 @@
 //
-//  CSStartScreen.swift
+//  CSStartStart.swift
 //  CharacterSwipe
 //
 //  Created by Liam Nagel on 10/29/24.
@@ -13,6 +13,9 @@ class CSGameState: GKState  {
     
     unowned let gameScene: CSGameScene
     
+
+    
+    /// Idk what this is, research
     init(gameScene: CSGameScene) {
         self.gameScene = gameScene
         super.init()
