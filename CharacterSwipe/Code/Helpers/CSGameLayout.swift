@@ -10,5 +10,7 @@
 import Foundation
 
 struct CSGameLayout {
+    var screenSize: CGSize = .zero //Sets a default size
+    
     
 }

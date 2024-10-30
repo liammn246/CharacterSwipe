@@ -7,9 +7,23 @@
 
 
 // Game sessions specific info: score, powerup active or not, level progression
+// Score, level progression
 
 import Foundation
 
-struct CSGameInfo {
+class CSGameInfo {
+    var score: Int
     
+    init() {
+        score = 0
+    }
+    
+    func reset() {
+        score = 0
+    }
+    
+    func incrementScore(by amount: Int) {
+        score = score + amount
+    }
+
 }
