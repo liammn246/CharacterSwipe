@@ -5,17 +5,21 @@
 //  Created by Liam Nagel on 10/23/24.
 //
 
+import GameplayKit
+import SpriteKit
 import SwiftUI
 
 struct ContentView: View {
+
+    let context = CSGameContext()
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, test world!")
+        ZStack {
+            SpriteView(scene: context.scene, debugOptions: [])
+                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                .edgesIgnoringSafeArea(.all)
         }
-        .padding()
+        .statusBarHidden()
     }
 }
 

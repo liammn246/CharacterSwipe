@@ -16,8 +16,10 @@ class CSGameContext {
         self.layoutInfo = CSGameLayout()
         self.gameInfo = CSGameInfo()
         self.scene = CSGameScene(context: self, size: UIScreen.main.bounds.size)
+        
+        configureStates()
+        configureLayoutInfo()
     }
-    //        configureStates()
     
     func configureStates() {
         stateMachine = GKStateMachine(
@@ -30,5 +32,6 @@ class CSGameContext {
     
     func configureLayoutInfo() {
         let screenSize = UIScreen.main.bounds.size
+        
     }
 }

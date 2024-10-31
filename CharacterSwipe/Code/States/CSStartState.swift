@@ -12,9 +12,6 @@ import GameplayKit
 class CSGameState: GKState  {
     
     unowned let gameScene: CSGameScene
-    
-
-    
     /// Idk what this is, research
     init(gameScene: CSGameScene) {
         self.gameScene = gameScene
