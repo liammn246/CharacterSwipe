@@ -42,59 +42,60 @@ class CSGameplayState: CSGameState {
                         self.gameBoard[randomRow][randomColumn] = [2, 4].randomElement()!
                         break
                     }
-                if direction == "right" {
-                    for column in 0...2 {
-                        for row in 0...2 {
-                            if gameBoard[row][column] == gameBoard[row+1][column] {
-                                gameBoard[row+1][column] = 2*gameBoard[row][column]
-                                gameBoard[row][column] = 0
-                            }
-                            else if gameBoard[row][column] != 0 {
-                                gameBoard[row+1][column] = gameBoard[row][column]
-                                gameBoard[row][column] = 0
-                            }
-                        }
-                    }
-                }
-                else if direction == "left" {
-                    for column in 3...1 {
-                        for row in 3...1 {
-                            if gameBoard[row][column] == gameBoard[row][column-1] {
-                                gameBoard[row][column-1] = 2*gameBoard[row][column]
-                                gameBoard[row][column] = 0
-                            }
-                            else if gameBoard[row][column] != 0 {
-                                gameBoard[row][column-1] = gameBoard[row][column]
-                                gameBoard[row][column] = 0
-                            }
-                            
-                        }
-                    }
-                }
-                else if direction == "up" {
-                    for column in 3...1  {
-                        for row in 3...1 {
-                            if gameBoard[row][column] == gameBoard[row-1][column] {
-                                gameBoard[row-1][column] = 2*gameBoard[row][column]
-                                gameBoard[row][column] = 0
-                            }
-                            else if gameBoard[row][column] != 0 {
-                                gameBoard[row-1][column] = gameBoard[row][column]
-                                gameBoard[row][column] = 0
+                    if direction == "right" {
+                        for column in 0...2 {
+                            for row in 0...2 {
+                                if gameBoard[row][column] == gameBoard[row+1][column] {
+                                    gameBoard[row+1][column] = 2*gameBoard[row][column]
+                                    gameBoard[row][column] = 0
+                                }
+                                else if gameBoard[row][column] != 0 {
+                                    gameBoard[row+1][column] = gameBoard[row][column]
+                                    gameBoard[row][column] = 0
+                                }
                             }
                         }
                     }
-                }
-                else if direction == "down" {
-                    for column in 0...2 {
-                        for row in 0...2 {
-                            if gameBoard[row][column] == gameBoard[row+1][column] {
-                                gameBoard[row+1][column] = 2*gameBoard[row][column]
-                                gameBoard[row][column] = 0
+                    else if direction == "left" {
+                        for column in 3...1 {
+                            for row in 3...1 {
+                                if gameBoard[row][column] == gameBoard[row][column-1] {
+                                    gameBoard[row][column-1] = 2*gameBoard[row][column]
+                                    gameBoard[row][column] = 0
+                                }
+                                else if gameBoard[row][column] != 0 {
+                                    gameBoard[row][column-1] = gameBoard[row][column]
+                                    gameBoard[row][column] = 0
+                                }
+                                
                             }
-                            else if gameBoard[row][column] != 0 {
-                                gameBoard[row+1][column] = gameBoard[row][column]
-                                gameBoard[row][column] = 0
+                        }
+                    }
+                    else if direction == "up" {
+                        for column in 3...1  {
+                            for row in 3...1 {
+                                if gameBoard[row][column] == gameBoard[row-1][column] {
+                                    gameBoard[row-1][column] = 2*gameBoard[row][column]
+                                    gameBoard[row][column] = 0
+                                }
+                                else if gameBoard[row][column] != 0 {
+                                    gameBoard[row-1][column] = gameBoard[row][column]
+                                    gameBoard[row][column] = 0
+                                }
+                            }
+                        }
+                    }
+                    else if direction == "down" {
+                        for column in 0...2 {
+                            for row in 0...2 {
+                                if gameBoard[row][column] == gameBoard[row+1][column] {
+                                    gameBoard[row+1][column] = 2*gameBoard[row][column]
+                                    gameBoard[row][column] = 0
+                                }
+                                else if gameBoard[row][column] != 0 {
+                                    gameBoard[row+1][column] = gameBoard[row][column]
+                                    gameBoard[row][column] = 0
+                                }
                             }
                         }
                     }
