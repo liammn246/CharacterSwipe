@@ -8,15 +8,17 @@
 import SpriteKit
 
 class CSGameScene: SKScene {
-    
+    weak var context: CSGameContext?
+    init(context: CSGameContext, size: CGSize) {
+        self.context = context
+        super.init(size: size)
+    }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    unowned let context: CSGameContext
-    var gameInfo: CSGameInfo? { context.gameInfo }
-    var layoutInfo: CSGameLayout { context.layoutInfo }
-
+//    var gameInfo: CSGameInfo? { context.gameInfo }
+//    var layoutInfo: CSGameLayout { context.layoutInfo }
+//    
 }
 
-//uh oh

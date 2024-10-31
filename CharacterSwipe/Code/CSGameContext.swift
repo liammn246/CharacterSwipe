@@ -17,15 +17,18 @@ class CSGameContext {
         self.gameInfo = CSGameInfo()
         self.scene = CSGameScene(context: self, size: UIScreen.main.bounds.size)
     }
-        //        configureStates()
-        
-        func configureStates() {
-            stateMachine = GKStateMachine(
-                states: [
-                    CSGameplayState(gameScene: scene),
-                    CSLoseState(gameScene: scene),
-                    CSStartState(gameScene: scene)
-                ])
-        }
-        
+    //        configureStates()
+    
+    func configureStates() {
+        stateMachine = GKStateMachine(
+            states: [
+                CSGameplayState(gameScene: scene),
+                CSLoseState(gameScene: scene),
+                CSStartState(gameScene: scene)
+            ])
     }
+    
+    func configureLayoutInfo() {
+        let screenSize = UIScreen.main.bounds.size
+    }
+}
