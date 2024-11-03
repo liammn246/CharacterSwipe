@@ -49,16 +49,125 @@ class CSGameplayState: CSGameState {
                         break
                     }
                     if direction == "right" {
+                        //shift right
+                        for i in 0..<4 {
+                            for r in 0..<4 {
+                                for c in stride(from: 3,to: 0,by: -1) {
+                                    if gameBoard[r][c] == 0 {
+                                        gameBoard[r][c] = gameBoard[r][c-1]
+                                        gameBoard[r][c-1] = 0
+                                    }
+                                }
+                            }
+                        }
+                        
+                        //merge right
+                        for r in 0..<4 {
+                            for c in stride(from: 3, to: 0, by: -1) {
+                                if gameBoard[r][c] == gameBoard[r][c-1] && mergeBoard[r][c] && mergeBoard[r][c-1] {
+                                    gameBoard[r][c] *= 2
+                                    gameBoard[r][c-1] = 0
+                                    mergeBoard[r][c] = false
+                                    for c in stride(from: 3, to: 0, by: -1) {
+                                        if gameBoard[r][c] == 0 {
+                                            gameBoard[r][c] = gameBoard[r][c-1]
+                                            gameBoard[r][c-1] = 0
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         
                     }
                     else if direction == "left" {
-
+                        //shift left
+                        for i in 0..<4 {
+                            for r in 0..<4 {
+                                for c in 0..<4 {
+                                    if gameBoard[r][c] == 0 {
+                                        gameBoard[r][c] = gameBoard[r][c+1]
+                                        gameBoard[r][c+1] = 0
+                                    }
+                                }
+                            }
+                        }
+                        //merge left
+                        for i in 0..<4 {
+                            for r in 0..<4 {
+                                for c in 0..<4 {
+                                    if gameBoard[r][c] == gameBoard[r][c+1] && mergeBoard[r][c] && mergeBoard[r][c+1] {
+                                        gameBoard[r][c] *= 2
+                                        gameBoard[r][c+1] = 0
+                                        mergeBoard[r][c] = false
+                                        for c in stride(from: 3, to: 0, by: -1) {
+                                            if gameBoard[r][c] == 0 {
+                                                gameBoard[r][c] = gameBoard[r][c+1]
+                                                gameBoard[r][c+1] = 0
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                     else if direction == "up" {
-
+                        //shift up
+                        for i in 0..<4 {
+                            for c in 0..<4 {
+                                for r in 0..<4 {
+                                    if gameBoard[r][c] == 0 {
+                                        gameBoard[r][c] = gameBoard[r+1][c]
+                                        gameBoard[r+1][c] = 0
+                                    }
+                                }
+                            }
+                        }
+                        //merge up
+                        for c in 0..<4 {
+                            for r in 0..<4 {
+                                if gameBoard[r][c] == gameBoard[r+1][c] && mergeBoard[r][c] && mergeBoard[r+1][c] {
+                                    gameBoard[r][c] *= 2
+                                    gameBoard[r+1][c] = 0
+                                    mergeBoard[r][c] = false
+                                    for r in 0..<4 {
+                                        if gameBoard[r][c] == 0 {
+                                            gameBoard[r][c] = gameBoard[r+1][c]
+                                            gameBoard[r+1][c] = 0
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                     else if direction == "down" {
-
+                        //shift down
+                        for i in 0..<4 {
+                            for c in 0..<4 {
+                                for r in 3...0 {
+                                    if gameBoard[r][c] == 0 {
+                                        gameBoard[r][c] = gameBoard[r-1][c]
+                                        gameBoard[r-1][c] = 0
+                                    }
+                                }
+                            }
+                        }
+                        
+                        //merge down
+                        for c in 0..<4 {
+                            for r in 3...0  {
+                                if gameBoard[r][c] == gameBoard[r-1][c] && mergeBoard[r][c] && mergeBoard[r-1][c] {
+                                    gameBoard[r][c] *= 2
+                                    gameBoard[r-1][c] = 0
+                                    mergeBoard[r][c] = false
+                                    for r in 3...0 {
+                                        if gameBoard[r][c] == 0 {
+                                            gameBoard[r][c] = gameBoard[r-1][c]
+                                            gameBoard[r-1][c] = 0
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
