@@ -11,7 +11,7 @@ import SpriteKit
 
 class CSGameplayState: CSGameState {
     override func didEnter(from previousState: GKState?) {
-        
+
     }
         class gameBoard {
             var gameBoard = [[0, 0, 0, 0],
