@@ -10,7 +10,6 @@ import SpriteKit
 
 
 class CSGameplayState: CSGameState {
-
     
     override func didEnter(from previousState: GKState?) {
 
