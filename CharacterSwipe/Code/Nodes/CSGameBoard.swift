@@ -37,12 +37,11 @@ class CSGameBoard: SKSpriteNode {
             }
         }
     }
-    
     private func calculateTilePosition(row: Int, col: Int) -> CGPoint {
         let gridWidth = CGFloat(columns) * (tileSideLength + spacing) - spacing
         let gridHeight = CGFloat(rows) * (tileSideLength + spacing) - spacing
         let xPosition = CGFloat(col) * (tileSideLength + spacing) - gridWidth / 2 + tileSideLength / 2
-        let yPosition = CGFloat(row) * (tileSideLength + spacing) - gridHeight / 2 + tileSideLength / 2
+        let yPosition = CGFloat(3-row) * (tileSideLength + spacing) - gridHeight / 2 + tileSideLength / 2
         return CGPoint(x: xPosition, y: yPosition)
     }
     
