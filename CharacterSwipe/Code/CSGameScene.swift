@@ -31,7 +31,7 @@ class CSGameScene: SKScene {
         
         // Add the game board to the scene
         addChild(gameBoard)
-
+//NEED TO MOVE GAMEBOARD INTO GAMEPLAYSTATE
     }
     //NEED TO WORK ON REFRESHING THE BOARD AFTER EVERY SWIPE SO THAT IT IS UPDATED
     //IN ORDER TO DO THAT: In CSGameScene, after creating gameBoard, pass it to CSGameplayState so it can call the updateTiles method after every swipe.
