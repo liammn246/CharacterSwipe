@@ -11,10 +11,10 @@ class CSGameBoard: SKSpriteNode {
     let columns = 4
     let tileSideLength: CGFloat = 90
     let spacing: CGFloat = 5
-    var gameBoardMatrix = [[0, 1, 2, 3],
-                           [4, 5, 6, 7],
-                           [8, 9, 10, 11],
-                           [12, 13, 0, 0]]
+    var gameBoardMatrix = [[2, 4, 8, 16],
+                           [32, 64, 128, 256],
+                           [512, 1024, 2048, 4096],
+                           [8192, 0, 0, 0]]
     
     init(size: CGSize) {
         super.init(texture: nil, color: .clear, size: size)
@@ -63,21 +63,26 @@ class CSGameBoard: SKSpriteNode {
                 }
             }
         }
+    
+    func updateBoard(with board: [[Int]]) {
+        gameBoardMatrix = board
+        updateTiles()
+    }
         
     private let tileTextures: [Int: String] = [
-            1: "tile_1",
-            2: "tile_2",
-            3: "tile_3",
-            4: "tile_4",
-            5: "tile_5",
-            6: "tile_6",
-            7: "tile_7",
-            8: "tile_8",
-            9: "tile_9",
-            10: "tile_10",
-            11: "tile_11",
-            12: "tile_12",
-            13: "tile_13",
+            2: "tile_1",
+            4: "tile_2",
+            8: "tile_3",
+            16: "tile_4",
+            32: "tile_5",
+            64: "tile_6",
+            128: "tile_7",
+            256: "tile_8",
+            512: "tile_9",
+            1024: "tile_10",
+            2048: "tile_11",
+            4096: "tile_12",
+            8192: "tile_13",
         ]
     
     private func getTextureForValue(_ value: Int) -> SKTexture? {

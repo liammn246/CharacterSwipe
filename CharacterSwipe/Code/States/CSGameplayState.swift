@@ -39,22 +39,17 @@ class CSGameplayState: CSGameState {
                 }
             }
             //TODO: TEST THIS CODE ONCE THE PROJECT WILL RUN; MARK BLOCKS TO AVOID DOUBLE MERGES WITH A SECOND ARRAY
+            //TODO: Make the merge logic its own function and incorporate a different onSwipe function
+            //Test all four merges after each move to determine if to continue the game, or if the user lost
             func swipe(direction: String) {
                 var mergeBoard = [[true, true, true, true],
                                   [true, true, true, true],
                                   [true, true, true, true],
                                   [true, true, true, true]]
-                while(true) {
-                    let randomRow = Int.random(in: 0..<4)
-                    let randomColumn = Int.random(in: 0..<4)
-                    
-                    if gameBoard[randomRow][randomColumn] == 0 {
-                        self.gameBoard[randomRow][randomColumn] = [2, 4].randomElement()!
-                        break
-                    }
+                    //TODO: Test which moves are possible, if none are then end game
                     if direction == "right" {
                         //shift right
-                        for i in 0..<4 {
+                        for _ in 0..<4 {
                             for r in 0..<4 {
                                 for c in stride(from: 3,to: 0,by: -1) {
                                     if gameBoard[r][c] == 0 {
@@ -85,7 +80,7 @@ class CSGameplayState: CSGameState {
                     }
                     else if direction == "left" {
                         //shift left
-                        for i in 0..<4 {
+                        for _ in 0..<4 {
                             for r in 0..<4 {
                                 for c in 0..<4 {
                                     if gameBoard[r][c] == 0 {
@@ -96,7 +91,7 @@ class CSGameplayState: CSGameState {
                             }
                         }
                         //merge left
-                        for i in 0..<4 {
+                        for _ in 0..<4 {
                             for r in 0..<4 {
                                 for c in 0..<4 {
                                     if gameBoard[r][c] == gameBoard[r][c+1] && mergeBoard[r][c] && mergeBoard[r][c+1] {
@@ -116,7 +111,7 @@ class CSGameplayState: CSGameState {
                     }
                     else if direction == "up" {
                         //shift up
-                        for i in 0..<4 {
+                        for _ in 0..<4 {
                             for c in 0..<4 {
                                 for r in 0..<4 {
                                     if gameBoard[r][c] == 0 {
@@ -145,7 +140,7 @@ class CSGameplayState: CSGameState {
                     }
                     else if direction == "down" {
                         //shift down
-                        for i in 0..<4 {
+                        for _ in 0..<4 {
                             for c in 0..<4 {
                                 for r in 3...0 {
                                     if gameBoard[r][c] == 0 {
@@ -172,6 +167,14 @@ class CSGameplayState: CSGameState {
                                 }
                             }
                         }
+                    }
+                while(true) {
+                    let randomRow = Int.random(in: 0..<4)
+                    let randomColumn = Int.random(in: 0..<4)
+                    
+                    if gameBoard[randomRow][randomColumn] == 0 {
+                        self.gameBoard[randomRow][randomColumn] = [2, 4].randomElement()!
+                        break
                     }
                 }
             }
