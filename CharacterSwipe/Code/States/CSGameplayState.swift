@@ -11,162 +11,183 @@
 import GameplayKit
 import SpriteKit
 
+
 class CSGameplayState: CSGameState {
     
-    // Game board instance
-    var gameBoard: GameBoard
-    
-    init(gameScene: CSGameScene, gameBoard: GameBoard) {
-        self.gameBoard = gameBoard
-        super.init(gameScene: gameScene)
-    }
-    
     override func didEnter(from previousState: GKState?) {
-        super.didEnter(from: previousState)
-        // Initialize or reset game board here if needed
-        print("Gameplay state entered.")
-    }
-    
-    // Handle swipe action
-    func swipe(direction: String) {
-        let movedBoard = gameBoard.boardMove(direction: direction)
         
-        if movedBoard != gameBoard.board {
-            gameBoard.board = movedBoard
-            
-            // Place a random tile after each valid move
-            gameBoard.placeRandomTile()
-            
-            // Check for game over condition after the move
-            if gameBoard.isGameOver() {
-                stateMachine?.enter(CSLoseState.self)
-            }
-        }
     }
-}
-
-class GameBoard {
-    
-    var board: [[Int]]
-    
-    init(board: [[Int]] = [[0, 0, 0, 0],
-                           [0, 0, 0, 0],
-                           [0, 0, 0, 0],
-                           [0, 0, 0, 0]]) {
-        self.board = board
-        self.placeRandomTile() // Place an initial random tile when the game starts
-    }
-    
-    // Add a random tile to an empty spot
-    func placeRandomTile() {
-        var emptySpaces: [(Int, Int)] = []
-        for row in 0..<4 {
-            for col in 0..<4 {
-                if board[row][col] == 0 {
-                    emptySpaces.append((row, col))
-                }
-            }
-        }
+    class gameBoard {
+        //TODO swipe function
         
-        if !emptySpaces.isEmpty {
-            let randomSpot = emptySpaces.randomElement()!
-            let randomValue = [2, 4].randomElement()!
-            board[randomSpot.0][randomSpot.1] = randomValue
-        }
-    }
-    
-    // Check if the game is over
-    func isGameOver() -> Bool {
-        for row in 0..<4 {
-            for col in 0..<4 {
-                if board[row][col] == 0 {
-                    return false
-                }
-                if col < 3 && board[row][col] == board[row][col + 1] {
-                    return false
-                }
-                if row < 3 && board[row][col] == board[row + 1][col] {
-                    return false
+        var board = [[0, 0, 0, 0],
+                     [0, 0, 0, 0],
+                     [0, 0, 0, 0],
+                     [0, 0, 0, 0]]
+        init(board: [[Int]] = [[0, 0, 0, 0],
+                                   [0, 0, 0, 0],
+                                   [0, 0, 0, 0],
+                                   [0, 0, 0, 0]]) {
+            self.board = board
+            self.board[Int.random(in: 0..<4)][Int.random(in: 0..<4)] = [2, 4].randomElement()!
+            while(true) {
+                let randomRow = Int.random(in: 0..<4)
+                let randomColumn = Int.random(in: 0..<4)
+                
+                if board[randomRow][randomColumn] == 0 {
+                    self.board[randomRow][randomColumn] = [2, 4].randomElement()!
+                    break
                 }
             }
         }
-        return true
-    }
-    
-    // Move and merge tiles based on direction
-    func boardMove(direction: String) -> [[Int]] {
-        var newBoard = self.board
-        var merged = Array(repeating: Array(repeating: false, count: 4), count: 4)
-        
-        switch direction {
-        case "right":
-            for r in 0..<4 {
-                var row = newBoard[r].filter { $0 != 0 }
-                var i = row.count - 1
-                while i > 0 {
-                    if row[i] == row[i - 1] && !merged[r][i] && !merged[r][i - 1] {
-                        row[i] *= 2
-                        row[i - 1] = 0
-                        merged[r][i] = true
+        func boardMove(direction: String) -> [[Int]] {
+            var gameBoard = self.board
+            var mergeBoard = [[true, true, true, true],
+                              [true, true, true, true],
+                              [true, true, true, true],
+                              [true, true, true, true]]
+            if direction == "right" {
+                //shift right
+                for _ in 0..<4 {
+                    for r in 0..<4 {
+                        for c in stride(from: 3,to: 0,by: -1) {
+                            if gameBoard[r][c] == 0 {
+                                gameBoard[r][c] = gameBoard[r][c-1]
+                                gameBoard[r][c-1] = 0
+                            }
+                        }
                     }
-                    i -= 1
                 }
-                row = row.filter { $0 != 0 }
-                newBoard[r] = Array(repeating: 0, count: 4 - row.count) + row
-            }
-        case "left":
-            for r in 0..<4 {
-                var row = newBoard[r].filter { $0 != 0 }
-                var i = 0
-                while i < row.count - 1 {
-                    if row[i] == row[i + 1] && !merged[r][i] && !merged[r][i + 1] {
-                        row[i] *= 2
-                        row[i + 1] = 0
-                        merged[r][i] = true
-                    }
-                    i += 1
-                }
-                row = row.filter { $0 != 0 }
-                newBoard[r] = row + Array(repeating: 0, count: 4 - row.count)
-            }
-        case "up":
-            for c in 0..<4 {
-                var col = (0..<4).map { newBoard[$0][c] }.filter { $0 != 0 }
-                var i = 0
-                while i < col.count - 1 {
-                    if col[i] == col[i + 1] && !merged[i][c] && !merged[i + 1][c] {
-                        col[i] *= 2
-                        col[i + 1] = 0
-                        merged[i][c] = true
-                    }
-                    i += 1
-                }
-                col = col.filter { $0 != 0 }
+                
+                //merge right
                 for r in 0..<4 {
-                    newBoard[r][c] = r < col.count ? col[r] : 0
-                }
-            }
-        case "down":
-            for c in 0..<4 {
-                var col = (0..<4).map { newBoard[$0][c] }.filter { $0 != 0 }
-                var i = col.count - 1
-                while i > 0 {
-                    if col[i] == col[i - 1] && !merged[i][c] && !merged[i - 1][c] {
-                        col[i] *= 2
-                        col[i - 1] = 0
-                        merged[i][c] = true
+                    for c in stride(from: 3, to: 0, by: -1) {
+                        if gameBoard[r][c] == gameBoard[r][c-1] && mergeBoard[r][c] && mergeBoard[r][c-1] {
+                            gameBoard[r][c] *= 2
+                            gameBoard[r][c-1] = 0
+                            mergeBoard[r][c] = false
+                            for c in stride(from: 3, to: 0, by: -1) {
+                                if gameBoard[r][c] == 0 {
+                                    gameBoard[r][c] = gameBoard[r][c-1]
+                                    gameBoard[r][c-1] = 0
+                                }
+                            }
+                        }
                     }
-                    i -= 1
                 }
-                col = col.filter { $0 != 0 }
-                for r in 0..<4 {
-                    newBoard[r][c] = r < col.count ? col[r] : 0
+                
+            }
+            else if direction == "left" {
+                //shift left
+                for _ in 0..<4 {
+                    for r in 0..<4 {
+                        for c in 0..<4 {
+                            if gameBoard[r][c] == 0 {
+                                gameBoard[r][c] = gameBoard[r][c+1]
+                                gameBoard[r][c+1] = 0
+                            }
+                        }
+                    }
+                }
+                //merge left
+                for _ in 0..<4 {
+                    for r in 0..<4 {
+                        for c in 0..<4 {
+                            if gameBoard[r][c] == gameBoard[r][c+1] && mergeBoard[r][c] && mergeBoard[r][c+1] {
+                                gameBoard[r][c] *= 2
+                                gameBoard[r][c+1] = 0
+                                mergeBoard[r][c] = false
+                                for c in stride(from: 3, to: 0, by: -1) {
+                                    if gameBoard[r][c] == 0 {
+                                        gameBoard[r][c] = gameBoard[r][c+1]
+                                        gameBoard[r][c+1] = 0
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
-        default:
-            break
+            else if direction == "up" {
+                //shift up
+                for _ in 0..<4 {
+                    for c in 0..<4 {
+                        for r in 0..<4 {
+                            if gameBoard[r][c] == 0 {
+                                gameBoard[r][c] = gameBoard[r+1][c]
+                                gameBoard[r+1][c] = 0
+                            }
+                        }
+                    }
+                }
+                //merge up
+                for c in 0..<4 {
+                    for r in 0..<4 {
+                        if gameBoard[r][c] == gameBoard[r+1][c] && mergeBoard[r][c] && mergeBoard[r+1][c] {
+                            gameBoard[r][c] *= 2
+                            gameBoard[r+1][c] = 0
+                            mergeBoard[r][c] = false
+                            for r in 0..<4 {
+                                if gameBoard[r][c] == 0 {
+                                    gameBoard[r][c] = gameBoard[r+1][c]
+                                    gameBoard[r+1][c] = 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if direction == "down" {
+                //shift down
+                for _ in 0..<4 {
+                    for c in 0..<4 {
+                        for r in 3...0 {
+                            if gameBoard[r][c] == 0 {
+                                gameBoard[r][c] = gameBoard[r-1][c]
+                                gameBoard[r-1][c] = 0
+                            }
+                        }
+                    }
+                }
+                
+                //merge down
+                for c in 0..<4 {
+                    for r in 3...0  {
+                        if gameBoard[r][c] == gameBoard[r-1][c] && mergeBoard[r][c] && mergeBoard[r-1][c] {
+                            gameBoard[r][c] *= 2
+                            gameBoard[r-1][c] = 0
+                            mergeBoard[r][c] = false
+                            for r in 3...0 {
+                                if gameBoard[r][c] == 0 {
+                                    gameBoard[r][c] = gameBoard[r-1][c]
+                                    gameBoard[r-1][c] = 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return gameBoard
         }
-        
-        return newBoard
+        func swipe(direction: String) {
+            var testBoard = boardMove(direction: direction)
+            if testBoard != board {
+                board = testBoard
+                while(true) {
+                    let randomRow = Int.random(in: 0..<4)
+                    let randomColumn = Int.random(in: 0..<4)
+                    
+                    if board[randomRow][randomColumn] == 0 {
+                        self.board[randomRow][randomColumn] = [2, 4].randomElement()!
+                        break
+                    }
+                    //TODO update main board
+                }
+                if board == boardMove(direction:"right") && board == boardMove(direction:"left") && board == boardMove(direction:"up") && board == boardMove(direction: "down") {
+                    //TODO lose condition
+                    
+                }
+            }
+        }
     }
 }
