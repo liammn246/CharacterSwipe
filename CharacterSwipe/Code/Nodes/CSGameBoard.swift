@@ -166,6 +166,7 @@ class CSGameBoard: SKSpriteNode {
         return gameBoard
     }
     
+//THIS IS THE IMPORTANT ONE
     func onUserInput(direction: String) {
         let newBoard = boardMove(direction: direction)
         if newBoard != gameBoardMatrix {
@@ -173,6 +174,13 @@ class CSGameBoard: SKSpriteNode {
             addRandomTile()
             print(gameBoardMatrix)
             updateTiles()
+            var sum = 0
+            for r in 0..<4 {
+                for c in 0..<4 {
+                    sum += gameBoardMatrix[r][c]
+                }
+            }
+            print("Score:" + String(sum))
         }
         if boardMove(direction: "left") == gameBoardMatrix && boardMove(direction: "right") ==  gameBoardMatrix && boardMove(direction: "up") == gameBoardMatrix && boardMove(direction: "down") == gameBoardMatrix {
             print("Game Over")
@@ -208,12 +216,6 @@ class CSGameBoard: SKSpriteNode {
                     let value = gameBoardMatrix[row][col]
                     tileNode.removeAllChildren() // Clear existing label
                     tileNode.texture = getTextureForValue(value)
-
-//                    if value != 0 {
-//                        tileNode.texture = getTextureForValue(value)
-//                    } else {
-//                        tileNode.color = .lightGray //Default tile
-//                    }
                 }
             }
         }
