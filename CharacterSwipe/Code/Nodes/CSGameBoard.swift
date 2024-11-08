@@ -235,7 +235,6 @@ class CSGameBoard: SKSpriteNode {
             }
         }
     func addRandomTile() {
-        print("Random tile should be added")
         while(true) {
             let randomRow = Int.random(in: 0..<4)
             let randomColumn = Int.random(in: 0..<4)
