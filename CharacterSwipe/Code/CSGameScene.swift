@@ -11,7 +11,8 @@ class CSGameScene: SKScene {
     weak var context: CSGameContext?
     var gameBoard: CSGameBoard!
     
-    
+    // SwipeDetector instance
+    let swipeDetector = SwipeDetector()
     
     init(context: CSGameContext, size: CGSize) {
         self.context = context
@@ -24,19 +25,53 @@ class CSGameScene: SKScene {
     
     override func didMove(to view: SKView) {
         super.didMove(to: view)
+        
         // Set up the game board
-        let boardSize = CGSize(width: 300, height: 300)  // Adjust the size as needed
+        let boardSize = CGSize(width: 300, height: 300) // Adjust the size as needed
         gameBoard = CSGameBoard(size: boardSize)
-        // Center the game board in the scene
         gameBoard.position = CGPoint(x: size.width / 2, y: size.height / 1.5)
-        // Ensure the game board appears in front
         gameBoard.zPosition = 1
-        // Add the game board to the scene
         addChild(gameBoard)
         
-        //NEED TO WORK ON REFRESHING THE BOARD AFTER EVERY SWIPE SO THAT IT IS UPDATED
-        //IN ORDER TO DO THAT: In CSGameScene, after creating gameBoard, pass it to CSGameplayState so it can call the updateTiles method after every swipe.
-        //HOW DO WE PASS IT TO CSGAMEPLAYSTATE?
-        //ALSO NEED AN UPDATE tiLES FUNCTION
+        // Add swipe functionality
+        setupSwipeGestures()
+    }
+    
+    // MARK: - Swipe Detection Setup
+    private func setupSwipeGestures() {
+        swipeDetector.addSwipeGestures(to: self)
+        
+        // Assign actions for each swipe direction
+        swipeDetector.onSwipeUp = { [weak self] in
+            self?.gameBoard.onUserInput(direction: "up")
+        }
+        
+        swipeDetector.onSwipeDown = { [weak self] in
+            self?.gameBoard.onUserInput(direction: "down")
+        }
+        
+        swipeDetector.onSwipeLeft = { [weak self] in
+            self?.gameBoard.onUserInput(direction: "left")
+        }
+        
+        swipeDetector.onSwipeRight = { [weak self] in
+            self?.gameBoard.onUserInput(direction: "right")
+        }
+    }
+    
+    // Handle swipe and pass to the gameplay state
+    private func handleSwipe(direction: UISwipeGestureRecognizer.Direction) {
+        print("Swiped in direction: \(direction)")
+        
+        // Pass swipe action to CSGameplayState
+        if let gameplayState = context?.stateMachine?.currentState as? CSGameplayState {
+//            gameplayState.handleSwipe(direction: direction)
+            print("Called state machine for swipe")
+        }
+    }
+    
+    // MARK: - Refresh Game Board
+    func updateTiles() {
+        gameBoard.updateTiles() // Ensure CSGameBoard has a method to refresh its tiles
     }
 }

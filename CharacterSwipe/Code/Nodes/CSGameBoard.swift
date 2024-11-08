@@ -22,8 +22,8 @@ class CSGameBoard: SKSpriteNode {
         initializeBoardValues()
         setupGrid()
         updateTiles()
-        //TODO: Take in user input here and call set gameBoardMatrix equal to the boardMove function in the given direction
-
+        //TODO: Take in user input and call set gameBoardMatrix equal to the boardMove function in the given direction
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -32,15 +32,34 @@ class CSGameBoard: SKSpriteNode {
     
     func boardMove(direction: String) -> [[Int]] {
         var gameBoard = gameBoardMatrix
-        var mergeBoard = [[true, true, true, true],
-                          [true, true, true, true],
-                          [true, true, true, true],
-                          [true, true, true, true]]
-        if direction == "right" {
-            //shift right
-            for _ in 0..<4 {
-                for r in 0..<4 {
-                    for c in stride(from: 3,to: 0,by: -1) {
+        var mergeBoard = Array(repeating: Array(repeating: true, count: 4), count: 4)
+
+        switch direction {
+        case "right":
+            print("Direction right from CSGameBoard")
+            for r in 0..<4 {
+                // Shift Right
+                for _ in 0..<3 {
+                    for c in stride(from: 3, to: 0, by: -1) {
+                        if gameBoard[r][c] == 0 {
+                            gameBoard[r][c] = gameBoard[r][c-1]
+                            gameBoard[r][c-1] = 0
+                        }
+                    }
+                }
+                
+                // Merge Right
+                for c in stride(from: 3, to: 0, by: -1) {
+                    if gameBoard[r][c] == gameBoard[r][c-1] && mergeBoard[r][c] && mergeBoard[r][c-1] {
+                        gameBoard[r][c] *= 2
+                        gameBoard[r][c-1] = 0
+                        mergeBoard[r][c] = false
+                    }
+                }
+                
+                // Shift Again After Merging
+                for _ in 0..<3 {
+                    for c in stride(from: 3, to: 0, by: -1) {
                         if gameBoard[r][c] == 0 {
                             gameBoard[r][c] = gameBoard[r][c-1]
                             gameBoard[r][c-1] = 0
@@ -49,29 +68,31 @@ class CSGameBoard: SKSpriteNode {
                 }
             }
             
-            //merge right
+        case "left":
+            print("Direction left from CSGameBoard")
             for r in 0..<4 {
-                for c in stride(from: 3, to: 0, by: -1) {
-                    if gameBoard[r][c] == gameBoard[r][c-1] && mergeBoard[r][c] && mergeBoard[r][c-1] {
-                        gameBoard[r][c] *= 2
-                        gameBoard[r][c-1] = 0
-                        mergeBoard[r][c] = false
-                        for c in stride(from: 3, to: 0, by: -1) {
-                            if gameBoard[r][c] == 0 {
-                                gameBoard[r][c] = gameBoard[r][c-1]
-                                gameBoard[r][c-1] = 0
-                            }
+                // Shift Left
+                for _ in 0..<3 {
+                    for c in 0..<3 {
+                        if gameBoard[r][c] == 0 {
+                            gameBoard[r][c] = gameBoard[r][c+1]
+                            gameBoard[r][c+1] = 0
                         }
                     }
                 }
-            }
-            
-        }
-        else if direction == "left" {
-            //shift left
-            for _ in 0..<4 {
-                for r in 0..<4 {
-                    for c in 0..<4 {
+                
+                // Merge Left
+                for c in 0..<3 {
+                    if gameBoard[r][c] == gameBoard[r][c+1] && mergeBoard[r][c] && mergeBoard[r][c+1] {
+                        gameBoard[r][c] *= 2
+                        gameBoard[r][c+1] = 0
+                        mergeBoard[r][c] = false
+                    }
+                }
+                
+                // Shift Again After Merging
+                for _ in 0..<3 {
+                    for c in 0..<3 {
                         if gameBoard[r][c] == 0 {
                             gameBoard[r][c] = gameBoard[r][c+1]
                             gameBoard[r][c+1] = 0
@@ -79,30 +100,32 @@ class CSGameBoard: SKSpriteNode {
                     }
                 }
             }
-            //merge left
-            for _ in 0..<4 {
-                for r in 0..<4 {
-                    for c in 0..<4 {
-                        if gameBoard[r][c] == gameBoard[r][c+1] && mergeBoard[r][c] && mergeBoard[r][c+1] {
-                            gameBoard[r][c] *= 2
-                            gameBoard[r][c+1] = 0
-                            mergeBoard[r][c] = false
-                            for c in stride(from: 3, to: 0, by: -1) {
-                                if gameBoard[r][c] == 0 {
-                                    gameBoard[r][c] = gameBoard[r][c+1]
-                                    gameBoard[r][c+1] = 0
-                                }
-                            }
+            
+        case "up":
+            print("Direction up from CSGameBoard")
+            for c in 0..<4 {
+                // Shift Up
+                for _ in 0..<3 {
+                    for r in 0..<3 {
+                        if gameBoard[r][c] == 0 {
+                            gameBoard[r][c] = gameBoard[r+1][c]
+                            gameBoard[r+1][c] = 0
                         }
                     }
                 }
-            }
-        }
-        else if direction == "up" {
-            //shift up
-            for _ in 0..<4 {
-                for c in 0..<4 {
-                    for r in 0..<4 {
+                
+                // Merge Up
+                for r in 0..<3 {
+                    if gameBoard[r][c] == gameBoard[r+1][c] && mergeBoard[r][c] && mergeBoard[r+1][c] {
+                        gameBoard[r][c] *= 2
+                        gameBoard[r+1][c] = 0
+                        mergeBoard[r][c] = false
+                    }
+                }
+                
+                // Shift Again After Merging
+                for _ in 0..<3 {
+                    for r in 0..<3 {
                         if gameBoard[r][c] == 0 {
                             gameBoard[r][c] = gameBoard[r+1][c]
                             gameBoard[r+1][c] = 0
@@ -110,28 +133,32 @@ class CSGameBoard: SKSpriteNode {
                     }
                 }
             }
-            //merge up
+            
+        case "down":
+            print("Direction down from CSGameBoard")
             for c in 0..<4 {
-                for r in 0..<4 {
-                    if gameBoard[r][c] == gameBoard[r+1][c] && mergeBoard[r][c] && mergeBoard[r+1][c] {
-                        gameBoard[r][c] *= 2
-                        gameBoard[r+1][c] = 0
-                        mergeBoard[r][c] = false
-                        for r in 0..<4 {
-                            if gameBoard[r][c] == 0 {
-                                gameBoard[r][c] = gameBoard[r+1][c]
-                                gameBoard[r+1][c] = 0
-                            }
+                // Shift Down
+                for _ in 0..<3 {
+                    for r in stride(from: 3, to: 0, by: -1) {
+                        if gameBoard[r][c] == 0 {
+                            gameBoard[r][c] = gameBoard[r-1][c]
+                            gameBoard[r-1][c] = 0
                         }
                     }
                 }
-            }
-        }
-        else if direction == "down" {
-            //shift down
-            for _ in 0..<4 {
-                for c in 0..<4 {
-                    for r in 3...0 {
+                
+                // Merge Down
+                for r in stride(from: 3, to: 0, by: -1) {
+                    if gameBoard[r][c] == gameBoard[r-1][c] && mergeBoard[r][c] && mergeBoard[r-1][c] {
+                        gameBoard[r][c] *= 2
+                        gameBoard[r-1][c] = 0
+                        mergeBoard[r][c] = false
+                    }
+                }
+                
+                // Shift Again After Merging
+                for _ in 0..<3 {
+                    for r in stride(from: 3, to: 0, by: -1) {
                         if gameBoard[r][c] == 0 {
                             gameBoard[r][c] = gameBoard[r-1][c]
                             gameBoard[r-1][c] = 0
@@ -139,25 +166,17 @@ class CSGameBoard: SKSpriteNode {
                     }
                 }
             }
-            
-            //merge down
-            for c in 0..<4 {
-                for r in 3...0  {
-                    if gameBoard[r][c] == gameBoard[r-1][c] && mergeBoard[r][c] && mergeBoard[r-1][c] {
-                        gameBoard[r][c] *= 2
-                        gameBoard[r-1][c] = 0
-                        mergeBoard[r][c] = false
-                        for r in 3...0 {
-                            if gameBoard[r][c] == 0 {
-                                gameBoard[r][c] = gameBoard[r-1][c]
-                                gameBoard[r-1][c] = 0
-                            }
-                        }
-                    }
-                }
-            }
+        default:
+            break
         }
         return gameBoard
+    }
+    
+    func onUserInput(direction: String) {
+        gameBoardMatrix = boardMove(direction: direction)
+        addRandomTile()
+        print(gameBoardMatrix)
+        updateTiles()
     }
     
     private func setupGrid() {
@@ -203,20 +222,30 @@ class CSGameBoard: SKSpriteNode {
                                 [0, 0, 0, 0],
                                 [0, 0, 0, 0],
                                 [0, 0, 0, 0]]
-        gameBoardMatrix[Int.random(in: 0..<4)][Int.random(in: 0..<4)] = [2, 4].randomElement()!
+        gameBoardMatrix[Int.random(in: 0..<3)][Int.random(in: 0..<3)] = [2, 4].randomElement()!
+            while(true) {
+                let randomRow = Int.random(in: 0..<3)
+                let randomColumn = Int.random(in: 0..<3)
+                if gameBoardMatrix[randomRow][randomColumn] == 0 {
+                    gameBoardMatrix[randomRow][randomColumn] = [2, 4].randomElement()!
+                    break
+                }
+            }
+        }
+    func addRandomTile() {
+        print("Random tile should be added")
         while(true) {
-            let randomRow = Int.random(in: 0..<4)
-            let randomColumn = Int.random(in: 0..<4)
-            
+            let randomRow = Int.random(in: 0..<3)
+            let randomColumn = Int.random(in: 0..<3)
             if gameBoardMatrix[randomRow][randomColumn] == 0 {
                 gameBoardMatrix[randomRow][randomColumn] = [2, 4].randomElement()!
                 break
             }
         }
     }
-    
     func updateBoard(matrix: [[Int]]) {
         gameBoardMatrix = matrix
+        addRandomTile()
         updateTiles()
     }
         
