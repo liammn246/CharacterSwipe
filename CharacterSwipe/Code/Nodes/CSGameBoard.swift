@@ -22,8 +22,6 @@ class CSGameBoard: SKSpriteNode {
         initializeBoardValues()
         setupGrid()
         updateTiles()
-        //TODO: Take in user input and call set gameBoardMatrix equal to the boardMove function in the given direction
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -36,7 +34,6 @@ class CSGameBoard: SKSpriteNode {
 
         switch direction {
         case "right":
-            print("Direction right from CSGameBoard")
             for r in 0..<4 {
                 // Shift Right
                 for _ in 0..<3 {
@@ -69,7 +66,6 @@ class CSGameBoard: SKSpriteNode {
             }
             
         case "left":
-            print("Direction left from CSGameBoard")
             for r in 0..<4 {
                 // Shift Left
                 for _ in 0..<3 {
@@ -102,7 +98,6 @@ class CSGameBoard: SKSpriteNode {
             }
             
         case "up":
-            print("Direction up from CSGameBoard")
             for c in 0..<4 {
                 // Shift Up
                 for _ in 0..<3 {
@@ -135,7 +130,6 @@ class CSGameBoard: SKSpriteNode {
             }
             
         case "down":
-            print("Direction down from CSGameBoard")
             for c in 0..<4 {
                 // Shift Down
                 for _ in 0..<3 {
@@ -173,10 +167,17 @@ class CSGameBoard: SKSpriteNode {
     }
     
     func onUserInput(direction: String) {
-        gameBoardMatrix = boardMove(direction: direction)
-        addRandomTile()
-        print(gameBoardMatrix)
-        updateTiles()
+        let newBoard = boardMove(direction: direction)
+        if newBoard != gameBoardMatrix {
+            gameBoardMatrix = newBoard
+            addRandomTile()
+            print(gameBoardMatrix)
+            updateTiles()
+        }
+        if boardMove(direction: "left") == gameBoardMatrix && boardMove(direction: "right") ==  gameBoardMatrix && boardMove(direction: "up") == gameBoardMatrix && boardMove(direction: "down") == gameBoardMatrix {
+            print("Game Over")
+            //TODO: Add the code for game over
+        }
     }
     
     private func setupGrid() {
