@@ -22,42 +22,69 @@ class CSGameScene: SKScene {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let location = touch.location(in: self)
+            
+            // Route the touch to the state machine
+            if let startState = context?.stateMachine?.currentState as? CSStartState {
+                startState.handleTouch(at: location)
+            }
+        }
+    }
+
     override func didMove(to view: SKView) {
         super.didMove(to: view)
+        context?.stateMachine?.enter(CSStartState.self) // Start with CSStartState
         
         // Set up the game board
         let boardSize = CGSize(width: 300, height: 300) // Adjust the size as needed
         gameBoard = CSGameBoard(size: boardSize)
         gameBoard.position = CGPoint(x: size.width / 2, y: size.height / 1.5)
         gameBoard.zPosition = 1
-        addChild(gameBoard)
+        gameBoard.isHidden = true  // Start hidden
+        if let gameBoard = gameBoard {
+            addChild(gameBoard)
+        }
         
         // Add swipe functionality
         setupSwipeGestures()
     }
     
+    // MARK: - Show/Hide Game Board
+    func showGameBoard() {
+        gameBoard.isHidden = false
+    }
+    
+    func hideGameBoard() {
+        gameBoard.isHidden = true
+    }
+
     // MARK: - Swipe Detection Setup
     private func setupSwipeGestures() {
         swipeDetector.addSwipeGestures(to: self)
         
-        // Assign actions for each swipe direction
         swipeDetector.onSwipeUp = { [weak self] in
-            self?.gameBoard.onUserInput(direction: "up")
+            guard let self = self, self.context?.stateMachine?.currentState is CSGameplayState else { return }
+            self.gameBoard.onUserInput(direction: "up")
         }
         
         swipeDetector.onSwipeDown = { [weak self] in
-            self?.gameBoard.onUserInput(direction: "down")
+            guard let self = self, self.context?.stateMachine?.currentState is CSGameplayState else { return }
+            self.gameBoard.onUserInput(direction: "down")
         }
         
         swipeDetector.onSwipeLeft = { [weak self] in
-            self?.gameBoard.onUserInput(direction: "left")
+            guard let self = self, self.context?.stateMachine?.currentState is CSGameplayState else { return }
+            self.gameBoard.onUserInput(direction: "left")
         }
         
         swipeDetector.onSwipeRight = { [weak self] in
-            self?.gameBoard.onUserInput(direction: "right")
+            guard let self = self, self.context?.stateMachine?.currentState is CSGameplayState else { return }
+            self.gameBoard.onUserInput(direction: "right")
         }
     }
+
     
     // Handle swipe and pass to the gameplay state
     private func handleSwipe(direction: UISwipeGestureRecognizer.Direction) {
@@ -65,7 +92,6 @@ class CSGameScene: SKScene {
         
         // Pass swipe action to CSGameplayState
         if let gameplayState = context?.stateMachine?.currentState as? CSGameplayState {
-//            gameplayState.handleSwipe(direction: direction)
             print("Called state machine for swipe")
         }
     }
