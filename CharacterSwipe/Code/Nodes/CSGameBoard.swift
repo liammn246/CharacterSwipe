@@ -64,8 +64,8 @@ class CSGameBoard: SKSpriteNode {
             }
         }
     
-    func updateBoard(with board: [[Int]]) {
-        gameBoardMatrix = board
+    func updateBoard(matrix: [[Int]]) {
+        gameBoardMatrix = matrix
         updateTiles()
     }
         

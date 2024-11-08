@@ -1,4 +1,4 @@
-gamestartstate: //
+//
 //  CSStartStart.swift
 //  CharacterSwipe
 //
