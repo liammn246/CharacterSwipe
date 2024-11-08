@@ -250,6 +250,7 @@ class CSGameBoard: SKSpriteNode {
     }
         
         private let tileTextures: [Int: String] = [
+            0: "tile_0",
             2: "tile_1",
             4: "tile_2",
             8: "tile_3",
