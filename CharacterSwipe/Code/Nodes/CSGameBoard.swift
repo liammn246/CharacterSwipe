@@ -16,14 +16,148 @@ class CSGameBoard: SKSpriteNode {
                            [512, 1024, 2048, 4096],
                            [8192, 0, 0, 0]]
     
+    //THIS IS THE FUNCTION THAT RUNS IN THE BEGINNING
     init(size: CGSize) {
         super.init(texture: nil, color: .clear, size: size)
+        initializeBoardValues()
         setupGrid()
-        updateTiles() // Initialize display based on the empty matrix
+        updateTiles()
+        //TODO: Take in user input here and call set gameBoardMatrix equal to the boardMove function in the given direction
+
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+    }
+    
+    func boardMove(direction: String) -> [[Int]] {
+        var gameBoard = gameBoardMatrix
+        var mergeBoard = [[true, true, true, true],
+                          [true, true, true, true],
+                          [true, true, true, true],
+                          [true, true, true, true]]
+        if direction == "right" {
+            //shift right
+            for _ in 0..<4 {
+                for r in 0..<4 {
+                    for c in stride(from: 3,to: 0,by: -1) {
+                        if gameBoard[r][c] == 0 {
+                            gameBoard[r][c] = gameBoard[r][c-1]
+                            gameBoard[r][c-1] = 0
+                        }
+                    }
+                }
+            }
+            
+            //merge right
+            for r in 0..<4 {
+                for c in stride(from: 3, to: 0, by: -1) {
+                    if gameBoard[r][c] == gameBoard[r][c-1] && mergeBoard[r][c] && mergeBoard[r][c-1] {
+                        gameBoard[r][c] *= 2
+                        gameBoard[r][c-1] = 0
+                        mergeBoard[r][c] = false
+                        for c in stride(from: 3, to: 0, by: -1) {
+                            if gameBoard[r][c] == 0 {
+                                gameBoard[r][c] = gameBoard[r][c-1]
+                                gameBoard[r][c-1] = 0
+                            }
+                        }
+                    }
+                }
+            }
+            
+        }
+        else if direction == "left" {
+            //shift left
+            for _ in 0..<4 {
+                for r in 0..<4 {
+                    for c in 0..<4 {
+                        if gameBoard[r][c] == 0 {
+                            gameBoard[r][c] = gameBoard[r][c+1]
+                            gameBoard[r][c+1] = 0
+                        }
+                    }
+                }
+            }
+            //merge left
+            for _ in 0..<4 {
+                for r in 0..<4 {
+                    for c in 0..<4 {
+                        if gameBoard[r][c] == gameBoard[r][c+1] && mergeBoard[r][c] && mergeBoard[r][c+1] {
+                            gameBoard[r][c] *= 2
+                            gameBoard[r][c+1] = 0
+                            mergeBoard[r][c] = false
+                            for c in stride(from: 3, to: 0, by: -1) {
+                                if gameBoard[r][c] == 0 {
+                                    gameBoard[r][c] = gameBoard[r][c+1]
+                                    gameBoard[r][c+1] = 0
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if direction == "up" {
+            //shift up
+            for _ in 0..<4 {
+                for c in 0..<4 {
+                    for r in 0..<4 {
+                        if gameBoard[r][c] == 0 {
+                            gameBoard[r][c] = gameBoard[r+1][c]
+                            gameBoard[r+1][c] = 0
+                        }
+                    }
+                }
+            }
+            //merge up
+            for c in 0..<4 {
+                for r in 0..<4 {
+                    if gameBoard[r][c] == gameBoard[r+1][c] && mergeBoard[r][c] && mergeBoard[r+1][c] {
+                        gameBoard[r][c] *= 2
+                        gameBoard[r+1][c] = 0
+                        mergeBoard[r][c] = false
+                        for r in 0..<4 {
+                            if gameBoard[r][c] == 0 {
+                                gameBoard[r][c] = gameBoard[r+1][c]
+                                gameBoard[r+1][c] = 0
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if direction == "down" {
+            //shift down
+            for _ in 0..<4 {
+                for c in 0..<4 {
+                    for r in 3...0 {
+                        if gameBoard[r][c] == 0 {
+                            gameBoard[r][c] = gameBoard[r-1][c]
+                            gameBoard[r-1][c] = 0
+                        }
+                    }
+                }
+            }
+            
+            //merge down
+            for c in 0..<4 {
+                for r in 3...0  {
+                    if gameBoard[r][c] == gameBoard[r-1][c] && mergeBoard[r][c] && mergeBoard[r-1][c] {
+                        gameBoard[r][c] *= 2
+                        gameBoard[r-1][c] = 0
+                        mergeBoard[r][c] = false
+                        for r in 3...0 {
+                            if gameBoard[r][c] == 0 {
+                                gameBoard[r][c] = gameBoard[r-1][c]
+                                gameBoard[r-1][c] = 0
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return gameBoard
     }
     
     private func setupGrid() {
@@ -56,20 +190,37 @@ class CSGameBoard: SKSpriteNode {
                     
                     if value != 0 {
                         tileNode.texture = getTextureForValue(value)
-                        } else {
-                            tileNode.color = .lightGray //Default tile
-                        }
+                    } else {
+                        tileNode.color = .lightGray //Default tile
                     }
                 }
             }
         }
+    }
+    
+    func initializeBoardValues() {
+        self.gameBoardMatrix = [[0, 0, 0, 0],
+                                [0, 0, 0, 0],
+                                [0, 0, 0, 0],
+                                [0, 0, 0, 0]]
+        gameBoardMatrix[Int.random(in: 0..<4)][Int.random(in: 0..<4)] = [2, 4].randomElement()!
+        while(true) {
+            let randomRow = Int.random(in: 0..<4)
+            let randomColumn = Int.random(in: 0..<4)
+            
+            if gameBoardMatrix[randomRow][randomColumn] == 0 {
+                gameBoardMatrix[randomRow][randomColumn] = [2, 4].randomElement()!
+                break
+            }
+        }
+    }
     
     func updateBoard(matrix: [[Int]]) {
         gameBoardMatrix = matrix
         updateTiles()
     }
         
-    private let tileTextures: [Int: String] = [
+        private let tileTextures: [Int: String] = [
             2: "tile_1",
             4: "tile_2",
             8: "tile_3",
@@ -84,8 +235,8 @@ class CSGameBoard: SKSpriteNode {
             4096: "tile_12",
             8192: "tile_13",
         ]
-    
-    private func getTextureForValue(_ value: Int) -> SKTexture? {
+        
+        private func getTextureForValue(_ value: Int) -> SKTexture? {
             // Return the texture for the given value, if it exists
             if let textureName = tileTextures[value] {
                 return SKTexture(imageNamed: textureName)
@@ -93,3 +244,4 @@ class CSGameBoard: SKSpriteNode {
             return nil // Return nil if no texture is available for the value
         }
     }
+
