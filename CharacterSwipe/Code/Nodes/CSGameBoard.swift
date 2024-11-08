@@ -206,12 +206,13 @@ class CSGameBoard: SKSpriteNode {
                 if let tileNode = childNode(withName: tileName) as? SKSpriteNode {
                     let value = gameBoardMatrix[row][col]
                     tileNode.removeAllChildren() // Clear existing label
-                    
-                    if value != 0 {
-                        tileNode.texture = getTextureForValue(value)
-                    } else {
-                        tileNode.color = .lightGray //Default tile
-                    }
+                    tileNode.texture = getTextureForValue(value)
+
+//                    if value != 0 {
+//                        tileNode.texture = getTextureForValue(value)
+//                    } else {
+//                        tileNode.color = .lightGray //Default tile
+//                    }
                 }
             }
         }
@@ -235,8 +236,8 @@ class CSGameBoard: SKSpriteNode {
     func addRandomTile() {
         print("Random tile should be added")
         while(true) {
-            let randomRow = Int.random(in: 0..<3)
-            let randomColumn = Int.random(in: 0..<3)
+            let randomRow = Int.random(in: 0..<4)
+            let randomColumn = Int.random(in: 0..<4)
             if gameBoardMatrix[randomRow][randomColumn] == 0 {
                 gameBoardMatrix[randomRow][randomColumn] = [2, 4].randomElement()!
                 break
