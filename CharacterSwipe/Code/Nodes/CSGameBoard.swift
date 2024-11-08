@@ -172,7 +172,6 @@ class CSGameBoard: SKSpriteNode {
         if newBoard != gameBoardMatrix {
             gameBoardMatrix = newBoard
             addRandomTile()
-            print(gameBoardMatrix)
             updateTiles()
             var sum = 0
             for r in 0..<4 {
