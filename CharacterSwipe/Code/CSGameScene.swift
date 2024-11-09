@@ -26,12 +26,14 @@ class CSGameScene: SKScene {
         if let touch = touches.first {
             let location = touch.location(in: self)
             
-            // Route the touch to the state machine
             if let startState = context?.stateMachine?.currentState as? CSStartState {
                 startState.handleTouch(at: location)
+            } else if let loseState = context?.stateMachine?.currentState as? CSLoseState {
+                loseState.handleTouch(at: location)
             }
         }
     }
+
 
     override func didMove(to view: SKView) {
         super.didMove(to: view)
@@ -40,6 +42,7 @@ class CSGameScene: SKScene {
         // Set up the game board
         let boardSize = CGSize(width: 300, height: 300) // Adjust the size as needed
         gameBoard = CSGameBoard(size: boardSize)
+        gameBoard.gameScene = self
         gameBoard.position = CGPoint(x: size.width / 2, y: size.height / 1.5)
         gameBoard.zPosition = 1
         gameBoard.isHidden = true  // Start hidden

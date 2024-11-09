@@ -7,6 +7,7 @@
 import SpriteKit
 
 class CSGameBoard: SKSpriteNode {
+    weak var gameScene: CSGameScene?
     let rows = 4
     let columns = 4
     let tileSideLength: CGFloat = 90
@@ -182,7 +183,8 @@ class CSGameBoard: SKSpriteNode {
             print("Score:" + String(sum))
         }
         if boardMove(direction: "left") == gameBoardMatrix && boardMove(direction: "right") ==  gameBoardMatrix && boardMove(direction: "up") == gameBoardMatrix && boardMove(direction: "down") == gameBoardMatrix {
-            print("Game Over")
+            print("Game Over -- attempting to transition to CSLoseState")
+            gameScene?.context?.stateMachine?.enter(CSLoseState.self)
             //TODO: Add the code for game over
         }
     }
