@@ -1,40 +1,35 @@
-//  CSGameplayState.swift
-//  CharacterSwipe
-//
-//  Created by Liam Nagel on 10/29/24.
-//
-
-//Tap mechanics go here
-//Code that changes depending on state
-
 import GameplayKit
 import SpriteKit
 
 class CSGameplayState: CSGameState {
+    private var scoreLabel: SKLabelNode? // Step 1: Add a property to hold a reference to the score label
+    
     override func didEnter(from previousState: GKState?) {
         super.didEnter(from: previousState)
     
-        
         print("Entering gameplay state, showing game board")
         gameScene.showGameBoard()
 
-        let score_tile = SKSpriteNode(color: .red, size: CGSize(width: 200, height: 50))
-        score_tile.position = CGPoint(x: gameScene.size.width / 2, y: gameScene.size.height / 4)
-        score_tile.name = "score"
+        // Create a red background tile for the score label
+        let scoreTile = SKSpriteNode(color: .red, size: CGSize(width: 200, height: 50))
+        scoreTile.position = CGPoint(x: gameScene.size.width / 2, y: gameScene.size.height / 4)
+        scoreTile.name = "scoreTile"
         
-        // Create a label for the button
-        let score_label = SKLabelNode(text: "SCOREE")
-        score_label.fontColor = .white
-        score_label.fontSize = 24
-        score_label.position = CGPoint(x: 0, y: -score_tile.size.height / 4)  // Adjust label position
+        // Create the actual score label
+        let scoreLabel = SKLabelNode(text: "SCORE: 0")
+        scoreLabel.fontColor = .white
+        scoreLabel.fontSize = 24
+        scoreLabel.position = CGPoint(x: 0, y: -scoreTile.size.height / 4) // Center label inside the tile
         
-        // Add the label to the  node
-        score_tile.addChild(score_label)
+        // Add the label to the score tile
+        scoreTile.addChild(scoreLabel)
+        gameScene.addChild(scoreTile)
         
-        gameScene.addChild(score_tile)
+        self.scoreLabel = scoreLabel
         
-        print("Displaying Start Button")
+        print("Displaying Score")
     }
+    
     override func willExit(to nextState: GKState) {
         super.willExit(to: nextState)
         
@@ -42,4 +37,7 @@ class CSGameplayState: CSGameState {
         gameScene.hideGameBoard()
     }
     
+    func updateScoreLabel(newScore: Int) {
+        scoreLabel?.text = "SCORE: \(newScore)"
     }
+}

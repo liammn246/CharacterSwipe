@@ -21,17 +21,27 @@ class CSGameContext {
         configureLayoutInfo()
     }
     
-    func configureStates() {
-        stateMachine = GKStateMachine(
-            states: [
-                CSGameplayState(gameScene: scene),
-                CSLoseState(gameScene: scene),
-                CSStartState(gameScene: scene)
-            ])
+    private func configureStates() {
+        // Ensure scene is already initialized before using it in states
+        guard let gameScene = scene else {
+            print("Error: Game Scene not initialized properly")
+            return
+        }
+        
+        // Set up the state machine with the already initialized scene
+        stateMachine = GKStateMachine(states: [
+            CSGameplayState(gameScene: gameScene),
+            CSLoseState(gameScene: gameScene),
+            CSStartState(gameScene: gameScene)
+        ])
+        
+        // Start with an initial state, e.g., CSStartState
+        stateMachine?.enter(CSStartState.self)
     }
     
-    func configureLayoutInfo() {
+    private func configureLayoutInfo() {
+        // If you have layout setup, do it here
         let screenSize = UIScreen.main.bounds.size
-        
+        // Additional layout configuration if needed
     }
 }

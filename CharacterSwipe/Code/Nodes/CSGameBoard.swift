@@ -7,7 +7,8 @@
 import SpriteKit
 
 class CSGameBoard: SKSpriteNode {
-    weak var gameScene: CSGameScene?
+    weak var gameScene: CSGameScene!
+    var score_tile: SKSpriteNode!
     let rows = 4
     let columns = 4
     let tileSideLength: CGFloat = 90
@@ -170,22 +171,34 @@ class CSGameBoard: SKSpriteNode {
 //THIS IS THE IMPORTANT ONE
     func onUserInput(direction: String) {
         let newBoard = boardMove(direction: direction)
+        
+        // Check if the board has changed after the move
         if newBoard != gameBoardMatrix {
             gameBoardMatrix = newBoard
             addRandomTile()
             updateTiles()
+            
+            // Calculate the total score
             var sum = 0
             for r in 0..<4 {
                 for c in 0..<4 {
                     sum += gameBoardMatrix[r][c]
                 }
             }
-            print("Score:" + String(sum))
+
+            // Update the score label using the gameplay state
+            if let gameplayState = gameScene.context?.stateMachine?.currentState as? CSGameplayState {
+                gameplayState.updateScoreLabel(newScore: sum)
+            }
         }
-        if boardMove(direction: "left") == gameBoardMatrix && boardMove(direction: "right") ==  gameBoardMatrix && boardMove(direction: "up") == gameBoardMatrix && boardMove(direction: "down") == gameBoardMatrix {
+        
+        // Check for game over condition
+        if boardMove(direction: "left") == gameBoardMatrix &&
+            boardMove(direction: "right") == gameBoardMatrix &&
+            boardMove(direction: "up") == gameBoardMatrix &&
+            boardMove(direction: "down") == gameBoardMatrix {
             print("Game Over -- attempting to transition to CSLoseState")
-            gameScene?.context?.stateMachine?.enter(CSLoseState.self)
-            //TODO: Add the code for game over
+            gameScene.context?.stateMachine?.enter(CSLoseState.self)
         }
     }
     
