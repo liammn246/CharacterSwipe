@@ -57,6 +57,7 @@ class CSGameScene: SKScene {
     // MARK: - Show/Hide Game Board
     func showGameBoard() {
         gameBoard.isHidden = false
+    
     }
     
     func hideGameBoard() {

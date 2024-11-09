@@ -37,7 +37,7 @@ class CSLoseState: CSGameState {
 
     func handleTouch(at location: CGPoint) {
         if let restartButton = gameScene.childNode(withName: "restartButton"), restartButton.contains(location) {
-            initializeBoardValues()
+//            gameScene.getGameBoard().initializeBoardValues() //FIX THIS NOW
             startGame()
         }
     }
