@@ -54,6 +54,10 @@ class CSGameScene: SKScene {
         setupSwipeGestures()
     }
     
+    func getGameBoard() -> CSGameBoard? {
+        return gameBoard
+    }
+    
     // MARK: - Show/Hide Game Board
     func showGameBoard() {
         gameBoard.isHidden = false
