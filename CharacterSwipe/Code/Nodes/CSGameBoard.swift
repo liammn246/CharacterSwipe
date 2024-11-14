@@ -9,6 +9,7 @@ import SpriteKit
 class CSGameBoard: SKSpriteNode {
     weak var gameScene: CSGameScene!
     var score_tile: SKSpriteNode!
+    var score = 0
     let rows = 4
     let columns = 4
     let tileSideLength: CGFloat = 90
@@ -53,6 +54,7 @@ class CSGameBoard: SKSpriteNode {
                         gameBoard[r][c] *= 2
                         gameBoard[r][c-1] = 0
                         mergeBoard[r][c] = false
+                        score += gameBoard[r][c]
                     }
                 }
                 
@@ -85,6 +87,7 @@ class CSGameBoard: SKSpriteNode {
                         gameBoard[r][c] *= 2
                         gameBoard[r][c+1] = 0
                         mergeBoard[r][c] = false
+                        score += gameBoard[r][c]
                     }
                 }
                 
@@ -117,6 +120,7 @@ class CSGameBoard: SKSpriteNode {
                         gameBoard[r][c] *= 2
                         gameBoard[r+1][c] = 0
                         mergeBoard[r][c] = false
+                        score += gameBoard[r][c]
                     }
                 }
                 
@@ -149,6 +153,7 @@ class CSGameBoard: SKSpriteNode {
                         gameBoard[r][c] *= 2
                         gameBoard[r-1][c] = 0
                         mergeBoard[r][c] = false
+                        score += gameBoard[r][c]
                     }
                 }
                 
@@ -179,16 +184,16 @@ class CSGameBoard: SKSpriteNode {
             updateTiles()
             
             // Calculate the total score
-            var sum = 0
-            for r in 0..<4 {
-                for c in 0..<4 {
-                    sum += gameBoardMatrix[r][c]
-                }
-            }
+//            let sum = 0
+//            for r in 0..<4 {
+//                for c in 0..<4 {
+//                    sum += gameBoardMatrix[r][c]
+//                }
+//            }
 
             // Update the score label using the gameplay state
             if let gameplayState = gameScene.context?.stateMachine?.currentState as? CSGameplayState {
-                gameplayState.updateScoreLabel(newScore: sum)
+                gameplayState.updateScoreLabel(newScore: score)
             }
         }
         
@@ -236,6 +241,7 @@ class CSGameBoard: SKSpriteNode {
     }
     
     func initializeBoardValues() {
+        score = 0
         self.gameBoardMatrix = [[0, 0, 0, 0],
                                 [0, 0, 0, 0],
                                 [0, 0, 0, 0],
