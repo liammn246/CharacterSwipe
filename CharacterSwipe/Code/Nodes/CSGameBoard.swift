@@ -182,14 +182,6 @@ class CSGameBoard: SKSpriteNode {
             gameBoardMatrix = newBoard
             addRandomTile()
             updateTiles()
-            
-            // Calculate the total score
-//            let sum = 0
-//            for r in 0..<4 {
-//                for c in 0..<4 {
-//                    sum += gameBoardMatrix[r][c]
-//                }
-//            }
 
             // Update the score label using the gameplay state
             if let gameplayState = gameScene.context?.stateMachine?.currentState as? CSGameplayState {
@@ -261,7 +253,7 @@ class CSGameBoard: SKSpriteNode {
             let randomRow = Int.random(in: 0..<4)
             let randomColumn = Int.random(in: 0..<4)
             if gameBoardMatrix[randomRow][randomColumn] == 0 {
-                gameBoardMatrix[randomRow][randomColumn] = [2, 4].randomElement()!
+                gameBoardMatrix[randomRow][randomColumn] = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4].randomElement()!
                 break
             }
         }
