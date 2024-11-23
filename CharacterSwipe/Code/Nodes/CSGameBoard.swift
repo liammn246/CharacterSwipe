@@ -51,8 +51,8 @@ class CSGameBoard: SKSpriteNode {
                         mergedTiles[r][c] = true
                         score += gameBoard[r][c]
 
-                        // Animate only merging tiles
-                        if let tileNode = childNode(withName: "tile_\(r)_\(c)") as? SKSpriteNode {
+                        // Animate only merging tiles with non-zero values
+                        if gameBoard[r][c] > 0, let tileNode = childNode(withName: "tile_\(r)_\(c)") as? SKSpriteNode {
                             let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
                             let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
                             let bounce = SKAction.sequence([scaleUp, scaleDown])
@@ -92,8 +92,8 @@ class CSGameBoard: SKSpriteNode {
                         mergedTiles[r][c] = true
                         score += gameBoard[r][c]
 
-                        // Animate only merging tiles
-                        if let tileNode = childNode(withName: "tile_\(r)_\(c)") as? SKSpriteNode {
+                        // Animate only merging tiles with non-zero values
+                        if gameBoard[r][c] > 0, let tileNode = childNode(withName: "tile_\(r)_\(c)") as? SKSpriteNode {
                             let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
                             let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
                             let bounce = SKAction.sequence([scaleUp, scaleDown])
@@ -133,8 +133,8 @@ class CSGameBoard: SKSpriteNode {
                         mergedTiles[r][c] = true
                         score += gameBoard[r][c]
 
-                        // Animate only merging tiles
-                        if let tileNode = childNode(withName: "tile_\(r)_\(c)") as? SKSpriteNode {
+                        // Animate only merging tiles with non-zero values
+                        if gameBoard[r][c] > 0, let tileNode = childNode(withName: "tile_\(r)_\(c)") as? SKSpriteNode {
                             let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
                             let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
                             let bounce = SKAction.sequence([scaleUp, scaleDown])
@@ -174,8 +174,8 @@ class CSGameBoard: SKSpriteNode {
                         mergedTiles[r][c] = true
                         score += gameBoard[r][c]
 
-                        // Animate only merging tiles
-                        if let tileNode = childNode(withName: "tile_\(r)_\(c)") as? SKSpriteNode {
+                        // Animate only merging tiles with non-zero values
+                        if gameBoard[r][c] > 0, let tileNode = childNode(withName: "tile_\(r)_\(c)") as? SKSpriteNode {
                             let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
                             let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
                             let bounce = SKAction.sequence([scaleUp, scaleDown])
@@ -201,6 +201,7 @@ class CSGameBoard: SKSpriteNode {
 
         return gameBoard
     }
+
 
 
     // Handle swipe input
@@ -254,21 +255,23 @@ class CSGameBoard: SKSpriteNode {
                 if let tileNode = childNode(withName: tileName) as? SKSpriteNode {
                     let value = gameBoardMatrix[row][col]
 
-                    // Skip animation for empty tiles
-                    if value == 0 {
-                        tileNode.texture = getTextureForValue(0)
-                        continue
-                    }
-
+                    // Set texture or skip for empty tiles
                     tileNode.texture = getTextureForValue(value)
 
-                    // Update position with smooth movement
-                    let moveAction = SKAction.move(to: calculateTilePosition(row: row, col: col), duration: 0.1)
-                    tileNode.run(moveAction)
+                    // Skip movement for empty tiles
+                    if value == 0 { continue }
+
+                    // Animate only if position changes
+                    let targetPosition = calculateTilePosition(row: row, col: col)
+                    if tileNode.position != targetPosition {
+                        let moveAction = SKAction.move(to: targetPosition, duration: 0.1)
+                        tileNode.run(moveAction)
+                    }
                 }
             }
         }
     }
+
 
     
     // Initialize board values (no changes)
