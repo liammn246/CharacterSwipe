@@ -28,164 +28,168 @@ class CSGameBoard: SKSpriteNode {
     // Board Move function (no changes)
     func boardMove(direction: String) -> [[Int]] {
         var gameBoard = gameBoardMatrix
-        var mergeBoard = Array(repeating: Array(repeating: true, count: 4), count: 4)
+        var mergedTiles = Array(repeating: Array(repeating: false, count: columns), count: rows)
 
         switch direction {
         case "right":
-            for r in 0..<4 {
+            for r in 0..<rows {
                 // Shift right
-                for _ in 0..<3 {
-                    for c in stride(from: 3, to: 0, by: -1) {
-                        if gameBoard[r][c] == 0 && gameBoard[r][c-1] != 0 {
-                            gameBoard[r][c] = gameBoard[r][c-1]
-                            gameBoard[r][c-1] = 0
+                for _ in 0..<columns - 1 {
+                    for c in stride(from: columns - 1, to: 0, by: -1) {
+                        if gameBoard[r][c] == 0 && gameBoard[r][c - 1] != 0 {
+                            gameBoard[r][c] = gameBoard[r][c - 1]
+                            gameBoard[r][c - 1] = 0
                         }
                     }
                 }
 
                 // Merge right
-                for c in stride(from: 3, to: 0, by: -1) {
-                    if gameBoard[r][c] == gameBoard[r][c-1] && mergeBoard[r][c] && mergeBoard[r][c-1] {
+                for c in stride(from: columns - 1, to: 0, by: -1) {
+                    if gameBoard[r][c] == gameBoard[r][c - 1] && !mergedTiles[r][c] && !mergedTiles[r][c - 1] {
                         gameBoard[r][c] *= 2
-                        gameBoard[r][c-1] = 0
-                        mergeBoard[r][c] = false
+                        gameBoard[r][c - 1] = 0
+                        mergedTiles[r][c] = true
                         score += gameBoard[r][c]
 
-                        // Animate merging tile (only merging tiles get this animation)
-                        let tileNode = childNode(withName: "tile_\(r)_\(c)") as! SKSpriteNode
-                        let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
-                        let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
-                        let bounce = SKAction.sequence([scaleUp, scaleDown])
-                        tileNode.run(SKAction.sequence([bounce]))
+                        // Animate only merging tiles
+                        if let tileNode = childNode(withName: "tile_\(r)_\(c)") as? SKSpriteNode {
+                            let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
+                            let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
+                            let bounce = SKAction.sequence([scaleUp, scaleDown])
+                            tileNode.run(bounce)
+                        }
                     }
                 }
 
                 // Shift again after merging
-                for _ in 0..<3 {
-                    for c in stride(from: 3, to: 0, by: -1) {
+                for _ in 0..<columns - 1 {
+                    for c in stride(from: columns - 1, to: 0, by: -1) {
                         if gameBoard[r][c] == 0 {
-                            gameBoard[r][c] = gameBoard[r][c-1]
-                            gameBoard[r][c-1] = 0
+                            gameBoard[r][c] = gameBoard[r][c - 1]
+                            gameBoard[r][c - 1] = 0
                         }
                     }
                 }
             }
 
         case "left":
-            for r in 0..<4 {
+            for r in 0..<rows {
                 // Shift left
-                for _ in 0..<3 {
-                    for c in 0..<3 {
-                        if gameBoard[r][c] == 0 && gameBoard[r][c+1] != 0 {
-                            gameBoard[r][c] = gameBoard[r][c+1]
-                            gameBoard[r][c+1] = 0
+                for _ in 0..<columns - 1 {
+                    for c in 0..<columns - 1 {
+                        if gameBoard[r][c] == 0 && gameBoard[r][c + 1] != 0 {
+                            gameBoard[r][c] = gameBoard[r][c + 1]
+                            gameBoard[r][c + 1] = 0
                         }
                     }
                 }
 
                 // Merge left
-                for c in 0..<3 {
-                    if gameBoard[r][c] == gameBoard[r][c+1] && mergeBoard[r][c] && mergeBoard[r][c+1] {
+                for c in 0..<columns - 1 {
+                    if gameBoard[r][c] == gameBoard[r][c + 1] && !mergedTiles[r][c] && !mergedTiles[r][c + 1] {
                         gameBoard[r][c] *= 2
-                        gameBoard[r][c+1] = 0
-                        mergeBoard[r][c] = false
+                        gameBoard[r][c + 1] = 0
+                        mergedTiles[r][c] = true
                         score += gameBoard[r][c]
 
-                        // Animate merging tile (only merging tiles get this animation)
-                        let tileNode = childNode(withName: "tile_\(r)_\(c)") as! SKSpriteNode
-                        let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
-                        let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
-                        let bounce = SKAction.sequence([scaleUp, scaleDown])
-                        tileNode.run(SKAction.sequence([bounce]))
+                        // Animate only merging tiles
+                        if let tileNode = childNode(withName: "tile_\(r)_\(c)") as? SKSpriteNode {
+                            let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
+                            let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
+                            let bounce = SKAction.sequence([scaleUp, scaleDown])
+                            tileNode.run(bounce)
+                        }
                     }
                 }
 
                 // Shift again after merging
-                for _ in 0..<3 {
-                    for c in 0..<3 {
+                for _ in 0..<columns - 1 {
+                    for c in 0..<columns - 1 {
                         if gameBoard[r][c] == 0 {
-                            gameBoard[r][c] = gameBoard[r][c+1]
-                            gameBoard[r][c+1] = 0
+                            gameBoard[r][c] = gameBoard[r][c + 1]
+                            gameBoard[r][c + 1] = 0
                         }
                     }
                 }
             }
 
         case "up":
-            for c in 0..<4 {
+            for c in 0..<columns {
                 // Shift up
-                for _ in 0..<3 {
-                    for r in 0..<3 {
-                        if gameBoard[r][c] == 0 && gameBoard[r+1][c] != 0 {
-                            gameBoard[r][c] = gameBoard[r+1][c]
-                            gameBoard[r+1][c] = 0
+                for _ in 0..<rows - 1 {
+                    for r in 0..<rows - 1 {
+                        if gameBoard[r][c] == 0 && gameBoard[r + 1][c] != 0 {
+                            gameBoard[r][c] = gameBoard[r + 1][c]
+                            gameBoard[r + 1][c] = 0
                         }
                     }
                 }
 
                 // Merge up
-                for r in 0..<3 {
-                    if gameBoard[r][c] == gameBoard[r+1][c] && mergeBoard[r][c] && mergeBoard[r+1][c] {
+                for r in 0..<rows - 1 {
+                    if gameBoard[r][c] == gameBoard[r + 1][c] && !mergedTiles[r][c] && !mergedTiles[r + 1][c] {
                         gameBoard[r][c] *= 2
-                        gameBoard[r+1][c] = 0
-                        mergeBoard[r][c] = false
+                        gameBoard[r + 1][c] = 0
+                        mergedTiles[r][c] = true
                         score += gameBoard[r][c]
 
-                        // Animate merging tile (only merging tiles get this animation)
-                        let tileNode = childNode(withName: "tile_\(r)_\(c)") as! SKSpriteNode
-                        let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
-                        let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
-                        let bounce = SKAction.sequence([scaleUp, scaleDown])
-                        tileNode.run(SKAction.sequence([bounce]))
+                        // Animate only merging tiles
+                        if let tileNode = childNode(withName: "tile_\(r)_\(c)") as? SKSpriteNode {
+                            let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
+                            let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
+                            let bounce = SKAction.sequence([scaleUp, scaleDown])
+                            tileNode.run(bounce)
+                        }
                     }
                 }
 
                 // Shift again after merging
-                for _ in 0..<3 {
-                    for r in 0..<3 {
+                for _ in 0..<rows - 1 {
+                    for r in 0..<rows - 1 {
                         if gameBoard[r][c] == 0 {
-                            gameBoard[r][c] = gameBoard[r+1][c]
-                            gameBoard[r+1][c] = 0
+                            gameBoard[r][c] = gameBoard[r + 1][c]
+                            gameBoard[r + 1][c] = 0
                         }
                     }
                 }
             }
 
         case "down":
-            for c in 0..<4 {
+            for c in 0..<columns {
                 // Shift down
-                for _ in 0..<3 {
-                    for r in stride(from: 3, to: 0, by: -1) {
-                        if gameBoard[r][c] == 0 && gameBoard[r-1][c] != 0 {
-                            gameBoard[r][c] = gameBoard[r-1][c]
-                            gameBoard[r-1][c] = 0
+                for _ in 0..<rows - 1 {
+                    for r in stride(from: rows - 1, to: 0, by: -1) {
+                        if gameBoard[r][c] == 0 && gameBoard[r - 1][c] != 0 {
+                            gameBoard[r][c] = gameBoard[r - 1][c]
+                            gameBoard[r - 1][c] = 0
                         }
                     }
                 }
 
                 // Merge down
-                for r in stride(from: 3, to: 0, by: -1) {
-                    if gameBoard[r][c] == gameBoard[r-1][c] && mergeBoard[r][c] && mergeBoard[r-1][c] {
+                for r in stride(from: rows - 1, to: 0, by: -1) {
+                    if gameBoard[r][c] == gameBoard[r - 1][c] && !mergedTiles[r][c] && !mergedTiles[r - 1][c] {
                         gameBoard[r][c] *= 2
-                        gameBoard[r-1][c] = 0
-                        mergeBoard[r][c] = false
+                        gameBoard[r - 1][c] = 0
+                        mergedTiles[r][c] = true
                         score += gameBoard[r][c]
 
-                        // Animate merging tile (only merging tiles get this animation)
-                        let tileNode = childNode(withName: "tile_\(r)_\(c)") as! SKSpriteNode
-                        let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
-                        let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
-                        let bounce = SKAction.sequence([scaleUp, scaleDown])
-                        tileNode.run(SKAction.sequence([bounce]))
+                        // Animate only merging tiles
+                        if let tileNode = childNode(withName: "tile_\(r)_\(c)") as? SKSpriteNode {
+                            let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
+                            let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
+                            let bounce = SKAction.sequence([scaleUp, scaleDown])
+                            tileNode.run(bounce)
+                        }
                     }
                 }
 
                 // Shift again after merging
-                for _ in 0..<3 {
-                    for r in stride(from: 3, to: 0, by: -1) {
+                for _ in 0..<rows - 1 {
+                    for r in stride(from: rows - 1, to: 0, by: -1) {
                         if gameBoard[r][c] == 0 {
-                            gameBoard[r][c] = gameBoard[r-1][c]
-                            gameBoard[r-1][c] = 0
+                            gameBoard[r][c] = gameBoard[r - 1][c]
+                            gameBoard[r - 1][c] = 0
                         }
                     }
                 }
@@ -195,10 +199,8 @@ class CSGameBoard: SKSpriteNode {
             break
         }
 
-        // Return the updated board state
         return gameBoard
     }
-
 
 
     // Handle swipe input
@@ -251,16 +253,23 @@ class CSGameBoard: SKSpriteNode {
                 let tileName = "tile_\(row)_\(col)"
                 if let tileNode = childNode(withName: tileName) as? SKSpriteNode {
                     let value = gameBoardMatrix[row][col]
-                    tileNode.removeAllChildren() // Clear existing label
+
+                    // Skip animation for empty tiles
+                    if value == 0 {
+                        tileNode.texture = getTextureForValue(0)
+                        continue
+                    }
+
                     tileNode.texture = getTextureForValue(value)
-                    
-                    // Animate tile movement (use calculated position)
+
+                    // Update position with smooth movement
                     let moveAction = SKAction.move(to: calculateTilePosition(row: row, col: col), duration: 0.1)
                     tileNode.run(moveAction)
                 }
             }
         }
     }
+
     
     // Initialize board values (no changes)
     func initializeBoardValues() {
