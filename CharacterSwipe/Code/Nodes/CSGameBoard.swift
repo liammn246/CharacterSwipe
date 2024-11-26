@@ -272,7 +272,15 @@ class CSGameBoard: SKSpriteNode {
         }
     }
 
-
+    func removeTile(atRow row: Int, column col: Int) {
+        gameBoardMatrix[row][col] = 0
+        updateTiles()
+    }
+    
+    func upgradeTile(atRow row: Int, column col: Int) {
+        gameBoardMatrix[row][col] *= 2
+        updateTiles()
+    }
     
     // Initialize board values (no changes)
     func initializeBoardValues() {
