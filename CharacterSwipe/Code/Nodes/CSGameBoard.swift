@@ -341,7 +341,7 @@ class CSGameBoard: SKSpriteNode {
         gameBoardMatrix[row][col] *= 2
         updateTiles()
     }
-    
+//don't let user remove top tile
     func updatePowerUps(scoreChange: Int) {
         let position = CGPoint(x: size.width / 2, y: -200)
         if powerUpScore + scoreChange >= 1000 && childNode(withName: "powerUpXNode.png") == nil {
@@ -353,7 +353,7 @@ class CSGameBoard: SKSpriteNode {
             powerUpXNode.zPosition = 100 // Ensure it appears above the tiles
             addChild(powerUpXNode)
         }
-        
+//limit how high of a tile user can double
         if powerUpScore + scoreChange >= 2000 && childNode(withName: "powerUp2XNode") == nil {
             powerUpScore += scoreChange
             let powerUp2XNode = SKSpriteNode(imageNamed: "2XPowerup")
