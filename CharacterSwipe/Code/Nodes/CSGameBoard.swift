@@ -364,4 +364,16 @@ class CSGameBoard: SKSpriteNode {
             addChild(powerUp2XNode)
         }
     }
+    
+    func maxValue() -> Int {
+        var maxValue = 0
+        for r in 0..<4 {
+            for c in 0..<4 {
+                if gameBoardMatrix[r][c] > maxValue {
+                    maxValue = gameBoardMatrix[r][c]
+                }
+            }
+        }
+        return maxValue
+    }
 }
