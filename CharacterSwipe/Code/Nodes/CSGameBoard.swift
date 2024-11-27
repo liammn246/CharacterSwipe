@@ -20,6 +20,7 @@ class CSGameBoard: SKSpriteNode {
         initializeBoardValues()
         setupGrid()
         updateTiles()
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -342,12 +343,25 @@ class CSGameBoard: SKSpriteNode {
     }
     
     func updatePowerUps(scoreChange: Int) {
-        if powerUpScore + scoreChange >= 1000 {
-            
+        let position = CGPoint(x: size.width / 2, y: -200)
+        if powerUpScore + scoreChange >= 1000 && childNode(withName: "powerUpXNode.png") == nil {
+            powerUpScore += scoreChange
+            let powerUpXNode = SKSpriteNode(imageNamed: "XPowerup")
+            powerUpXNode.name = "XPowerup"
+            powerUpXNode.size = CGSize(width: 60, height: 60) // Adjust size as needed
+            powerUpXNode.position = position
+            powerUpXNode.zPosition = 100 // Ensure it appears above the tiles
+            addChild(powerUpXNode)
         }
         
-        if powerUpScore + scoreChange >= 2000 {
-            
+        if powerUpScore + scoreChange >= 2000 && childNode(withName: "powerUp2XNode") == nil {
+            powerUpScore += scoreChange
+            let powerUp2XNode = SKSpriteNode(imageNamed: "2XPowerup")
+            powerUp2XNode.name = "XPowerup"
+            powerUp2XNode.size = CGSize(width: 60, height: 60) // Adjust size as needed
+            powerUp2XNode.position = position
+            powerUp2XNode.zPosition = 100 // Ensure it appears above the tiles
+            addChild(powerUp2XNode)
         }
     }
 }
