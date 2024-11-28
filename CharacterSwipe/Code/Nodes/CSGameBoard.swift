@@ -7,7 +7,7 @@ class CSGameBoard: SKSpriteNode {
     var powerUpScore = 0
     let rows = 4
     let columns = 4
-    let tileSideLength: CGFloat = 90
+    let tileSideLength: CGFloat = 70
     let spacing: CGFloat = 5
     var gameBoardMatrix = [[2, 4, 8, 16],
                            [32, 64, 128, 256],
@@ -221,6 +221,7 @@ class CSGameBoard: SKSpriteNode {
             
             if let gameplayState = gameScene.context?.stateMachine?.currentState as? CSGameplayState {
                 gameplayState.updateScoreLabel(newScore: score)
+                gameplayState.updateBackground()
             }
         }
         
@@ -249,7 +250,8 @@ class CSGameBoard: SKSpriteNode {
         let gridWidth = CGFloat(columns) * (tileSideLength + spacing) - spacing
         let gridHeight = CGFloat(rows) * (tileSideLength + spacing) - spacing
         let xPosition = CGFloat(col) * (tileSideLength + spacing) - gridWidth / 2 + tileSideLength / 2
-        let yPosition = CGFloat(3-row) * (tileSideLength + spacing) - gridHeight / 2 + tileSideLength / 2
+        let yPosition = (CGFloat(3-row) * (tileSideLength + spacing) - gridHeight / 2 + tileSideLength / 2)-100
+ 
         return CGPoint(x: xPosition, y: yPosition)
     }
     
