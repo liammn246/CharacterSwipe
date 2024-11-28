@@ -1,10 +1,11 @@
 import SpriteKit
+import Foundation
 
 class CSGameBoard: SKSpriteNode {
     weak var gameScene: CSGameScene!
     var score_tile: SKSpriteNode!
     var score = 0
-    var powerUpScore = 0
+    var powerUpScore = 950
     let rows = 4
     let columns = 4
     let tileSideLength: CGFloat = 70
@@ -13,6 +14,9 @@ class CSGameBoard: SKSpriteNode {
                            [32, 64, 128, 256],
                            [512, 1024, 2048, 4096],
                            [8192, 0, 0, 0]]
+    var updatePowerup = false
+    var powerUpNode = SKSpriteNode()
+
     
     // Initialize
     init(size: CGSize) {
@@ -343,27 +347,42 @@ class CSGameBoard: SKSpriteNode {
         gameBoardMatrix[row][col] *= 2
         updateTiles()
     }
-//don't let user remove top tile
     func updatePowerUps(scoreChange: Int) {
-        let position = CGPoint(x: size.width / 2, y: -200)
-        if powerUpScore + scoreChange >= 1000 && childNode(withName: "powerUpXNode.png") == nil {
+        if powerUpScore < 1000 && powerUpScore + scoreChange >= 1000 {
+            let mynum = Int.random(in: 0...2)
+            let position = CGPoint(x: 0, y: -460)
+            
+            if mynum == -2 {
+                print("x powerup")
+                powerUpNode = SKSpriteNode(imageNamed: "XPowerup")
+            }
+            else if mynum == -1 {
+                print("2x powerup")
+                powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
+            }
+            else if maxValue() >= 8 {
+                powerUpNode = SKSpriteNode(imageNamed: "tile_"+String(log2(Double(maxValue()))-2))
+                updatePowerup = true
+            }
+            else {
+                updatePowerUps(scoreChange: scoreChange)
+            }
+            powerUpNode.size = CGSize(width: 75, height: 75)
+            powerUpNode.position = position
+            powerUpNode.zPosition = 100
+            addChild(powerUpNode)
             powerUpScore += scoreChange
-            let powerUpXNode = SKSpriteNode(imageNamed: "XPowerup")
-            powerUpXNode.name = "XPowerup"
-            powerUpXNode.size = CGSize(width: 60, height: 60) // Adjust size as needed
-            powerUpXNode.position = position
-            powerUpXNode.zPosition = 100 // Ensure it appears above the tiles
-            addChild(powerUpXNode)
         }
-//limit how high of a tile user can double
-        if powerUpScore + scoreChange >= 2000 && childNode(withName: "powerUp2XNode") == nil {
+        else {
             powerUpScore += scoreChange
-            let powerUp2XNode = SKSpriteNode(imageNamed: "2XPowerup")
-            powerUp2XNode.name = "XPowerup"
-            powerUp2XNode.size = CGSize(width: 60, height: 60) // Adjust size as needed
-            powerUp2XNode.position = position
-            powerUp2XNode.zPosition = 100 // Ensure it appears above the tiles
-            addChild(powerUp2XNode)
+        }
+        if updatePowerup {
+            print("powerup updated")
+            powerUpNode = SKSpriteNode(imageNamed: "tile_"+String(log2(Double(maxValue()))-2))
+            powerUpNode.position = CGPoint(x: 0, y: -460)
+            powerUpNode.size = CGSize(width: 75, height: 75)
+            powerUpNode.zPosition = CGFloat(score)
+            addChild(powerUpNode)
         }
     }
     
@@ -377,5 +396,9 @@ class CSGameBoard: SKSpriteNode {
             }
         }
         return maxValue
+    }
+    
+    func powerUp() {
+        
     }
 }
