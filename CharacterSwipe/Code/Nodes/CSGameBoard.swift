@@ -16,7 +16,8 @@ class CSGameBoard: SKSpriteNode {
                            [8192, 0, 0, 0]]
     var updatePowerup = false
     var powerUpNode = SKSpriteNode()
-
+    var powerUpActive = false
+    var cancelButton: SKSpriteNode?
     
     // Initialize
     init(size: CGSize) {
@@ -352,11 +353,11 @@ class CSGameBoard: SKSpriteNode {
             let mynum = Int.random(in: 0...2)
             let position = CGPoint(x: 0, y: -460)
             
-            if mynum == -2 {
+            if mynum == 0 {
                 print("x powerup")
                 powerUpNode = SKSpriteNode(imageNamed: "XPowerup")
             }
-            else if mynum == -1 {
+            else if mynum == 1 {
                 print("2x powerup")
                 powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
             }
@@ -400,5 +401,66 @@ class CSGameBoard: SKSpriteNode {
     
     func powerUp() {
         
+    }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: self)
+        print(location)
+        // Check if powerUpNode is tapped
+        if powerUpNode.contains(location) && powerUpNode.parent != nil {
+            activatePowerUp()
+        }
+        
+        // Check if cancel button is tapped
+        if let cancelButton = cancelButton, cancelButton.contains(location) {
+            deactivatePowerUp()
+        }
+    }
+    
+    func activatePowerUp() {
+        powerUpActive = true
+        
+        // Call specific power-up function based on the type
+        if powerUpNode.texture == SKTexture(imageNamed: "XPowerup") {
+            handleXPowerUp()
+        } else if powerUpNode.texture == SKTexture(imageNamed: "2xPowerup") {
+            handle2xPowerUp()
+        } else {
+            handleTileUpgradePowerUp()
+        }
+        
+        // Add cancel button
+        addCancelButton()
+    }
+    // Add cancel button to the board
+    func addCancelButton() {
+        cancelButton = SKSpriteNode(color: .red, size: CGSize(width: 100, height: 50))
+        cancelButton?.position = CGPoint(x: 0, y: -500) // Adjust position as needed
+        cancelButton?.name = "CancelButton"
+        addChild(cancelButton!)
+    }
+
+    // Deactivate power-up and remove cancel button
+    func deactivatePowerUp() {
+        powerUpActive = false
+        cancelButton?.removeFromParent()
+        cancelButton = nil
+        powerUpNode.removeFromParent() // Remove power-up node after use
+    }
+
+    // Specific power-up handlers (empty for now)
+    func handleXPowerUp() {
+        print("X Power-Up activated!")
+        // Logic for X power-up
+    }
+
+    func handle2xPowerUp() {
+        print("2x Power-Up activated!")
+        // Logic for 2x power-up
+    }
+
+    func handleTileUpgradePowerUp() {
+        print("Tile Upgrade Power-Up activated!")
+        // Logic for upgrading a tile
     }
 }
