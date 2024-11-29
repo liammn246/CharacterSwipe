@@ -18,7 +18,6 @@ class CSGameBoard: SKSpriteNode {
     var powerUpNode = SKSpriteNode()
     var powerUpActive = false
     var cancelButton: SKSpriteNode?
-    var powerUpType: String?
     
     // Initialize
     init(size: CGSize) {
@@ -26,7 +25,6 @@ class CSGameBoard: SKSpriteNode {
         initializeBoardValues()
         setupGrid()
         updateTiles()
-        self.isUserInteractionEnabled = true
         
     }
     
@@ -358,12 +356,10 @@ class CSGameBoard: SKSpriteNode {
             if mynum == 0 {
                 print("x powerup")
                 powerUpNode = SKSpriteNode(imageNamed: "XPowerup")
-                powerUpType = "XPowerup"
             }
             else if mynum == 1 {
                 print("2x powerup")
                 powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
-                powerUpType = "2xPowerup"
             }
             else if maxValue() >= 8 {
                 powerUpNode = SKSpriteNode(imageNamed: "tile_"+String(log2(Double(maxValue()))-2))
@@ -409,16 +405,25 @@ class CSGameBoard: SKSpriteNode {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
-        handleTouch(at: location)
+        print(location)
+        // Check if powerUpNode is tapped
+        if powerUpNode.contains(location) && powerUpNode.parent != nil {
+            activatePowerUp()
+        }
+        
+        // Check if cancel button is tapped
+        if let cancelButton = cancelButton, cancelButton.contains(location) {
+            deactivatePowerUp()
+        }
     }
     
     func activatePowerUp() {
         powerUpActive = true
         
         // Call specific power-up function based on the type
-        if powerUpType == "XPowerup" {
+        if powerUpNode.texture == SKTexture(imageNamed: "XPowerup") {
             handleXPowerUp()
-        } else if powerUpType == "2xPowerup" {
+        } else if powerUpNode.texture == SKTexture(imageNamed: "2xPowerup") {
             handle2xPowerUp()
         } else {
             handleTileUpgradePowerUp()
@@ -459,18 +464,3 @@ class CSGameBoard: SKSpriteNode {
         // Logic for upgrading a tile
     }
 }
-extension CSGameBoard {
-    func handleTouch(at location: CGPoint) {
-        // Check if the touch hit the power-up node
-        if powerUpNode.contains(location) && powerUpNode.parent != nil {
-            activatePowerUp()
-            return
-        }
-
-        // Check if the touch hit the cancel button
-        if let cancelButton = cancelButton, cancelButton.contains(location) {
-            deactivatePowerUp()
-        }
-    }
-}
-

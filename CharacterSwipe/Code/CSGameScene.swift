@@ -23,23 +23,16 @@ class CSGameScene: SKScene {
         fatalError("init(coder:) has not been implemented")
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else { return }
-        let location = touch.location(in: self)
-        
-        // Delegate touch to game board if applicable
-        if let gameBoard = gameBoard, !gameBoard.isHidden {
-            let locationInBoard = touch.location(in: gameBoard)
-            gameBoard.handleTouch(at: locationInBoard)
-        }
-
-        // Handle touches in specific states
-        if let startState = context?.stateMachine?.currentState as? CSStartState {
-            startState.handleTouch(at: location)
-        } else if let loseState = context?.stateMachine?.currentState as? CSLoseState {
-            loseState.handleTouch(at: location)
+        if let touch = touches.first {
+            let location = touch.location(in: self)
+            
+            if let startState = context?.stateMachine?.currentState as? CSStartState {
+                startState.handleTouch(at: location)
+            } else if let loseState = context?.stateMachine?.currentState as? CSLoseState {
+                loseState.handleTouch(at: location)
+            }
         }
     }
-
 
 
     override func didMove(to view: SKView) {
