@@ -11,11 +11,29 @@ class CSGameplayState: CSGameState {
         
         print("Entering gameplay state, showing game board")
         gameScene.showGameBoard()
-        updateBackground()
+        
+        // Create background
+        let gameplayBackground = SKSpriteNode(imageNamed: "gameplayBackground")
+        gameplayBackground.position = CGPoint(x: gameScene.size.width / 2, y: gameScene.size.height / 2)
+        gameplayBackground.size = gameScene.size // Fill the scene
+        gameplayBackground.zPosition = -100
+        gameplayBackground.name = "gameplayBackground" // Name it for easy removal
+        gameScene.addChild(gameplayBackground)
+        
+        
+ 
+        let rectangleBackground = SKShapeNode(rectOf: CGSize(width: 320, height: 320), cornerRadius: 20) // Adjust
+        rectangleBackground.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
+        rectangleBackground.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
+        rectangleBackground.lineWidth = 5 // Border thickness
+        rectangleBackground.position = CGPoint(x: gameScene.size.width / 2, y: gameScene.size.height / 1.81)
+        rectangleBackground.zPosition = -1 // Set zPosition to layer it properly
+        gameScene.addChild(rectangleBackground)
+        
         
         // Create a red background tile for the score label
         let scoreTile = SKSpriteNode(color: .red, size: CGSize(width: 200, height: 50))
-        scoreTile.position = CGPoint(x: gameScene.size.width / 2, y: gameScene.size.height / 4)
+        scoreTile.position = CGPoint(x: gameScene.size.width / 2, y: gameScene.size.height / 6)
         scoreTile.name = "scoreTile"
         
         // Create the actual score label
@@ -40,35 +58,7 @@ class CSGameplayState: CSGameState {
         gameScene.hideGameBoard()
         
     }
-    func updateBackground() {
-        
-        // Determine the background image based on the max value
-        if let maxValue = gameScene.getGameBoard()?.maxValue() {
-            let backgroundImageName = backgroundForValue(maxValue)
-            let newBackground = SKSpriteNode(imageNamed: backgroundImageName)
-            
-            newBackground.position = CGPoint(x: gameScene.size.width / 2, y: gameScene.size.height / 2)
-            newBackground.size = gameScene.size
-            newBackground.zPosition = -1
-            gameScene.addChild(newBackground)
-            
-            
-        }
-    func backgroundForValue(_ value: Int) -> String {
-            switch value {
-            case 0...16:
-                return "sunny"
-            case 32...128:
-                return "deep"
-            case 256...1024:
-                return "hell"
-            case 2048...8192:
-                return "stars"
-            default:
-                return "sunny" // For values like 8192+
-            }
-        }
-    }
+
     func updateScoreLabel(newScore: Int) {
         scoreLabel?.text = "SCORE: \(newScore)"
     }

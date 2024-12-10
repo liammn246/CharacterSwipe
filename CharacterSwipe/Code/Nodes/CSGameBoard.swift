@@ -230,7 +230,7 @@ class CSGameBoard: SKSpriteNode {
             
             if let gameplayState = gameScene.context?.stateMachine?.currentState as? CSGameplayState {
                 gameplayState.updateScoreLabel(newScore: score)
-                gameplayState.updateBackground()
+
             }
         }
         
