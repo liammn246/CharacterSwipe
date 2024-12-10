@@ -26,7 +26,7 @@ class CSGameplayState: CSGameState {
         rectangleBackground.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
         rectangleBackground.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
         rectangleBackground.lineWidth = 5 // Border thickness
-        rectangleBackground.position = CGPoint(x: gameScene.size.width / 2, y: gameScene.size.height / 1.81)
+        rectangleBackground.position = CGPoint(x: gameScene.size.width / 2, y: gameScene.size.height / 2)
         rectangleBackground.zPosition = -1 // Set zPosition to layer it properly
         gameScene.addChild(rectangleBackground)
         

@@ -50,7 +50,7 @@ class CSGameScene: SKScene {
         let boardSize = CGSize(width: 300, height: 300) // Adjust the size as needed
         gameBoard = CSGameBoard(size: boardSize)
         gameBoard.gameScene = self
-        gameBoard.position = CGPoint(x: size.width / 2, y: size.height / 1.5)
+        gameBoard.position = CGPoint(x: size.width / 2, y: size.height / 1.625)
         gameBoard.zPosition = 1
         gameBoard.isHidden = true  // Start hidden
         if let gameBoard = gameBoard {
