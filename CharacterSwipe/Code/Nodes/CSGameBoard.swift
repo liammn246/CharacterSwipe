@@ -217,21 +217,16 @@ class CSGameBoard: SKSpriteNode {
         return gameBoard
     }
     
-    
-    
     // Handle swipe input
     func onUserInput(direction: String) {
         let newBoard = boardMove(direction: direction)
-        
         if newBoard != gameBoardMatrix {
             gameBoardMatrix = newBoard
             addRandomTile()
             updateTiles()
             
-            if let gameplayState = gameScene.context?.stateMachine?.currentState as? CSGameplayState {
-                gameplayState.updateScoreLabel(newScore: score)
-
-            }
+        
+            gameScene.updateScoreLabel(newScore: score)
         }
         
         // Check for game over condition
