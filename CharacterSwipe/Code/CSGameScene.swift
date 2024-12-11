@@ -109,8 +109,38 @@ class CSGameScene: SKScene {
     }
     
     func updateScoreLabel(newScore: Int) {
-        scoreLabel?.text = "\(newScore)"
+        guard let scoreLabel = scoreLabel else { return }
+
+        // Create a floating label to show the old score
+        let floatingLabel: SKLabelNode
+        if let currentScore = Int(scoreLabel.text ?? "0") {
+            floatingLabel = SKLabelNode(text: "+ " + String(newScore - currentScore))
+        } else {
+            floatingLabel = SKLabelNode(text: "+ " + String(newScore))
+        }
+        if Int(scoreLabel.text ?? "0") != newScore {
+            floatingLabel.fontName = scoreLabel.fontName
+            floatingLabel.fontSize = scoreLabel.fontSize - 5
+            floatingLabel.fontColor = scoreLabel.fontColor
+            floatingLabel.position = scoreLabel.position
+            floatingLabel.zPosition = scoreLabel.zPosition
+            scoreLabel.parent?.addChild(floatingLabel)
+            
+            // Update the score label text
+            scoreLabel.text = "\(newScore)"
+            
+            // Create the floating and fading animation
+            let floatUp = SKAction.moveBy(x: 0, y: 20, duration: 0.5)
+            let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+            let group = SKAction.group([floatUp, fadeOut])
+            let remove = SKAction.removeFromParent()
+            let sequence = SKAction.sequence([group, remove])
+            
+            // Run the animation
+            floatingLabel.run(sequence)
+        }
     }
+
     // MARK: - Swipe Detection Setup
     private func setupSwipeGestures() {
         swipeDetector.addSwipeGestures(to: self)
