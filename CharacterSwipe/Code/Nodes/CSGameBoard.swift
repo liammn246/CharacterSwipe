@@ -268,7 +268,7 @@ class CSGameBoard: SKSpriteNode {
                     let value = gameBoardMatrix[row][col]
                     
                     // Set texture or skip for empty tiles
-                    tileNode.texture = getTextureForValue(value)
+                    tileNode.texture = getTextureForValue(value) //Work here
                     
                     // Skip movement for empty tiles
                     if value == 0 { continue }
