@@ -10,6 +10,7 @@ class CSGameScene: SKScene {
     var scorePop: SKLabelNode!
     var rectangleBackground: SKShapeNode!
     var scoreLabel: SKLabelNode!
+    var background2: SKShapeNode!
     var scoreTile: SKShapeNode!
     weak var context: CSGameContext?
     var gameBoard: CSGameBoard!
@@ -54,7 +55,7 @@ class CSGameScene: SKScene {
         rectangleBackground.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
         rectangleBackground.lineWidth = 5 // Border thickness
         rectangleBackground.position = CGPoint(x: size.width / 2, y: size.height / 2)
-        rectangleBackground.zPosition = -1 // Set zPosition to layer it properly
+        rectangleBackground.zPosition = -4 // Set zPosition to layer it properly
         rectangleBackground.isHidden = true
         addChild(rectangleBackground)
         
@@ -71,23 +72,37 @@ class CSGameScene: SKScene {
          
          
 
-        scoreTile = SKShapeNode(rectOf: CGSize(width: 200, height: 50), cornerRadius: 10)
+        background2 = SKShapeNode(rectOf: CGSize(width: 300, height: 80), cornerRadius: 10)
+        background2.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
+        background2.position = CGPoint(x: size.width / 2, y: size.height / 6)
+        background2.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
+        background2.lineWidth = 5 // Border thickness
+        background2.name = "scoreTile"
+        addChild(background2)
+
+        
+        scoreTile = SKShapeNode(rectOf: CGSize(width: 90, height: 50), cornerRadius: 25) // Adjust
         scoreTile.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
-        scoreTile.position = CGPoint(x: size.width / 2, y: size.height / 6)
         scoreTile.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
         scoreTile.lineWidth = 5 // Border thickness
-        scoreTile.name = "scoreTile"
-        addChild(scoreTile)
-
+        scoreTile.zPosition = 9 // Set zPosition to layer it properly
+        background2.addChild(scoreTile)
+        
+        
         // Create the actual score label
         scoreLabel = SKLabelNode(text: "0")
         scoreLabel.fontColor = .white
+        scoreLabel.zPosition = 10
         scoreLabel.fontSize = 24
         scoreLabel.verticalAlignmentMode = .center // Ensures vertical centering
         scoreLabel.horizontalAlignmentMode = .center // Ensures horizontal centering
         scoreLabel.position = CGPoint(x: 0, y: 0) // Position at the center of scoreTile
         scoreTile.addChild(scoreLabel) // Add label as a child of the tile
 
+       
+        
+        
+        
         // Add swipe functionality
         setupSwipeGestures()
     }
