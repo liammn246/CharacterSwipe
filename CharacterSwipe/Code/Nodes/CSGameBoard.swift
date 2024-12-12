@@ -14,6 +14,10 @@ class CSGameBoard: SKSpriteNode {
                            [32, 64, 128, 256],
                            [512, 1024, 2048, 4096],
                            [8192, 0, 0, 0]]
+    var tileMatrix = [[nil, nil, nil, nil],
+                      [nil, nil, nil, nil],
+                      [nil, nil, nil, nil],
+                      [nil, nil, nil, nil]]
     var updatePowerup = false
     var powerUpNode = SKSpriteNode()
     var powerUpActive = false
@@ -50,6 +54,10 @@ class CSGameBoard: SKSpriteNode {
                         if gameBoard[r][c] == 0 && gameBoard[r][c - 1] != 0 {
                             gameBoard[r][c] = gameBoard[r][c - 1]
                             gameBoard[r][c - 1] = 0
+                            let moveAction = SKAction.move(to: calculateTilePosition(row: r, col: c), duration: 0.2)
+                            (tileMatrix[r][c-1] as! SKSpriteNode).run(moveAction)
+                            tileMatrix[r][c] = tileMatrix[r][c - 1]
+                            tileMatrix[r][c - 1] = nil
                         }
                     }
                 }
@@ -242,10 +250,11 @@ class CSGameBoard: SKSpriteNode {
     private func setupGrid() {
         for row in 0..<rows {
             for col in 0..<columns {
-                let tileNode = SKSpriteNode(color: .lightGray, size: CGSize(width: tileSideLength, height: tileSideLength))
-                tileNode.position = calculateTilePosition(row: row, col: col)
-                tileNode.name = "tile_\(row)_\(col)"
-                addChild(tileNode)
+                if tileMatrix[row][col] is SKSpriteNode {
+                    (tileMatrix[row][col] as! SKSpriteNode).position = calculateTilePosition(row: row, col: col)
+                    (tileMatrix[row][col] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
+                    addChild(tileMatrix[row][col] as! SKSpriteNode)
+                }
             }
         }
     }
@@ -268,7 +277,7 @@ class CSGameBoard: SKSpriteNode {
                     let value = gameBoardMatrix[row][col]
                     
                     // Set texture or skip for empty tiles
-                    tileNode.texture = getTextureForValue(value) //Work here
+                    tileNode.texture = getTextureForValue(value)
                     
                     // Skip movement for empty tiles
                     if value == 0 { continue }
@@ -296,12 +305,16 @@ class CSGameBoard: SKSpriteNode {
                                 [0, 0, 0, 0],
                                 [0, 0, 0, 0],
                                 [0, 0, 0, 0]]
-        gameBoardMatrix[Int.random(in: 0..<3)][Int.random(in: 0..<3)] = [2, 4].randomElement()!
+        let randomRow = Int.random(in: 0..<3)
+        let randomColumn = Int.random(in: 0..<3)
+        gameBoardMatrix[randomRow][randomColumn] = [2, 4].randomElement()!
+        tileMatrix[randomRow][randomColumn] = SKSpriteNode(texture: getTextureForValue(gameBoardMatrix[randomRow][randomColumn]))
         while(true) {
             let randomRow = Int.random(in: 0..<3)
             let randomColumn = Int.random(in: 0..<3)
             if gameBoardMatrix[randomRow][randomColumn] == 0 {
                 gameBoardMatrix[randomRow][randomColumn] = [2, 4].randomElement()!
+                tileMatrix[randomRow][randomColumn] = SKSpriteNode(texture: getTextureForValue(gameBoardMatrix[randomRow][randomColumn]))
                 break
             }
         }
@@ -314,11 +327,14 @@ class CSGameBoard: SKSpriteNode {
             let randomColumn = Int.random(in: 0..<4)
             if gameBoardMatrix[randomRow][randomColumn] == 0 {
                 gameBoardMatrix[randomRow][randomColumn] = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4].randomElement()!
+                tileMatrix[randomRow][randomColumn] = SKSpriteNode(texture: getTextureForValue(gameBoardMatrix[randomRow][randomColumn]))
+                (tileMatrix[randomRow][randomColumn] as! SKSpriteNode).position = calculateTilePosition(row: randomRow, col: randomColumn)
+                (tileMatrix[randomRow][randomColumn] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
+                addChild(tileMatrix[randomRow][randomColumn] as! SKSpriteNode)
                 break
             }
         }
     }
-    
     // Return texture based on value (no changes)
     func getTextureForValue(_ value: Int) -> SKTexture? {
         let tileTextures: [Int: String] = [
