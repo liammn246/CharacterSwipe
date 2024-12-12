@@ -78,14 +78,16 @@ class CSGameScene: SKScene {
         background2.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
         background2.lineWidth = 5 // Border thickness
         background2.name = "scoreTile"
+        background2.isHidden = true
         addChild(background2)
 
         
         scoreTile = SKShapeNode(rectOf: CGSize(width: 90, height: 50), cornerRadius: 25) // Adjust
-        scoreTile.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
+        scoreTile.fillColor = SKColor(red: 63/255, green: 63/255, blue: 63/255, alpha: 1)
         scoreTile.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
         scoreTile.lineWidth = 5 // Border thickness
         scoreTile.zPosition = 9 // Set zPosition to layer it properly
+        scoreTile.isHidden = true
         background2.addChild(scoreTile)
         
         
@@ -97,6 +99,7 @@ class CSGameScene: SKScene {
         scoreLabel.verticalAlignmentMode = .center // Ensures vertical centering
         scoreLabel.horizontalAlignmentMode = .center // Ensures horizontal centering
         scoreLabel.position = CGPoint(x: 0, y: 0) // Position at the center of scoreTile
+        scoreLabel.isHidden = true
         scoreTile.addChild(scoreLabel) // Add label as a child of the tile
 
        
@@ -115,12 +118,18 @@ class CSGameScene: SKScene {
     func showGameBoard() {
         gameBoard.isHidden = false
         rectangleBackground.isHidden = false
+        scoreTile.isHidden = false
+        scoreLabel.isHidden = false
+        background2.isHidden = false
     
     }
     
     func hideGameBoard() {
         gameBoard.isHidden = true
         rectangleBackground.isHidden = true
+        scoreTile.isHidden = true
+        scoreLabel.isHidden = true
+        background2.isHidden = true
     }
     
     func updateScoreLabel(newScore: Int) {

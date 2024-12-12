@@ -4,6 +4,7 @@ import Foundation
 class CSGameBoard: SKSpriteNode {
     weak var gameScene: CSGameScene!
     var score_tile: SKSpriteNode!
+//    var background2: SKShapeNode! /*idk if this works*/
     var score = 0
     var powerUpScore = 0
     let rows = 4
@@ -378,7 +379,7 @@ class CSGameBoard: SKSpriteNode {
             powerUpNode.size = CGSize(width: 75, height: 75)
             powerUpNode.position = position
             powerUpNode.zPosition = 100
-            addChild(powerUpNode)
+//            background2.addChild(powerUpNode)
             powerUpScore += scoreChange
         }
         else {
