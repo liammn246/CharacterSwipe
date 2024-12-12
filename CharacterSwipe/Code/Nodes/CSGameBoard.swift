@@ -4,7 +4,6 @@ import Foundation
 class CSGameBoard: SKSpriteNode {
     weak var gameScene: CSGameScene!
     var score_tile: SKSpriteNode!
-//    var background2: SKShapeNode! /*idk if this works*/
     var score = 0
     var powerUpScore = 0
     let rows = 4
@@ -356,7 +355,6 @@ class CSGameBoard: SKSpriteNode {
     func updatePowerUps(scoreChange: Int) {
         if powerUpScore < powerUpMultiplier && powerUpScore + scoreChange >= powerUpMultiplier {
             let mynum = Int.random(in: 0...2)
-            let position = CGPoint(x: 0, y: -460)
             
             if mynum == 0 {
                 print("x powerup")
@@ -377,9 +375,9 @@ class CSGameBoard: SKSpriteNode {
                 updatePowerUps(scoreChange: scoreChange)
             }
             powerUpNode.size = CGSize(width: 75, height: 75)
-            powerUpNode.position = position
-            powerUpNode.zPosition = 100
-//            background2.addChild(powerUpNode)
+            powerUpNode.position = CGPoint(x: size.width / 2, y: size.height / 2)
+            powerUpNode.zPosition = 11
+            addChild(powerUpNode)
             powerUpScore += scoreChange
         }
         else {
@@ -390,7 +388,7 @@ class CSGameBoard: SKSpriteNode {
             powerUpNode.removeFromParent()
             print("powerup updated")
             powerUpNode = SKSpriteNode(imageNamed: "tile_"+String(log2(Double(maxValue()))-2))
-            powerUpNode.position = CGPoint(x: 0, y: -460)
+            powerUpNode.position = CGPoint(x: size.width / 2, y: size.height / 2)
             powerUpNode.size = CGSize(width: 75, height: 75)
             powerUpNode.zPosition = CGFloat(score)
             addChild(powerUpNode)
@@ -434,7 +432,7 @@ class CSGameBoard: SKSpriteNode {
     // Add cancel button to the board
     func addCancelButton() {
         cancelButton = SKSpriteNode(color: .red, size: CGSize(width: 100, height: 100))
-        cancelButton?.position = CGPoint(x: 0, y: -460) // Adjust position as needed
+        cancelButton?.position = CGPoint(x: size.width / 2, y: size.height / 2) // Adjust position as needed
         cancelButton?.zPosition = 10000
         cancelButton?.name = "CancelButton"
         addChild(cancelButton!)
@@ -563,8 +561,8 @@ extension CSGameBoard {
     func setupProgressBar() {
         // Create the background for the progress bar
         progressBarBackground = SKSpriteNode(color: .gray, size: CGSize(width: size.width - 40, height: 20))
-        progressBarBackground.position = CGPoint(x: 0, y: -525)
-        progressBarBackground.zPosition = 10
+        progressBarBackground.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        progressBarBackground.zPosition = 15
         addChild(progressBarBackground)
         
         // Create the actual progress bar

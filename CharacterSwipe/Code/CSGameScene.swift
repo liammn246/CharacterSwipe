@@ -48,35 +48,35 @@ class CSGameScene: SKScene {
 
     override func didMove(to view: SKView) {
         super.didMove(to: view)
-        context?.stateMachine?.enter(CSStartState.self) // Start with CSStartState
+        context?.stateMachine?.enter(CSStartState.self)
         
-        rectangleBackground = SKShapeNode(rectOf: CGSize(width: 320, height: 320), cornerRadius: 20) // Adjust
+        rectangleBackground = SKShapeNode(rectOf: CGSize(width: 320, height: 320), cornerRadius: 20)
         rectangleBackground.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
-        rectangleBackground.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
-        rectangleBackground.lineWidth = 5 // Border thickness
-        rectangleBackground.position = CGPoint(x: size.width / 2, y: size.height / 2)
-        rectangleBackground.zPosition = -4 // Set zPosition to layer it properly
+        rectangleBackground.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
+        rectangleBackground.lineWidth = 3 // Border thickness
+        rectangleBackground.position = CGPoint(x: size.width / 2, y: size.height / 3) // WHEN MOVING THE MATRIX, ONLY USE HERE
+        rectangleBackground.zPosition = -4
         rectangleBackground.isHidden = true
         addChild(rectangleBackground)
         
         // Set up the game board
-        let boardSize = CGSize(width: 300, height: 300) // Adjust the size as needed
+        let boardSize = CGSize(width: 300, height: 300)
         gameBoard = CSGameBoard(size: boardSize)
+        gameBoard.position = CGPoint(x: 0, y: size.height / 8.8)
         gameBoard.gameScene = self
-        gameBoard.position = CGPoint(x: size.width / 2, y: size.height / 1.625)
         gameBoard.zPosition = 1
         gameBoard.isHidden = true  // Start hidden
-        addChild(gameBoard)
+        rectangleBackground.addChild(gameBoard)
 
         
          
          
 
-        background2 = SKShapeNode(rectOf: CGSize(width: 300, height: 80), cornerRadius: 10)
+        background2 = SKShapeNode(rectOf: CGSize(width: 320, height: 80), cornerRadius: 10)
         background2.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
-        background2.position = CGPoint(x: size.width / 2, y: size.height / 6)
+        background2.position = CGPoint(x: size.width / 2, y: size.height / 1.5)
         background2.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
-        background2.lineWidth = 5 // Border thickness
+        background2.lineWidth = 3 // Border thickness
         background2.name = "scoreTile"
         background2.isHidden = true
         addChild(background2)
@@ -85,9 +85,10 @@ class CSGameScene: SKScene {
         scoreTile = SKShapeNode(rectOf: CGSize(width: 90, height: 50), cornerRadius: 25) // Adjust
         scoreTile.fillColor = SKColor(red: 63/255, green: 63/255, blue: 63/255, alpha: 1)
         scoreTile.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
-        scoreTile.lineWidth = 5 // Border thickness
+        scoreTile.lineWidth = 3 // Border thickness
         scoreTile.zPosition = 9 // Set zPosition to layer it properly
         scoreTile.isHidden = true
+        scoreTile.position = CGPoint(x: -80, y: 0) // Adjust x to move left; keep y at 0 for vertical centering
         background2.addChild(scoreTile)
         
         
@@ -96,6 +97,7 @@ class CSGameScene: SKScene {
         scoreLabel.fontColor = .white
         scoreLabel.zPosition = 10
         scoreLabel.fontSize = 24
+        scoreLabel.fontName = "Arial-BoldMT"
         scoreLabel.verticalAlignmentMode = .center // Ensures vertical centering
         scoreLabel.horizontalAlignmentMode = .center // Ensures horizontal centering
         scoreLabel.position = CGPoint(x: 0, y: 0) // Position at the center of scoreTile
