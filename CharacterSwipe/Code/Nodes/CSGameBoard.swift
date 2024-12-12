@@ -375,7 +375,7 @@ class CSGameBoard: SKSpriteNode {
                 updatePowerUps(scoreChange: scoreChange)
             }
             powerUpNode.size = CGSize(width: 75, height: 75)
-            powerUpNode.position = CGPoint(x: size.width / 2, y: size.height / 2)
+            powerUpNode.position = CGPoint(x: size.width / 2.5, y: size.height / 1.6)
             powerUpNode.zPosition = 11
             addChild(powerUpNode)
             powerUpScore += scoreChange
@@ -388,7 +388,7 @@ class CSGameBoard: SKSpriteNode {
             powerUpNode.removeFromParent()
             print("powerup updated")
             powerUpNode = SKSpriteNode(imageNamed: "tile_"+String(log2(Double(maxValue()))-2))
-            powerUpNode.position = CGPoint(x: size.width / 2, y: size.height / 2)
+            powerUpNode.position = CGPoint(x: size.width / 2.5, y: size.height / 1.6)
             powerUpNode.size = CGSize(width: 75, height: 75)
             powerUpNode.zPosition = CGFloat(score)
             addChild(powerUpNode)
@@ -432,7 +432,7 @@ class CSGameBoard: SKSpriteNode {
     // Add cancel button to the board
     func addCancelButton() {
         cancelButton = SKSpriteNode(color: .red, size: CGSize(width: 100, height: 100))
-        cancelButton?.position = CGPoint(x: size.width / 2, y: size.height / 2) // Adjust position as needed
+        cancelButton?.position = CGPoint(x: size.width / 2.5, y: size.height / 1.6) // Adjust position as needed
         cancelButton?.zPosition = 10000
         cancelButton?.name = "CancelButton"
         addChild(cancelButton!)
