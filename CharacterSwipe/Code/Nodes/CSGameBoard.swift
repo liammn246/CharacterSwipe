@@ -326,14 +326,25 @@ class CSGameBoard: SKSpriteNode {
     private func setupGrid() {
         for row in 0..<rows {
             for col in 0..<columns {
-                if tileMatrix[row][col] is SKSpriteNode {
-                    (tileMatrix[row][col] as! SKSpriteNode).position = calculateTilePosition(row: row, col: col)
-                    (tileMatrix[row][col] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
-                    addChild(tileMatrix[row][col] as! SKSpriteNode)
+                // Create a static background node for each position
+                let backgroundNode = SKSpriteNode(texture: getTextureForValue(0), size: CGSize(width: tileSideLength, height: tileSideLength))
+                backgroundNode.position = calculateTilePosition(row: row, col: col)
+                backgroundNode.zPosition = -1 // Place it behind everything
+                addChild(backgroundNode)
+
+                // Initialize the tileMatrix with SKSpriteNodes where needed
+                let tileValue = gameBoardMatrix[row][col]
+                if tileValue > 0 {
+                    let tileNode = SKSpriteNode(texture: getTextureForValue(tileValue))
+                    tileNode.position = calculateTilePosition(row: row, col: col)
+                    tileNode.size = CGSize(width: tileSideLength, height: tileSideLength)
+                    tileMatrix[row][col] = tileNode
+                    addChild(tileNode)
                 }
             }
         }
     }
+
     
     private func calculateTilePosition(row: Int, col: Int) -> CGPoint {
         let gridWidth = CGFloat(columns) * (tileSideLength + spacing) - spacing
@@ -462,12 +473,12 @@ class CSGameBoard: SKSpriteNode {
             let mynum = Int.random(in: 0...2)
             progressBarBackground.isHidden = true
             
-            if mynum == -1 {
+            if mynum == 0 {
                 print("x powerup")
                 powerUpNode = SKSpriteNode(imageNamed: "delete_powerup")
                 powerUpType = "XPowerup"
             }
-            else if mynum > 0 {
+            else if mynum == 1 {
                 print("2x powerup")
                 powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
                 powerUpType = "2xPowerup"
@@ -581,94 +592,71 @@ extension CSGameBoard {
             activatePowerUp()
             return
         }
-        
+
         // Check if the touch hit the cancel button
         if let cancelButton = cancelButton, cancelButton.contains(location) {
             print("Cancelled powerup")
-            powerUpActive = false
-            cancelButton.removeFromParent()
-            addChild(powerUpNode)
+            deactivatePowerUp()
+            return
         }
-        
-        if powerUpType == "XPowerup" && powerUpActive == true {
-            // Identify which tile was tapped
-            for row in 0..<rows {
-                for col in 0..<columns {
-                    let tileName = "tile_\(row)_\(col)"
-                    if let tileNode = childNode(withName: tileName) as? SKSpriteNode, tileNode.contains(location) {
-                        let value = gameBoardMatrix[row][col]
-                        
-                        // Check if the tapped tile is not the highest value
+
+        // Handle tile interactions for power-ups
+        for row in 0..<rows {
+            for col in 0..<columns {
+                guard let tileNode = tileMatrix[row][col] as? SKSpriteNode else { continue }
+
+                // Check if the touch intersects the tile's frame
+                if tileNode.frame.contains(location) {
+                    let value = gameBoardMatrix[row][col]
+
+                    // Handle XPowerup
+                    if powerUpType == "XPowerup" && powerUpActive {
                         if value != maxValue() && value > 0 {
                             print("Removing tile at (\(row), \(col)) with value \(value)")
                             removeTile(atRow: row, column: col)
-                            powerUpType = ""
-                            powerUpActive = false
-                            deactivatePowerUp() // Remove power-up UI
-                            return
+                            deactivatePowerUp()
                         } else {
                             print("Cannot remove the highest-value tile!")
                         }
+                        return
                     }
-                }
-            }
-        }
-        if powerUpType == "2xPowerup" && powerUpActive {
-            // Identify which tile was tapped
-            for row in 0..<rows {
-                for col in 0..<columns {
-                    let tileName = "tile_\(row)_\(col)"
-                    if let tileNode = childNode(withName: tileName) as? SKSpriteNode, tileNode.contains(location) {
-                        let value = gameBoardMatrix[row][col]
-                        
-                        // Check if the tapped tile is not the highest value
-                        if value < (maxValue()/2) && value > 0 {
-                            gameBoardMatrix[row][col] *= 2 // Double the tile value
-                            (tileMatrix[row][col] as! SKSpriteNode).texture = getTextureForValue(gameBoardMatrix[row][col])
+
+                    // Handle 2xPowerup
+                    if powerUpType == "2xPowerup" && powerUpActive {
+                        if value < maxValue() / 2 && value > 0 {
+                            gameBoardMatrix[row][col] *= 2
+                            tileNode.texture = getTextureForValue(gameBoardMatrix[row][col])
                             print("Doubled tile at (\(row), \(col)) to \(gameBoardMatrix[row][col])")
-                            deactivatePowerUp() // Deactivate the power-up
-                            return
+                            deactivatePowerUp()
                         } else {
                             print("Cannot double the highest-value tile!")
                         }
+                        return
                     }
-                }
-            }
-        }
-        
-        if powerUpType == "TileAddPowerup" && powerUpActive {
-            for row in 0..<rows {
-                for col in 0..<columns {
-                    // Only allow placement on empty spaces
-                    if gameBoardMatrix[row][col] == 0 {
-                        let tilePosition = calculateTilePosition(row: row, col: col)
-                        
-                        // Check if the touch is within the bounds of this empty tile
-                        if CGRect(x: tilePosition.x - tileSideLength / 2,
-                                  y: tilePosition.y - tileSideLength / 2,
-                                  width: tileSideLength,
-                                  height: tileSideLength).contains(location) {
-                            
-                            // Add a tile two levels below the max value
+
+                    // Handle TileAddPowerup
+                    if powerUpType == "TileAddPowerup" && powerUpActive {
+                        if value == 0 {
                             let newTileValue = maxValue() / 4
                             gameBoardMatrix[row][col] = newTileValue
+                            let newTileNode = SKSpriteNode(texture: getTextureForValue(newTileValue))
+                            newTileNode.position = calculateTilePosition(row: row, col: col)
+                            newTileNode.size = CGSize(width: tileSideLength, height: tileSideLength)
+                            tileMatrix[row][col] = newTileNode
+                            addChild(newTileNode)
+
                             print("Added tile at (\(row), \(col)) with value \(newTileValue)")
-                            tileMatrix[row][col] = SKSpriteNode(texture: getTextureForValue(newTileValue)) // Refresh the board
-                            (tileMatrix[row][col] as! SKSpriteNode).position = calculateTilePosition(row: row, col: col)
-                            (tileMatrix[row][col] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
-                            addChild(tileMatrix[row][col] as! SKSpriteNode)
-                            
-                            // Deactivate the power-up after placing the tile
-                            deactivatePowerUp() // Properly remove the power-up UI
-                            updatePowerup = false
-                            return
+                            deactivatePowerUp()
+                        } else {
+                            print("Invalid location! Tap an empty space to place the new tile.")
                         }
+                        return
                     }
                 }
             }
-            print("Invalid location! Tap an empty space to place the new tile.")
         }
     }
+
     func setupProgressBar() {
         // Create the background asset
         let assetTexture = SKTexture(imageNamed: "powerup_base")
