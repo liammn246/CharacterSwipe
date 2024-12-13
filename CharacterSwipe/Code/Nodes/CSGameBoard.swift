@@ -81,6 +81,7 @@ class CSGameBoard: SKSpriteNode {
                             gameBoard[r][target + 1] *= 2
                             gameBoard[r][target] = 0
                             score += gameBoard[r][target + 1]
+                            updatePowerUps(scoreChange: gameBoard[r][target + 1])
                             mergedTiles[r][target + 1] = true
                             animateTileMerge(at: (r, target + 1), value: gameBoard[r][target + 1])
                             
@@ -112,6 +113,7 @@ class CSGameBoard: SKSpriteNode {
                             gameBoard[r][target - 1] *= 2
                             gameBoard[r][target] = 0
                             score += gameBoard[r][target - 1]
+                            updatePowerUps(scoreChange: gameBoard[r][target - 1])
                             mergedTiles[r][target - 1] = true
                             animateTileMerge(at: (r, target - 1), value: gameBoard[r][target - 1])
                             
@@ -143,6 +145,7 @@ class CSGameBoard: SKSpriteNode {
                             gameBoard[target - 1][c] *= 2
                             gameBoard[target][c] = 0
                             score += gameBoard[target - 1][c]
+                            updatePowerUps(scoreChange: gameBoard[target - 1][c])
                             mergedTiles[target - 1][c] = true
                             animateTileMerge(at: (target - 1, c), value: gameBoard[target - 1][c])
                             
@@ -174,6 +177,7 @@ class CSGameBoard: SKSpriteNode {
                             gameBoard[target + 1][c] *= 2
                             gameBoard[target][c] = 0
                             score += gameBoard[target + 1][c]
+                            updatePowerUps(scoreChange: gameBoard[target + 1][c])
                             mergedTiles[target + 1][c] = true
                             animateTileMerge(at: (target + 1, c), value: gameBoard[target + 1][c])
                             
@@ -204,6 +208,7 @@ class CSGameBoard: SKSpriteNode {
             gameBoardMatrix = newBoard
             addRandomTile()
             updateTiles()
+            
             gameScene.updateScoreLabel(newScore: score)
         }
 
