@@ -398,15 +398,26 @@ class CSGameBoard: SKSpriteNode {
     
     // Add a random tile to an empty space (no changes)
     func addRandomTile() {
-        while(true) {
+        while true {
             let randomRow = Int.random(in: 0..<4)
             let randomColumn = Int.random(in: 0..<4)
             if gameBoardMatrix[randomRow][randomColumn] == 0 {
+                // Assign a random value to the tile (e.g., 2 or 4)
                 gameBoardMatrix[randomRow][randomColumn] = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4].randomElement()!
-                tileMatrix[randomRow][randomColumn] = SKSpriteNode(texture: getTextureForValue(gameBoardMatrix[randomRow][randomColumn]))
-                (tileMatrix[randomRow][randomColumn] as! SKSpriteNode).position = calculateTilePosition(row: randomRow, col: randomColumn)
-                (tileMatrix[randomRow][randomColumn] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
-                addChild(tileMatrix[randomRow][randomColumn] as! SKSpriteNode)
+                
+                // Create the new tile node
+                let newTileNode = SKSpriteNode(texture: getTextureForValue(gameBoardMatrix[randomRow][randomColumn]))
+                newTileNode.position = calculateTilePosition(row: randomRow, col: randomColumn)
+                newTileNode.size = CGSize(width: tileSideLength, height: tileSideLength)
+                tileMatrix[randomRow][randomColumn] = newTileNode
+                addChild(newTileNode)
+                
+                // Add bounce animation to the new tile
+                let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
+                let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
+                let bounce = SKAction.sequence([scaleUp, scaleDown])
+                newTileNode.run(bounce)
+                
                 break
             }
         }
