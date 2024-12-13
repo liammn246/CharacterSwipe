@@ -195,11 +195,6 @@ class CSGameBoard: SKSpriteNode {
 
         return gameBoard
     }
-
-
-
-
-
     
     // Handle swipe input
     func onUserInput(direction: String) {
