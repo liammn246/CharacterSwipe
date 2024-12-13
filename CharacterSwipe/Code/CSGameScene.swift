@@ -11,6 +11,7 @@ class CSGameScene: SKScene {
     var rectangleBackground: SKShapeNode!
     var scoreLabel: SKLabelNode!
     var background2: SKShapeNode!
+    var background3: SKShapeNode!
     var scoreTile: SKShapeNode!
     weak var context: CSGameContext?
     var gameBoard: CSGameBoard!
@@ -104,10 +105,59 @@ class CSGameScene: SKScene {
         scoreLabel.isHidden = true
         scoreTile.addChild(scoreLabel) // Add label as a child of the tile
 
-       
+
+        background3 = SKShapeNode(rectOf: CGSize(width: 330, height: 30), cornerRadius: 5)
+        background3.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
+        background3.position = CGPoint(x: size.width / 2, y: size.height / 1.767)
+        background3.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
+        background3.lineWidth = 3 // Border thickness
+        background3.name = "scoreTile"
+        background3.isHidden = true
+        background3.zPosition = 10
+        addChild(background3)
         
-        
-        
+        // Generate the tile names directly based on asset naming convention
+        let numberOfTiles = 13
+        let tileWidth: CGFloat = 15 // Tile dimensions (adjust as needed)
+        let tileHeight: CGFloat = 15
+        let spacing: CGFloat = 10 // Space between tiles
+        let startingOpacity: CGFloat = 0.4 // 40% opacity
+        let maxOpacity: CGFloat = 1.0 // 100% opacity
+
+        // Create and add tiles
+        for i in 1...numberOfTiles { // Start from 1 to match asset naming
+            let tileName = "tile_\(i)" // Match asset names
+            let tile = SKSpriteNode(imageNamed: tileName)
+            tile.size = CGSize(width: tileWidth, height: tileHeight)
+            tile.position = CGPoint(
+                x: -CGFloat(numberOfTiles - 1) / 2 * (tileWidth + spacing) + CGFloat(i - 1) * (tileWidth + spacing),
+                y: 0
+            )
+            tile.zPosition = background3.zPosition + 1 // Ensure it's above the background
+
+            // Set initial opacity
+            tile.alpha = startingOpacity
+            tile.name = tileName // Assign a name to identify the tile
+            background3.addChild(tile)
+        }
+
+        // Function to update tile opacity
+        func updateTileOpacity(unlockedIndex: Int) {
+            background3.children.forEach { node in
+                if let tile = node as? SKSpriteNode,
+                   let tileName = tile.name,
+                   let tileIndexString = tileName.split(separator: "_").last,
+                   let tileIndex = Int(tileIndexString) {
+                    // Set opacity to max if the tile index is less than or equal to the unlocked index
+                    tile.alpha = tileIndex <= unlockedIndex ? maxOpacity : startingOpacity
+                }
+            }
+        }
+
+        // Example: Unlock tiles up to tile_5 (can be dynamically triggered in the game)
+        let highestUnlockedIndex = 5
+        updateTileOpacity(unlockedIndex: highestUnlockedIndex)
+
         // Add swipe functionality
         setupSwipeGestures()
     }
@@ -123,6 +173,7 @@ class CSGameScene: SKScene {
         scoreTile.isHidden = false
         scoreLabel.isHidden = false
         background2.isHidden = false
+        background3.isHidden = false
     
     }
     
@@ -132,6 +183,7 @@ class CSGameScene: SKScene {
         scoreTile.isHidden = true
         scoreLabel.isHidden = true
         background2.isHidden = true
+        background3.isHidden = true
     }
     
     func updateScoreLabel(newScore: Int) {

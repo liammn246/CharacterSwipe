@@ -456,6 +456,7 @@ class CSGameBoard: SKSpriteNode {
         gameBoardMatrix[row][col] *= 2
         updateTiles()
     }
+
     func updatePowerUps(scoreChange: Int) {
         if powerUpScore < powerUpMultiplier && powerUpScore + scoreChange >= powerUpMultiplier {
             let mynum = Int.random(in: 0...2)
