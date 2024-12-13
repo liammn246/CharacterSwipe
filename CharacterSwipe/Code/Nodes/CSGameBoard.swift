@@ -451,12 +451,12 @@ class CSGameBoard: SKSpriteNode {
             let mynum = Int.random(in: 0...2)
             progressBarBackground.isHidden = true
             
-            if mynum == 0 {
+            if mynum == -1 {
                 print("x powerup")
                 powerUpNode = SKSpriteNode(imageNamed: "delete_powerup")
                 powerUpType = "XPowerup"
             }
-            else if mynum == 1 {
+            else if mynum > 0 {
                 print("2x powerup")
                 powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
                 powerUpType = "2xPowerup"
@@ -613,8 +613,8 @@ extension CSGameBoard {
                         // Check if the tapped tile is not the highest value
                         if value < (maxValue()/2) && value > 0 {
                             gameBoardMatrix[row][col] *= 2 // Double the tile value
+                            (tileMatrix[row][col] as! SKSpriteNode).texture = getTextureForValue(gameBoardMatrix[row][col])
                             print("Doubled tile at (\(row), \(col)) to \(gameBoardMatrix[row][col])")
-                            updateTiles() // Refresh the board
                             deactivatePowerUp() // Deactivate the power-up
                             return
                         } else {
@@ -642,7 +642,10 @@ extension CSGameBoard {
                             let newTileValue = maxValue() / 4
                             gameBoardMatrix[row][col] = newTileValue
                             print("Added tile at (\(row), \(col)) with value \(newTileValue)")
-                            updateTiles() // Refresh the board
+                            tileMatrix[row][col] = SKSpriteNode(texture: getTextureForValue(newTileValue)) // Refresh the board
+                            (tileMatrix[row][col] as! SKSpriteNode).position = calculateTilePosition(row: row, col: col)
+                            (tileMatrix[row][col] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
+                            addChild(tileMatrix[row][col] as! SKSpriteNode)
                             
                             // Deactivate the power-up after placing the tile
                             deactivatePowerUp() // Properly remove the power-up UI
