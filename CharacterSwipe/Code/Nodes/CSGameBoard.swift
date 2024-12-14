@@ -497,7 +497,7 @@ class CSGameBoard: SKSpriteNode {
                 powerUpNode = SKSpriteNode(imageNamed: "delete_powerup")
                 powerUpType = "XPowerup"
             } else if mynum == 1 {
-                print("2x powerup")
+                print("")
                 powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
                 powerUpType = "2xPowerup"
             } else if maxValue() >= 8 {
@@ -700,19 +700,25 @@ extension CSGameBoard {
         for r in 0..<rows {
             for c in 0..<columns {
                 if let backgroundNode = backgroundGrid[r][c] as? SKSpriteNode {
-                    backgroundNode.removeAllActions() // Stop background node animations
-                    backgroundNode.children.forEach { $0.removeFromParent() } // Remove any child nodes like glowing borders
-                    backgroundNode.size = CGSize(width: tileSideLength, height: tileSideLength) // Reset size
+                    // Stop animations for background nodes
+                    backgroundNode.removeAllActions()
+                    backgroundNode.children.forEach { $0.removeFromParent() } // Remove any child nodes
+                    backgroundNode.size = CGSize(width: tileSideLength, height: tileSideLength) // Reset to default size
                 }
                 
                 if let tileNode = tileMatrix[r][c] as? SKSpriteNode {
-                    tileNode.removeAllActions() // Stop tile node animations
-                    tileNode.size = CGSize(width: tileSideLength, height: tileSideLength) // Reset size
+                    // Stop animations for tile nodes
+                    tileNode.removeAllActions()
                     
-                    // If the original size was stored, reset it
+                    // Restore the original size, or reset to tileSideLength
                     if let originalSize = tileNode.userData?["originalSize"] as? CGSize {
                         tileNode.size = originalSize
+                    } else {
+                        tileNode.size = CGSize(width: tileSideLength, height: tileSideLength)
                     }
+                    
+                    // Remove child nodes (like glowing effects) if they exist
+                    tileNode.children.forEach { $0.removeFromParent() }
                 }
             }
         }
