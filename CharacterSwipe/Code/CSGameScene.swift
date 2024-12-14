@@ -243,16 +243,19 @@ class CSGameScene: SKScene {
         swipeDetector.onSwipeUp = { [weak self] in
             guard let self = self, self.context?.stateMachine?.currentState is CSGameplayState else { return }
             self.gameBoard.onUserInput(direction: "up")
+            self.updateTileOpacity()
         }
         
         swipeDetector.onSwipeDown = { [weak self] in
             guard let self = self, self.context?.stateMachine?.currentState is CSGameplayState else { return }
             self.gameBoard.onUserInput(direction: "down")
+            self.updateTileOpacity()
         }
         
         swipeDetector.onSwipeLeft = { [weak self] in
             guard let self = self, self.context?.stateMachine?.currentState is CSGameplayState else { return }
             self.gameBoard.onUserInput(direction: "left")
+            self.updateTileOpacity()
         }
         
         swipeDetector.onSwipeRight = { [weak self] in
