@@ -205,6 +205,7 @@ class CSGameBoard: SKSpriteNode {
             updateTiles()
             delay(0.25) {
                 self.resetSize()
+                self.updatePowerUps(scoreChange: 0)
             }
             gameScene.updateScoreLabel(newScore: score)
         }
@@ -511,7 +512,8 @@ class CSGameBoard: SKSpriteNode {
                 powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
                 powerUpType = "2xPowerup"
             } else if maxValue() >= 8 {
-                powerUpNode = SKSpriteNode(imageNamed: "place_tile")
+                print("Should do place tile image")
+                powerUpNode = SKSpriteNode(imageNamed: "place_tile"+String(maxValue()/4))
                 powerUpType = "TileAddPowerup"
                 updatePowerup = true
             } else {
@@ -550,7 +552,7 @@ class CSGameBoard: SKSpriteNode {
         if updatePowerup {
             powerUpNode.removeFromParent()
             print("powerup updated")
-            powerUpNode = SKSpriteNode(imageNamed: "tile_" + String(log2(Double(maxValue())) - 2))
+            powerUpNode = SKSpriteNode(imageNamed: "place_tile" + String(maxValue()/4))
             powerUpNode.position = CGPoint(x: size.width / 3.5, y: size.height / 1.57)
             powerUpNode.size = CGSize(width: size.width / 5, height: size.width / 5)
             powerUpNode.zPosition = CGFloat(score)
@@ -797,9 +799,10 @@ extension CSGameBoard {
                     if powerUpType == "2xPowerup" && powerUpActive {
                         if value < maxValue() / 2 && value > 0 {
                             gameBoardMatrix[row][col] *= 2
-                            tileNode.texture = getTextureForValue(gameBoardMatrix[row][col])
                             tileNode.removeAllActions()
-                            tileNode.size = CGSize(width: tileSideLength, height: tileSideLength)
+                            (tileMatrix[row][col] as! SKSpriteNode).texture = getTextureForValue(gameBoardMatrix[row][col])
+                            (tileMatrix[row][col] as! SKSpriteNode).removeAllActions()
+                            (tileMatrix[row][col] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
                             print("Doubled tile at (\(row), \(col)) to \(gameBoardMatrix[row][col])")
                             deactivatePowerUp()
                         } else {
