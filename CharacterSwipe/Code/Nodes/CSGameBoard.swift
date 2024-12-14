@@ -73,10 +73,20 @@ class CSGameBoard: SKSpriteNode {
                 let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
                 let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
                 let bounce = SKAction.sequence([scaleUp, scaleDown])
+
+                // Trigger haptic feedback
+                let triggerHaptic = SKAction.run {
+                    let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+                    feedbackGenerator.impactOccurred()
+                }
+
+                // Update texture action
                 let updateTexture = SKAction.run {
                     newTileNode.texture = self.getTextureForValue(value)
                 }
-                newTileNode.run(SKAction.sequence([bounce, updateTexture]))
+
+                // Run animations with haptic feedback
+                newTileNode.run(SKAction.sequence([bounce, triggerHaptic, updateTexture]))
             }
         }
 
