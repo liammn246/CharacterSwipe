@@ -3,6 +3,7 @@ import SpriteKit
 
 class CSGameplayState: CSGameState {
     private var scoreLabel: SKLabelNode? // Step 1: Add a property to hold a reference to the score label
+    var gameBoard: CSGameBoard!
     
     override func didEnter(from previousState: GKState?) {
         super.didEnter(from: previousState)
