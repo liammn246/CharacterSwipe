@@ -15,6 +15,8 @@ class CSGameScene: SKScene {
     var scoreTile: SKShapeNode!
     weak var context: CSGameContext?
     var gameBoard: CSGameBoard!
+    let maxOpacity: CGFloat = 1.0
+    let startingOpacity: CGFloat = 0.3
     
     // SwipeDetector instance
     let swipeDetector = SwipeDetector()
@@ -45,7 +47,32 @@ class CSGameScene: SKScene {
         }
     }
 
+    
+    func calculateUnlockedIndex(for maxValue: Int) -> Int {
+        // Assuming tiles correspond to powers of 2 (e.g., tile_1 = 2, tile_2 = 4, etc.)
+        return Int(log2(Double(maxValue)))
+    }
+    // Function to update tile opacity
+    func updateTileOpacity() {
+        guard let maxValue = gameBoard?.maxValue() else {
+            print("Game board not initialized or has no values")
+            return
+        }
 
+        // Calculate the highest unlocked index based on maxValue
+        let highestUnlockedIndex = calculateUnlockedIndex(for: maxValue)
+
+        // Update opacity for tiles
+        background3.children.forEach { node in
+            if let tile = node as? SKSpriteNode,
+               let tileName = tile.name,
+               let tileIndexString = tileName.split(separator: "_").last,
+               let tileIndex = Int(tileIndexString) {
+                // Set opacity to max if the tile index is less than or equal to the unlocked index
+                tile.alpha = tileIndex <= highestUnlockedIndex ? maxOpacity : startingOpacity
+            }
+        }
+    }
 
     override func didMove(to view: SKView) {
         super.didMove(to: view)
@@ -139,27 +166,17 @@ class CSGameScene: SKScene {
             tile.alpha = startingOpacity
             tile.name = tileName // Assign a name to identify the tile
             background3.addChild(tile)
-        }
-
-        // Function to update tile opacity
-        func updateTileOpacity(unlockedIndex: Int) {
-            background3.children.forEach { node in
-                if let tile = node as? SKSpriteNode,
-                   let tileName = tile.name,
-                   let tileIndexString = tileName.split(separator: "_").last,
-                   let tileIndex = Int(tileIndexString) {
-                    // Set opacity to max if the tile index is less than or equal to the unlocked index
-                    tile.alpha = tileIndex <= unlockedIndex ? maxOpacity : startingOpacity
-                }
-            }
+            
+            
+        
         }
 
         // Example: Unlock tiles up to tile_5 (can be dynamically triggered in the game)
-        let highestUnlockedIndex = 5
-        updateTileOpacity(unlockedIndex: highestUnlockedIndex)
+
 
         // Add swipe functionality
         setupSwipeGestures()
+        
     }
     
     func getGameBoard() -> CSGameBoard? {
@@ -218,7 +235,7 @@ class CSGameScene: SKScene {
             floatingLabel.run(sequence)
         }
     }
-
+    
     // MARK: - Swipe Detection Setup
     private func setupSwipeGestures() {
         swipeDetector.addSwipeGestures(to: self)
@@ -241,6 +258,7 @@ class CSGameScene: SKScene {
         swipeDetector.onSwipeRight = { [weak self] in
             guard let self = self, self.context?.stateMachine?.currentState is CSGameplayState else { return }
             self.gameBoard.onUserInput(direction: "right")
+            self.updateTileOpacity()
         }
     }
 
