@@ -271,8 +271,10 @@ class CSGameBoard: SKSpriteNode {
         let newBoard = boardMove(direction: direction)
         if newBoard != gameBoardMatrix {
             gameBoardMatrix = newBoard
-            addRandomTile()
             updateTiles()
+            delay(0.1) {
+                self.addRandomTile()
+            }
             delay(0.25) {
                 self.resetSize()
                 self.updatePowerUps(scoreChange: 0)
@@ -508,8 +510,8 @@ class CSGameBoard: SKSpriteNode {
                 addChild(newTileNode)
                 
                 // Add bounce animation to the new tile
-                let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
-                let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
+                let scaleUp = SKAction.scale(to: 1.2, duration: 0.05)
+                let scaleDown = SKAction.scale(to: 1.0, duration: 0.05)
                 let bounce = SKAction.sequence([scaleUp, scaleDown])
                 newTileNode.run(bounce)
                 
