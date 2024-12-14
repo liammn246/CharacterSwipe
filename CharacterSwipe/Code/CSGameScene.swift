@@ -18,28 +18,6 @@ class CSGameScene: SKScene {
     let maxOpacity: CGFloat = 1.0
     let startingOpacity: CGFloat = 0.3
     private var audioPlayer: AVAudioPlayer?
-    
-    private func playSwipeSound() {
-        print("Attempting to play sound")
-        guard let url = Bundle.main.url(forResource: "swipeSound", withExtension: "mp3") else {
-            print("Swipe sound file not found")
-            return
-        }
-        do {
-            // Initialize the audio player
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            
-            // Set the volume (0.0 is mute, 1.0 is the maximum)
-            audioPlayer?.volume = 0.1
-            
-            // Play the sound
-            audioPlayer?.play()
-            print("Playing sound")
-        } catch {
-            print("Error playing swipe sound: \(error)")
-        }
-    }
-
 
     // SwipeDetector instance
     let swipeDetector = SwipeDetector()
@@ -271,28 +249,24 @@ class CSGameScene: SKScene {
             guard let self = self, self.context?.stateMachine?.currentState is CSGameplayState else { return }
             self.gameBoard.onUserInput(direction: "up")
             self.updateTileOpacity()
-            self.playSwipeSound() // Play sound on swipe up
         }
         
         swipeDetector.onSwipeDown = { [weak self] in
             guard let self = self, self.context?.stateMachine?.currentState is CSGameplayState else { return }
             self.gameBoard.onUserInput(direction: "down")
             self.updateTileOpacity()
-            self.playSwipeSound() // Play sound on swipe down
         }
         
         swipeDetector.onSwipeLeft = { [weak self] in
             guard let self = self, self.context?.stateMachine?.currentState is CSGameplayState else { return }
             self.gameBoard.onUserInput(direction: "left")
             self.updateTileOpacity()
-            self.playSwipeSound() // Play sound on swipe left
         }
         
         swipeDetector.onSwipeRight = { [weak self] in
             guard let self = self, self.context?.stateMachine?.currentState is CSGameplayState else { return }
             self.gameBoard.onUserInput(direction: "right")
             self.updateTileOpacity()
-            self.playSwipeSound() // Play sound on swipe right
         }
     }
 
