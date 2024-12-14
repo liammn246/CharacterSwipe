@@ -18,6 +18,10 @@ class CSGameBoard: SKSpriteNode {
                       [nil, nil, nil, nil],
                       [nil, nil, nil, nil],
                       [nil, nil, nil, nil]]
+    var backgroundGrid = [[nil, nil, nil, nil],
+                          [nil, nil, nil, nil],
+                          [nil, nil, nil, nil],
+                          [nil, nil, nil, nil]]
     var updatePowerup = false
     var powerUpNode = SKSpriteNode()
     var powerUpActive = false
@@ -327,10 +331,10 @@ class CSGameBoard: SKSpriteNode {
         for row in 0..<rows {
             for col in 0..<columns {
                 // Create a static background node for each position
-                let backgroundNode = SKSpriteNode(texture: getTextureForValue(0), size: CGSize(width: tileSideLength, height: tileSideLength))
-                backgroundNode.position = calculateTilePosition(row: row, col: col)
-                backgroundNode.zPosition = -1 // Place it behind everything
-                addChild(backgroundNode)
+                backgroundGrid[row][col] = SKSpriteNode(texture: getTextureForValue(0), size: CGSize(width: tileSideLength, height: tileSideLength))
+                (backgroundGrid[row][col] as! SKSpriteNode).position = calculateTilePosition(row: row, col: col)
+                (backgroundGrid[row][col] as! SKSpriteNode).zPosition = -1 // Place it behind everything
+                addChild((backgroundGrid[row][col] as! SKSpriteNode))
 
                 // Initialize the tileMatrix with SKSpriteNodes where needed
                 let tileValue = gameBoardMatrix[row][col]
@@ -614,6 +618,27 @@ class CSGameBoard: SKSpriteNode {
                 tileNode.userData = ["originalSize": originalSize]
             }
         }
+        else if powerUpType == "TileAddPowerup" {
+            for r in 0...3 {
+                for c in 0...3 {
+                    if gameBoardMatrix[r][c] == 0 {
+                        guard let tileNode = backgroundGrid[r][c] as? SKSpriteNode else { continue }
+                        
+                        let originalSize = tileNode.size
+                        
+                        let scaleUp = SKAction.scale(to: 1.2, duration: 0.3)
+                        let scaleDown = SKAction.scale(to: 1.0, duration: 0.3)
+                        let pulse = SKAction.sequence([scaleUp, scaleDown])
+                        let pulsingAction = SKAction.repeatForever(pulse) // Repeat the pulsing forever
+                        
+                        tileNode.run(pulsingAction)
+                        
+                        // Store the original size for later restoration
+                        tileNode.userData = ["originalSize": originalSize]
+                    }
+                }
+            }
+        }
 
         // Add cancel button
         addCancelButton()
@@ -648,6 +673,11 @@ class CSGameBoard: SKSpriteNode {
             if let originalSize = tileNode.userData?["originalSize"] as? CGSize {
                 tileNode.size = originalSize
             }
+        }
+        for r in 0...3 {
+            for c in 0...3 {
+                (backgroundGrid[r][c] as! SKSpriteNode).removeAllActions()
+                (backgroundGrid[r][c] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)            }
         }
         
         cancelButton?.removeFromParent()
@@ -711,7 +741,7 @@ extension CSGameBoard {
         // Handle tile interactions for power-ups
         for row in 0..<rows {
             for col in 0..<columns {
-                guard let tileNode = tileMatrix[row][col] as? SKSpriteNode else { continue }
+                guard let tileNode = backgroundGrid[row][col] as? SKSpriteNode else { continue }
 
                 // Check if the touch intersects the tile's frame
                 if tileNode.frame.contains(location) {
@@ -749,11 +779,10 @@ extension CSGameBoard {
                         if value == 0 {
                             let newTileValue = maxValue() / 4
                             gameBoardMatrix[row][col] = newTileValue
-                            let newTileNode = SKSpriteNode(texture: getTextureForValue(newTileValue))
-                            newTileNode.position = calculateTilePosition(row: row, col: col)
-                            newTileNode.size = CGSize(width: tileSideLength, height: tileSideLength)
-                            tileMatrix[row][col] = newTileNode
-                            addChild(newTileNode)
+                            tileMatrix[row][col] = SKSpriteNode(texture: getTextureForValue(newTileValue))
+                            (tileMatrix[row][col] as! SKSpriteNode).position = calculateTilePosition(row: row, col: col)
+                            (tileMatrix[row][col] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
+                            addChild(tileMatrix[row][col] as! SKSpriteNode)
 
                             print("Added tile at (\(row), \(col)) with value \(newTileValue)")
                             deactivatePowerUp()
