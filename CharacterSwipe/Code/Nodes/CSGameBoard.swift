@@ -98,6 +98,7 @@ class CSGameBoard: SKSpriteNode {
                             score += gameBoard[r][target + 1]
                             updatePowerUps(scoreChange: gameBoard[r][target + 1])
                             mergedTiles[r][target + 1] = true
+                            
                             animateTileMerge(at: (r, target + 1), value: gameBoard[r][target + 1], oldTile: oldTile)
                         } else {
                             target -= 1
@@ -496,7 +497,7 @@ class CSGameBoard: SKSpriteNode {
                 powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
                 powerUpType = "2xPowerup"
             } else if maxValue() >= 8 {
-                powerUpNode = SKSpriteNode(imageNamed: "tile_" + String(log2(Double(maxValue())) - 2))
+                powerUpNode = SKSpriteNode(imageNamed: "place_tile")
                 powerUpType = "TileAddPowerup"
                 updatePowerup = true
             } else {
@@ -505,7 +506,7 @@ class CSGameBoard: SKSpriteNode {
             }
 
             // Set up power-up node properties
-            powerUpNode.size = CGSize(width: size.width / 3.5, height: size.width / 4)
+            powerUpNode.size = CGSize(width: size.width / 4, height: size.width / 4)
             powerUpNode.position = CGPoint(x: size.width / 3.5, y: size.height / 1.57)
             powerUpNode.zPosition = 11
             powerUpNode.setScale(0) // Start with scale 0 for animation
