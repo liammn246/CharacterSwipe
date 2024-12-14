@@ -215,6 +215,8 @@ class CSGameBoard: SKSpriteNode {
             print("Game Over -- attempting to transition to CSLoseState")
             updatePowerup = false
             powerUpNode.removeFromParent()
+            score = 0
+            gameScene.updateScoreLabel(newScore: score)
             for r in 0...3 {
                 for c in 0...3 {
                     if tileMatrix[r][c] != nil {
