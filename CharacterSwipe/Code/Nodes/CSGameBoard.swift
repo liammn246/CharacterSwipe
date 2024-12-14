@@ -57,152 +57,130 @@ class CSGameBoard: SKSpriteNode {
             }
         }
 
-        func animateTileMerge(at: (row: Int, col: Int), value: Int) {
-            if let tileNode = tileMatrix[at.row][at.col] as? SKSpriteNode {
+        func animateTileMerge(at: (row: Int, col: Int), value: Int, oldTile: SKSpriteNode) {
+            if let newTileNode = tileMatrix[at.row][at.col] as? SKSpriteNode {
+                // Ensure old tile moves below the new tile
+                oldTile.zPosition = -1
+
+                // Animation for the old tile to swipe into position
+                let moveAction = SKAction.move(to: calculateTilePosition(row: at.row, col: at.col), duration: 0.1)
+                let removeOldTile = SKAction.run {
+                    oldTile.removeFromParent()
+                }
+                oldTile.run(SKAction.sequence([moveAction, removeOldTile]))
+
+                // Bounce animation for the new tile
                 let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
                 let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
                 let bounce = SKAction.sequence([scaleUp, scaleDown])
-                tileNode.run(bounce)
-                tileNode.texture = getTextureForValue(value)
+                let updateTexture = SKAction.run {
+                    newTileNode.texture = self.getTextureForValue(value)
+                }
+                newTileNode.run(SKAction.sequence([bounce, updateTexture]))
             }
         }
 
-        // Process moves based on the direction
         switch direction {
         case "right":
             for r in 0..<rows {
                 var target = columns - 1
                 for c in stride(from: columns - 1, through: 0, by: -1) {
                     if gameBoard[r][c] != 0 {
-                        // Move tile to the furthest available position
                         if c != target {
                             gameBoard[r][target] = gameBoard[r][c]
                             gameBoard[r][c] = 0
                             animateTileMove(from: (r, c), to: (r, target))
                         }
-                        // Check for merge
                         if target < columns - 1, gameBoard[r][target] == gameBoard[r][target + 1], !mergedTiles[r][target + 1] {
+                            let oldTile = tileMatrix[r][target] as! SKSpriteNode
                             gameBoard[r][target + 1] *= 2
                             gameBoard[r][target] = 0
                             score += gameBoard[r][target + 1]
                             mergedTiles[r][target + 1] = true
-                            animateTileMerge(at: (r, target + 1), value: gameBoard[r][target + 1])
-                            updatePowerUps(scoreChange: gameBoard[r][target + 1])
-
-                            // Remove the old tile after the merge
-                            if let tileNode = tileMatrix[r][target] as? SKSpriteNode {
-                                tileNode.removeFromParent()
-                                tileMatrix[r][target] = nil
-                            }
+                            animateTileMerge(at: (r, target + 1), value: gameBoard[r][target + 1], oldTile: oldTile)
                         } else {
                             target -= 1
                         }
                     }
                 }
             }
-
         case "left":
             for r in 0..<rows {
                 var target = 0
                 for c in 0..<columns {
                     if gameBoard[r][c] != 0 {
-                        // Move tile to the furthest available position
                         if c != target {
                             gameBoard[r][target] = gameBoard[r][c]
                             gameBoard[r][c] = 0
                             animateTileMove(from: (r, c), to: (r, target))
                         }
-                        // Check for merge
                         if target > 0, gameBoard[r][target] == gameBoard[r][target - 1], !mergedTiles[r][target - 1] {
+                            let oldTile = tileMatrix[r][target] as! SKSpriteNode
                             gameBoard[r][target - 1] *= 2
                             gameBoard[r][target] = 0
                             score += gameBoard[r][target - 1]
                             mergedTiles[r][target - 1] = true
-                            animateTileMerge(at: (r, target - 1), value: gameBoard[r][target - 1])
-                            updatePowerUps(scoreChange: gameBoard[r][target - 1])
-
-                            // Remove the old tile after the merge
-                            if let tileNode = tileMatrix[r][target] as? SKSpriteNode {
-                                tileNode.removeFromParent()
-                                tileMatrix[r][target] = nil
-                            }
+                            animateTileMerge(at: (r, target - 1), value: gameBoard[r][target - 1], oldTile: oldTile)
                         } else {
                             target += 1
                         }
                     }
                 }
             }
-
         case "up":
             for c in 0..<columns {
                 var target = 0
                 for r in 0..<rows {
                     if gameBoard[r][c] != 0 {
-                        // Move tile to the furthest available position
                         if r != target {
                             gameBoard[target][c] = gameBoard[r][c]
                             gameBoard[r][c] = 0
                             animateTileMove(from: (r, c), to: (target, c))
                         }
-                        // Check for merge
                         if target > 0, gameBoard[target][c] == gameBoard[target - 1][c], !mergedTiles[target - 1][c] {
+                            let oldTile = tileMatrix[target][c] as! SKSpriteNode
                             gameBoard[target - 1][c] *= 2
                             gameBoard[target][c] = 0
                             score += gameBoard[target - 1][c]
                             mergedTiles[target - 1][c] = true
-                            animateTileMerge(at: (target - 1, c), value: gameBoard[target - 1][c])
-                            updatePowerUps(scoreChange: gameBoard[target - 1][c])
-
-                            // Remove the old tile after the merge
-                            if let tileNode = tileMatrix[target][c] as? SKSpriteNode {
-                                tileNode.removeFromParent()
-                                tileMatrix[target][c] = nil
-                            }
+                            animateTileMerge(at: (target - 1, c), value: gameBoard[target - 1][c], oldTile: oldTile)
                         } else {
                             target += 1
                         }
                     }
                 }
             }
-
         case "down":
             for c in 0..<columns {
                 var target = rows - 1
                 for r in stride(from: rows - 1, through: 0, by: -1) {
                     if gameBoard[r][c] != 0 {
-                        // Move tile to the furthest available position
                         if r != target {
                             gameBoard[target][c] = gameBoard[r][c]
                             gameBoard[r][c] = 0
                             animateTileMove(from: (r, c), to: (target, c))
                         }
-                        // Check for merge
                         if target < rows - 1, gameBoard[target][c] == gameBoard[target + 1][c], !mergedTiles[target + 1][c] {
+                            let oldTile = tileMatrix[target][c] as! SKSpriteNode
                             gameBoard[target + 1][c] *= 2
                             gameBoard[target][c] = 0
                             score += gameBoard[target + 1][c]
                             mergedTiles[target + 1][c] = true
-                            animateTileMerge(at: (target + 1, c), value: gameBoard[target + 1][c])
-                            updatePowerUps(scoreChange: gameBoard[target + 1][c])
-
-                            // Remove the old tile after the merge
-                            if let tileNode = tileMatrix[target][c] as? SKSpriteNode {
-                                tileNode.removeFromParent()
-                                tileMatrix[target][c] = nil
-                            }
+                            animateTileMerge(at: (target + 1, c), value: gameBoard[target + 1][c], oldTile: oldTile)
                         } else {
                             target -= 1
                         }
                     }
                 }
             }
-
         default:
             break
         }
 
         return gameBoard
     }
+
+
     
     // Handle swipe input
     func onUserInput(direction: String) {
@@ -729,13 +707,16 @@ extension CSGameBoard {
                 if let originalSize = tileNode.userData?["originalSize"] as? CGSize {
                     tileNode.size = originalSize
                 }
-                for row in 0..<rows {
-                    for col in 0..<columns {
-                        if tileMatrix[row][col] == nil { continue }
-                        (tileMatrix[row][col] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
-                    }
+            }
+            for row in 0..<rows {
+                for col in 0..<columns {
+                    if tileMatrix[row][col] == nil { continue }
+                    (tileMatrix[row][col] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
+                    (backgroundGrid[row][col] as! SKSpriteNode).removeAllActions()
+                    (backgroundGrid[row][col] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
                 }
             }
+            
         }
 
         // Handle tile interactions for power-ups
@@ -820,4 +801,7 @@ extension CSGameBoard {
     }
 }
 
+func delay(_ seconds: Double, execute: @escaping () -> Void) {
+    DispatchQueue.main.asyncAfter(deadline: .now() + seconds, execute: execute)
+}
 
