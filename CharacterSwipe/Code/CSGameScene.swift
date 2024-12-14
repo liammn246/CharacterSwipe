@@ -20,20 +20,26 @@ class CSGameScene: SKScene {
     private var audioPlayer: AVAudioPlayer?
     
     private func playSwipeSound() {
-        audioPlayer?.volume = 1.0
         print("Attempting to play sound")
         guard let url = Bundle.main.url(forResource: "swipeSound", withExtension: "mp3") else {
             print("Swipe sound file not found")
             return
         }
         do {
+            // Initialize the audio player
             audioPlayer = try AVAudioPlayer(contentsOf: url)
+            
+            // Set the volume (0.0 is mute, 1.0 is the maximum)
+            audioPlayer?.volume = 0.1
+            
+            // Play the sound
             audioPlayer?.play()
             print("Playing sound")
         } catch {
             print("Error playing swipe sound: \(error)")
         }
     }
+
 
     // SwipeDetector instance
     let swipeDetector = SwipeDetector()

@@ -1,5 +1,6 @@
 import SpriteKit
 import Foundation
+import AVFoundation
 
 class CSGameBoard: SKSpriteNode {
     weak var gameScene: CSGameScene!
@@ -31,6 +32,23 @@ class CSGameBoard: SKSpriteNode {
     var powerUpMultiplier = 250
     var progressBarBackground: SKSpriteNode!
     var progressBar: SKSpriteNode!
+    private var audioPlayer: AVAudioPlayer?
+    
+    private func playMergeSound() {
+        audioPlayer?.volume = 0.5
+        print("Attempting to play merge sound")
+        guard let url = Bundle.main.url(forResource: "mergeSound", withExtension: "mp3") else {
+            print(" merge sound file not found")
+            return
+        }
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.play()
+            print("Playing sound")
+        } catch {
+            print("Error playing merge sound: \(error)")
+        }
+    }
     
     // Initialize
     init(size: CGSize) {
@@ -89,8 +107,13 @@ class CSGameBoard: SKSpriteNode {
                     newTileNode.texture = self.getTextureForValue(value)
                 }
 
-                // Run animations with haptic feedback
-                newTileNode.run(SKAction.sequence([bounce, triggerHaptic, updateTexture]))
+                // Play merge sound action
+                let playMergeSound = SKAction.run {
+                    self.playMergeSound()
+                }
+
+                // Run animations with sound and haptic feedback
+                newTileNode.run(SKAction.sequence([bounce, triggerHaptic, playMergeSound, updateTexture]))
             }
         }
 
