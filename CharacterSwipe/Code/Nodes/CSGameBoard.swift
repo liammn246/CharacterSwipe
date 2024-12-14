@@ -524,15 +524,23 @@ class CSGameBoard: SKSpriteNode {
             powerUpNode.position = CGPoint(x: size.width / 3.5, y: size.height / 1.57)
             powerUpNode.zPosition = 11
             powerUpNode.setScale(0) // Start with scale 0 for animation
-            
-            addChild(powerUpNode)
-            
-            // Add pop-in animation
-            let scaleUp = SKAction.scale(to: 1.1, duration: 0.2) // Slight overshoot
-            let scaleDown = SKAction.scale(to: 1.0, duration: 0.1) // Settle to final size
-            let popInAction = SKAction.sequence([scaleUp, scaleDown])
-            powerUpNode.run(popInAction)
 
+            addChild(powerUpNode)
+
+            // Shrink the progress bar before showing the power-up
+            let shrinkProgressBar = SKAction.scaleY(to: 0, duration: 0.3)
+            let switchToPowerUp = SKAction.run {
+                // Hide progress bar and switch to power-up node
+                self.progressBarBackground.isHidden = true
+                self.powerUpNode.isHidden = false
+            }
+            
+            // Grow the power-up after it appears
+            let growPowerUp = SKAction.scale(to: 1.0, duration: 0.3)
+            
+            let sequence = SKAction.sequence([shrinkProgressBar, switchToPowerUp, growPowerUp])
+            powerUpNode.run(sequence)
+            
             powerUpScore += scoreChange
         } else {
             powerUpScore += scoreChange
@@ -549,6 +557,7 @@ class CSGameBoard: SKSpriteNode {
             addChild(powerUpNode)
         }
     }
+
 
     
     func maxValue() -> Int {
@@ -586,28 +595,31 @@ class CSGameBoard: SKSpriteNode {
         // Get positions of tiles below the second-highest value
         let positionsBelowSecondHighest = getPositionsBelowSecondHighest(matrix: gameBoardMatrix)
 
-        // Create a pulsing animation for each tile
-        for position in positionsBelowSecondHighest {
-            guard let tileNode = tileMatrix[position.row][position.col] as? SKSpriteNode else { continue }
-            
-            // Save the original size of the tile before pulsing
-            let originalSize = tileNode.size
-            
-            // Create a pulsing effect (scaling up and down continuously)
-            let scaleUp = SKAction.scale(to: 1.2, duration: 0.3)
-            let scaleDown = SKAction.scale(to: 1.0, duration: 0.3)
-            let pulse = SKAction.sequence([scaleUp, scaleDown])
-            let pulsingAction = SKAction.repeatForever(pulse) // Repeat the pulsing forever
-            
-            tileNode.run(pulsingAction)
-            
-            // Store the original size for later restoration
-            tileNode.userData = ["originalSize": originalSize]
+        // Create a pulsing animation for each tile, except for TileAddPowerup
+        if powerUpType != "TileAddPowerup" {  // Check to avoid pulsing for TileAddPowerup
+            for position in positionsBelowSecondHighest {
+                guard let tileNode = tileMatrix[position.row][position.col] as? SKSpriteNode else { continue }
+                
+                // Save the original size of the tile before pulsing
+                let originalSize = tileNode.size
+                
+                // Create a pulsing effect (scaling up and down continuously)
+                let scaleUp = SKAction.scale(to: 1.2, duration: 0.3)
+                let scaleDown = SKAction.scale(to: 1.0, duration: 0.3)
+                let pulse = SKAction.sequence([scaleUp, scaleDown])
+                let pulsingAction = SKAction.repeatForever(pulse) // Repeat the pulsing forever
+                
+                tileNode.run(pulsingAction)
+                
+                // Store the original size for later restoration
+                tileNode.userData = ["originalSize": originalSize]
+            }
         }
 
         // Add cancel button
         addCancelButton()
     }
+
 
     // Add cancel button to the board
     func addCancelButton() {
