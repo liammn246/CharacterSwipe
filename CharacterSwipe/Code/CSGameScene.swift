@@ -8,6 +8,7 @@ import SpriteKit
 
 class CSGameScene: SKScene {
     var scorePop: SKLabelNode!
+    
     var rectangleBackground: SKShapeNode!
     var scoreLabel: SKLabelNode!
     var background2: SKShapeNode!
@@ -85,17 +86,46 @@ class CSGameScene: SKScene {
         // Calculate the highest unlocked index based on maxValue
         let highestUnlockedIndex = calculateUnlockedIndex(for: maxValue)
 
+        // Track the previous highest unlocked index (this can be stored elsewhere if needed)
+        let previousHighestUnlockedIndex = context?.previousHighestUnlockedIndex ?? -1
+
         // Update opacity for tiles
         background3.children.forEach { node in
             if let tile = node as? SKSpriteNode,
                let tileName = tile.name,
                let tileIndexString = tileName.split(separator: "_").last,
                let tileIndex = Int(tileIndexString) {
-                // Set opacity to max if the tile index is less than or equal to the unlocked index
-                tile.alpha = tileIndex <= highestUnlockedIndex ? maxOpacity : startingOpacity
+
+                // Determine the new opacity for the tile
+                let isUnlocked = tileIndex <= highestUnlockedIndex
+                let newOpacity: CGFloat = isUnlocked ? maxOpacity : startingOpacity
+
+                // Only animate the newly unlocked tile
+                if isUnlocked && tileIndex > previousHighestUnlockedIndex {
+                    // Apply pop animation for the newly unlocked tile
+                    let opacityAction = SKAction.fadeAlpha(to: newOpacity, duration: 0.2)
+
+                    // Apply the pop animation (scale up and down)
+                    let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
+                    let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
+                    let scaleSequence = SKAction.sequence([scaleUp, scaleDown])
+
+                    // Combine the opacity and scale animations
+                    let group = SKAction.group([opacityAction, scaleSequence])
+
+                    // Run the animation
+                    tile.run(group)
+                } else {
+                    // Just update opacity without animation for other tiles
+                    tile.alpha = newOpacity
+                }
             }
         }
+
+        // Update the previous highest unlocked index after the opacity update
+        context?.previousHighestUnlockedIndex = highestUnlockedIndex
     }
+
 
     override func didMove(to view: SKView) {
         super.didMove(to: view)
@@ -156,7 +186,7 @@ class CSGameScene: SKScene {
         scoreTile.addChild(scoreLabel) // Add label as a child of the tile
 
 
-        background3 = SKShapeNode(rectOf: CGSize(width: 340, height: 30), cornerRadius: 10)
+        background3 = SKShapeNode(rectOf: CGSize(width: 250, height: 25), cornerRadius: 10)
         background3.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
         background3.position = CGPoint(x: size.width / 2, y: size.height / 1.767)
         background3.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
@@ -168,9 +198,9 @@ class CSGameScene: SKScene {
         
         // Generate the tile names directly based on asset naming convention
         let numberOfTiles = 13
-        let tileWidth: CGFloat = 15 // Tile dimensions (adjust as needed)
-        let tileHeight: CGFloat = 15
-        let spacing: CGFloat = 10 // Space between tiles
+        let tileWidth: CGFloat = 10 // Tile dimensions (adjust as needed)
+        let tileHeight: CGFloat = 10
+        let spacing: CGFloat = 8 // Space between tiles
 
         // Create and add tiles
         for i in 1...numberOfTiles { // Start from 1 to match asset naming
@@ -188,8 +218,7 @@ class CSGameScene: SKScene {
             tile.name = tileName // Assign a name to identify the tile
             background3.addChild(tile)
             
-            
-        
+
         }
 
         // Example: Unlock tiles up to tile_5 (can be dynamically triggered in the game)

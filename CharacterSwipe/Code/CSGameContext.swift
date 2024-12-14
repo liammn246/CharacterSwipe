@@ -9,6 +9,7 @@ import SwiftUI
 
 class CSGameContext {
     private(set) var scene: CSGameScene!
+    var previousHighestUnlockedIndex: Int = -1
     private(set) var stateMachine: GKStateMachine?
     var layoutInfo: CSGameLayout
     var gameInfo: CSGameInfo
