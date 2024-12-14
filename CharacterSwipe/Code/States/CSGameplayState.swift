@@ -29,7 +29,7 @@ class CSGameplayState: CSGameState {
         super.willExit(to: nextState)
         
         print("Exiting gameplay state, hiding game board")
-        gameScene.hideGameBoard()
+//        gameScene.hideGameBoard()
         
     }
     
