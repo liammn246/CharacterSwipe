@@ -313,6 +313,10 @@ class CSGameBoard: SKSpriteNode {
     private func setupGrid() {
         for row in 0..<rows {
             for col in 0..<columns {
+                if tileMatrix[row][col] != nil {
+                    (tileMatrix[row][col] as! SKSpriteNode).removeFromParent()
+                    tileMatrix[row][col] = nil
+                }
                 // Create a static background node for each position
                 backgroundGrid[row][col] = SKSpriteNode(texture: getTextureForValue(0), size: CGSize(width: tileSideLength, height: tileSideLength))
                 (backgroundGrid[row][col] as! SKSpriteNode).position = calculateTilePosition(row: row, col: col)
@@ -798,6 +802,7 @@ extension CSGameBoard {
                             addChild(tileMatrix[row][col] as! SKSpriteNode)
 
                             print("Added tile at (\(row), \(col)) with value \(newTileValue)")
+                            updatePowerup = false
                             stopTileAnimations()
                             deactivatePowerUp()
                         } else {
