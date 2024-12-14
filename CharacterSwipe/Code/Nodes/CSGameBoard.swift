@@ -186,7 +186,15 @@ class CSGameBoard: SKSpriteNode {
     }
 
 
-    
+    func resetSize() {
+        for c in 0...3 {
+            for r in 0...3 {
+                if tileMatrix[r][c] != nil {
+                    (tileMatrix[r][c] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
+                }
+            }
+        }
+    }
     // Handle swipe input
     func onUserInput(direction: String) {
         // Perform the actual move
@@ -195,7 +203,9 @@ class CSGameBoard: SKSpriteNode {
             gameBoardMatrix = newBoard
             addRandomTile()
             updateTiles()
-            
+            delay(0.25) {
+                self.resetSize()
+            }
             gameScene.updateScoreLabel(newScore: score)
         }
 
@@ -839,14 +849,15 @@ extension CSGameBoard {
         progressBarBackground.addChild(progressBar)
     }
     
+    func delay(_ seconds: Double, execute: @escaping () -> Void) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + seconds, execute: execute)
+    }
+
+    
     func updateProgressBar() {
         let progress = min(CGFloat(powerUpScore) / CGFloat(powerUpMultiplier), 1.0) // Clamp progress to a max of 1.0
         progressBar.size.height = progressBarBackground.size.height * (1.0 - progress) // Shrink from top to bottom
         progressBar.position.y = -progressBarBackground.size.height / 2 // Adjust position to stay anchored
     }
-}
-
-func delay(_ seconds: Double, execute: @escaping () -> Void) {
-    DispatchQueue.main.asyncAfter(deadline: .now() + seconds, execute: execute)
 }
 
