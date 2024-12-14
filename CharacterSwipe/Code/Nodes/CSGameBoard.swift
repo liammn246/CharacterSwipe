@@ -604,7 +604,7 @@ class CSGameBoard: SKSpriteNode {
             }
 
             // Set up power-up node properties
-            powerUpNode.size = CGSize(width: size.width / 4, height: size.width / 4)
+            powerUpNode.size = CGSize(width: size.width / 5, height: size.width / 5)
             powerUpNode.position = CGPoint(x: size.width / 3.5, y: size.height / 1.57)
             powerUpNode.zPosition = 5
             powerUpNode.setScale(0) // Start with scale 0 for animation
