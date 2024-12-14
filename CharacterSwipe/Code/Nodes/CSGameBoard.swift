@@ -3,6 +3,7 @@ import Foundation
 
 class CSGameBoard: SKSpriteNode {
     weak var gameScene: CSGameScene!
+    private let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
     var score_tile: SKSpriteNode!
     var score = 0
     var powerUpScore = 0
@@ -59,6 +60,10 @@ class CSGameBoard: SKSpriteNode {
 
         func animateTileMerge(at: (row: Int, col: Int), value: Int, oldTile: SKSpriteNode) {
             if let newTileNode = tileMatrix[at.row][at.col] as? SKSpriteNode {
+                // Prepare haptic generator to reduce delay
+                let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+                feedbackGenerator.prepare()
+
                 // Ensure old tile moves below the new tile
                 oldTile.zPosition = -1
 
@@ -76,7 +81,6 @@ class CSGameBoard: SKSpriteNode {
 
                 // Trigger haptic feedback
                 let triggerHaptic = SKAction.run {
-                    let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
                     feedbackGenerator.impactOccurred()
                 }
 
@@ -89,6 +93,7 @@ class CSGameBoard: SKSpriteNode {
                 newTileNode.run(SKAction.sequence([bounce, triggerHaptic, updateTexture]))
             }
         }
+
 
         switch direction {
         case "right":
