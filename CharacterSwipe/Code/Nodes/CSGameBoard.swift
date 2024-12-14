@@ -635,7 +635,8 @@ class CSGameBoard: SKSpriteNode {
 
     // Add cancel button to the board
     func addCancelButton() {
-        cancelButton = SKSpriteNode(color: .red, size: CGSize(width: size.width / 5, height: size.width / 5))
+        cancelButton = SKSpriteNode(imageNamed: "cancel")  // Use the "cancel" asset (image)
+        cancelButton?.size = CGSize(width: size.width / 5, height: size.width / 5)  // Keep the size the same
         cancelButton?.position = CGPoint(x: size.width / 3.5, y: size.height / 1.57) // Adjust position as needed
         cancelButton?.zPosition = 10000
         cancelButton?.name = "CancelButton"
