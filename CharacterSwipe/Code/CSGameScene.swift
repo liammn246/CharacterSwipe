@@ -241,21 +241,27 @@ class CSGameScene: SKScene {
             floatingLabel.position = scoreLabel.position
             floatingLabel.zPosition = scoreLabel.zPosition
             scoreLabel.parent?.addChild(floatingLabel)
-            
+
             // Update the score label text
             scoreLabel.text = "\(newScore)"
-            
-            // Create the floating and fading animation
+
+            // Create the floating, scaling, and fading animations
             let floatUp = SKAction.moveBy(x: 0, y: 20, duration: 0.5)
             let fadeOut = SKAction.fadeOut(withDuration: 0.5)
-            let group = SKAction.group([floatUp, fadeOut])
+            let scaleUp = SKAction.scale(to: 1.5, duration: 0.25) // Scale up to 1.5x
+            let scaleDown = SKAction.scale(to: 1.0, duration: 0.25) // Scale back to 1x
+            let scalingSequence = SKAction.sequence([scaleUp, scaleDown])
+
+            // Combine all animations into a group
+            let group = SKAction.group([floatUp, fadeOut, scalingSequence])
             let remove = SKAction.removeFromParent()
             let sequence = SKAction.sequence([group, remove])
-            
+
             // Run the animation
             floatingLabel.run(sequence)
         }
     }
+
     
     // MARK: - Swipe Detection Setup
     private func setupSwipeGestures() {
