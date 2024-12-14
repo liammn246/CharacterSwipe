@@ -33,6 +33,28 @@ class CSGameBoard: SKSpriteNode {
     var progressBarBackground: SKSpriteNode!
     var progressBar: SKSpriteNode!
     private var audioPlayer: AVAudioPlayer?
+    var merged = false
+    
+    private func playSwipeSound() {
+        print("Attempting to play sound")
+        guard let url = Bundle.main.url(forResource: "swipeSound", withExtension: "mp3") else {
+            print("Swipe sound file not found")
+            return
+        }
+        do {
+            // Initialize the audio player
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            
+            // Set the volume (0.0 is mute, 1.0 is the maximum)
+            audioPlayer?.volume = 0.1
+            
+            // Play the sound
+            audioPlayer?.play()
+            print("Playing sound")
+        } catch {
+            print("Error playing swipe sound: \(error)")
+        }
+    }
     
     private func playMergeSound() {
         audioPlayer?.volume = 0.5
@@ -114,7 +136,7 @@ class CSGameBoard: SKSpriteNode {
                 }
 
                 // Run animations with sound and haptic feedback
-                newTileNode.run(SKAction.sequence([bounce, triggerHaptic, playMergeSound, updateTexture]))
+                newTileNode.run(SKAction.sequence([bounce, triggerHaptic, updateTexture, playMergeSound]))
             }
         }
 
@@ -137,8 +159,8 @@ class CSGameBoard: SKSpriteNode {
                             score += gameBoard[r][target + 1]
                             updatePowerUps(scoreChange: gameBoard[r][target + 1])
                             mergedTiles[r][target + 1] = true
-                            
                             animateTileMerge(at: (r, target + 1), value: gameBoard[r][target + 1], oldTile: oldTile)
+                            merged = true
                         } else {
                             target -= 1
                         }
@@ -163,6 +185,7 @@ class CSGameBoard: SKSpriteNode {
                             updatePowerUps(scoreChange: gameBoard[r][target - 1])
                             mergedTiles[r][target - 1] = true
                             animateTileMerge(at: (r, target - 1), value: gameBoard[r][target - 1], oldTile: oldTile)
+                            merged = true
                         } else {
                             target += 1
                         }
@@ -187,6 +210,7 @@ class CSGameBoard: SKSpriteNode {
                             updatePowerUps(scoreChange: gameBoard[target - 1][c])
                             mergedTiles[target - 1][c] = true
                             animateTileMerge(at: (target - 1, c), value: gameBoard[target - 1][c], oldTile: oldTile)
+                            merged = true
                         } else {
                             target += 1
                         }
@@ -211,6 +235,7 @@ class CSGameBoard: SKSpriteNode {
                             updatePowerUps(scoreChange: gameBoard[target + 1][c])
                             mergedTiles[target + 1][c] = true
                             animateTileMerge(at: (target + 1, c), value: gameBoard[target + 1][c], oldTile: oldTile)
+                            merged = true
                         } else {
                             target -= 1
                         }
@@ -220,6 +245,12 @@ class CSGameBoard: SKSpriteNode {
         default:
             break
         }
+        if !merged {
+            delay(0.1){
+                self.playSwipeSound()
+            }
+        }
+        merged = false
 
         return gameBoard
     }
