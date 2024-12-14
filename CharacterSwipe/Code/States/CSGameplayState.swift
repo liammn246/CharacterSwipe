@@ -8,7 +8,6 @@ class CSGameplayState: CSGameState {
         super.didEnter(from: previousState)
         
         
-        
         print("Entering gameplay state, showing game board")
         gameScene.showGameBoard()
         

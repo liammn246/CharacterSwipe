@@ -3,7 +3,7 @@
 //
 //  Created by Liam Nagel on 10/24/24.
 //
-
+import AVFoundation
 import SpriteKit
 
 class CSGameScene: SKScene {
@@ -17,7 +17,24 @@ class CSGameScene: SKScene {
     var gameBoard: CSGameBoard!
     let maxOpacity: CGFloat = 1.0
     let startingOpacity: CGFloat = 0.3
+    private var audioPlayer: AVAudioPlayer?
     
+    private func playSwipeSound() {
+        audioPlayer?.volume = 1.0
+        print("Attempting to play sound")
+        guard let url = Bundle.main.url(forResource: "swipeSound", withExtension: "mp3") else {
+            print("Swipe sound file not found")
+            return
+        }
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.play()
+            print("Playing sound")
+        } catch {
+            print("Error playing swipe sound: \(error)")
+        }
+    }
+
     // SwipeDetector instance
     let swipeDetector = SwipeDetector()
     
@@ -148,8 +165,6 @@ class CSGameScene: SKScene {
         let tileWidth: CGFloat = 15 // Tile dimensions (adjust as needed)
         let tileHeight: CGFloat = 15
         let spacing: CGFloat = 10 // Space between tiles
-        let startingOpacity: CGFloat = 0.4 // 40% opacity
-        let maxOpacity: CGFloat = 1.0 // 100% opacity
 
         // Create and add tiles
         for i in 1...numberOfTiles { // Start from 1 to match asset naming
@@ -244,24 +259,28 @@ class CSGameScene: SKScene {
             guard let self = self, self.context?.stateMachine?.currentState is CSGameplayState else { return }
             self.gameBoard.onUserInput(direction: "up")
             self.updateTileOpacity()
+            self.playSwipeSound() // Play sound on swipe up
         }
         
         swipeDetector.onSwipeDown = { [weak self] in
             guard let self = self, self.context?.stateMachine?.currentState is CSGameplayState else { return }
             self.gameBoard.onUserInput(direction: "down")
             self.updateTileOpacity()
+            self.playSwipeSound() // Play sound on swipe down
         }
         
         swipeDetector.onSwipeLeft = { [weak self] in
             guard let self = self, self.context?.stateMachine?.currentState is CSGameplayState else { return }
             self.gameBoard.onUserInput(direction: "left")
             self.updateTileOpacity()
+            self.playSwipeSound() // Play sound on swipe left
         }
         
         swipeDetector.onSwipeRight = { [weak self] in
             guard let self = self, self.context?.stateMachine?.currentState is CSGameplayState else { return }
             self.gameBoard.onUserInput(direction: "right")
             self.updateTileOpacity()
+            self.playSwipeSound() // Play sound on swipe right
         }
     }
 
