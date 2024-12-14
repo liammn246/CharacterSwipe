@@ -605,22 +605,27 @@ class CSGameBoard: SKSpriteNode {
                 for c in 0...3 {
                     if gameBoardMatrix[r][c] == 0 {
                         guard let tileNode = backgroundGrid[r][c] as? SKSpriteNode else { continue }
-                        
-                        let originalSize = tileNode.size
-                        
-                        let scaleUp = SKAction.scale(to: 1.2, duration: 0.3)
-                        let scaleDown = SKAction.scale(to: 1.0, duration: 0.3)
-                        let pulse = SKAction.sequence([scaleUp, scaleDown])
-                        let pulsingAction = SKAction.repeatForever(pulse) // Repeat the pulsing forever
-                        
-                        tileNode.run(pulsingAction)
-                        
-                        // Store the original size for later restoration
-                        tileNode.userData = ["originalSize": originalSize]
+
+                        // Create a glowing blue border effect
+                        let blueGlow = SKShapeNode(rectOf: tileNode.size, cornerRadius: 10)
+                        blueGlow.strokeColor = .blue
+                        blueGlow.lineWidth = 4.0
+                        blueGlow.glowWidth = 10.0
+                        blueGlow.zPosition = tileNode.zPosition + 1 // Render above the tileNode
+                        tileNode.addChild(blueGlow)
+
+                        // Create a pulsing opacity animation for the glow
+                        let fadeOut = SKAction.fadeAlpha(to: 0.3, duration: 0.5)
+                        let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 0.5)
+                        let pulse = SKAction.sequence([fadeOut, fadeIn])
+                        let pulsingAction = SKAction.repeatForever(pulse)
+
+                        blueGlow.run(pulsingAction)
                     }
                 }
             }
         }
+
 
         // Add cancel button
         addCancelButton()
