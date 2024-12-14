@@ -43,6 +43,7 @@ class CSGameBoard: SKSpriteNode {
         }
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.volume = 0.1
             audioPlayer?.play()
             print("Playing sound")
         } catch {
