@@ -657,9 +657,7 @@ class CSGameBoard: SKSpriteNode {
             tileNode.removeAllActions()
 
             // Retrieve the original size and reset the tile size
-            if let originalSize = tileNode.userData?["originalSize"] as? CGSize {
-                tileNode.size = originalSize
-            }
+            tileNode.size = CGSize(width: tileSideLength, height: tileSideLength)
         }
         for r in 0...3 {
             for c in 0...3 {
@@ -692,6 +690,29 @@ class CSGameBoard: SKSpriteNode {
     }
 }
 extension CSGameBoard {
+    func stopTileAnimations() {
+        for r in 0..<rows {
+            for c in 0..<columns {
+                if let backgroundNode = backgroundGrid[r][c] as? SKSpriteNode {
+                    backgroundNode.removeAllActions() // Stop background node animations
+                    backgroundNode.children.forEach { $0.removeFromParent() } // Remove any child nodes like glowing borders
+                    backgroundNode.size = CGSize(width: tileSideLength, height: tileSideLength) // Reset size
+                }
+                
+                if let tileNode = tileMatrix[r][c] as? SKSpriteNode {
+                    tileNode.removeAllActions() // Stop tile node animations
+                    tileNode.size = CGSize(width: tileSideLength, height: tileSideLength) // Reset size
+                    
+                    // If the original size was stored, reset it
+                    if let originalSize = tileNode.userData?["originalSize"] as? CGSize {
+                        tileNode.size = originalSize
+                    }
+                }
+            }
+        }
+    }
+
+    
     func handleTouch(at location: CGPoint) {
         // Check if the touch hit the power-up node
         if powerUpNode.contains(location) && powerUpNode.parent != nil {
@@ -702,6 +723,7 @@ extension CSGameBoard {
         // Check if the touch hit the cancel button
         if let cancelButton = cancelButton, cancelButton.contains(location) {
             print("Cancelled powerup")
+            stopTileAnimations()
             powerUpActive = false
             cancelButton.removeFromParent()
             addChild(powerUpNode)
@@ -775,6 +797,7 @@ extension CSGameBoard {
                             addChild(tileMatrix[row][col] as! SKSpriteNode)
 
                             print("Added tile at (\(row), \(col)) with value \(newTileValue)")
+                            stopTileAnimations()
                             deactivatePowerUp()
                         } else {
                             print("Invalid location! Tap an empty space to place the new tile.")
