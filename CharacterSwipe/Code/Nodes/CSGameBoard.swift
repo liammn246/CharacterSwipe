@@ -216,6 +216,7 @@ class CSGameBoard: SKSpriteNode {
             updatePowerup = false
             powerUpNode.removeFromParent()
             score = 0
+            progressBar.removeFromParent()
             gameScene.updateScoreLabel(newScore: score)
             for r in 0...3 {
                 for c in 0...3 {
