@@ -80,11 +80,18 @@ class CSLoseState: CSGameState {
     }
     
     func handleTouch(at location: CGPoint) {
-        // Make sure you can properly detect the touch on the restart button
-        if let restartButton = gameScene.childNode(withName: "restartButton"), restartButton.contains(location) {
+        let convertedLocation = rectangleBackgroundEnd.convert(location, from: gameScene)
+
+        if let restartButton = rectangleBackgroundEnd.childNode(withName: "restartButton"),
+           restartButton.contains(convertedLocation) {
+            print("Restart button tapped")
             startGame()
             gameBoard.initializeBoardValues()
+            gameBoard.setupGrid()
             gameScene.updateTiles()
+        } else {
+            print("Touched outside of restart button")
         }
     }
+
 }

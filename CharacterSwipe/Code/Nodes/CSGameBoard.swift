@@ -213,6 +213,15 @@ class CSGameBoard: SKSpriteNode {
         // Check for game over
         if !canMakeMove() {
             print("Game Over -- attempting to transition to CSLoseState")
+            updatePowerup = false
+            powerUpNode.removeFromParent()
+            for r in 0...3 {
+                for c in 0...3 {
+                    if tileMatrix[r][c] != nil {
+                        (tileMatrix[r][c] as! SKSpriteNode).removeFromParent()
+                    }
+                }
+            }
             gameScene.context?.stateMachine?.enter(CSLoseState.self)
         }
     }
@@ -321,7 +330,7 @@ class CSGameBoard: SKSpriteNode {
     }
 
     
-    private func setupGrid() {
+    func setupGrid() {
         for row in 0..<rows {
             for col in 0..<columns {
                 if tileMatrix[row][col] != nil {
@@ -524,7 +533,7 @@ class CSGameBoard: SKSpriteNode {
             // Set up power-up node properties
             powerUpNode.size = CGSize(width: size.width / 4, height: size.width / 4)
             powerUpNode.position = CGPoint(x: size.width / 3.5, y: size.height / 1.57)
-            powerUpNode.zPosition = 11
+            powerUpNode.zPosition = 5
             powerUpNode.setScale(0) // Start with scale 0 for animation
 
             addChild(powerUpNode)
