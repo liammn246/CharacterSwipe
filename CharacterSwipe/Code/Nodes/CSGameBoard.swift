@@ -467,50 +467,89 @@ class CSGameBoard: SKSpriteNode {
         gameBoardMatrix[row][col] *= 2
         updateTiles()
     }
+    
+    
+    
+    func getPositionsBelowSecondHighest(matrix: [[Int?]]) -> [(row: Int, col: Int)] {
+        // Flatten the matrix and extract non-nil values
+        let allValues = matrix.flatMap { $0.compactMap { $0 } }
+        
+        // Ensure there are at least two distinct values
+        guard allValues.count > 1 else { return [] }
+        
+        // Get the sorted unique values in descending order
+        let sortedUniqueValues = Array(Set(allValues)).sorted(by: >)
+        
+        // Find the second highest value
+        let secondHighest = sortedUniqueValues.count > 1 ? sortedUniqueValues[1] : sortedUniqueValues[0]
+        
+        // Collect all positions with values below the second highest
+        var positions: [(row: Int, col: Int)] = []
+        for row in 0..<matrix.count {
+            for col in 0..<matrix[row].count {
+                if let value = matrix[row][col], value < secondHighest {
+                    positions.append((row: row, col: col))
+                }
+            }
+        }
+        
+        return positions
+    }
+
 
     func updatePowerUps(scoreChange: Int) {
         if powerUpScore < powerUpMultiplier && powerUpScore + scoreChange >= powerUpMultiplier {
             let mynum = Int.random(in: 0...2)
             progressBarBackground.isHidden = true
-            
+
             if mynum == 0 {
                 print("x powerup")
                 powerUpNode = SKSpriteNode(imageNamed: "delete_powerup")
                 powerUpType = "XPowerup"
-            }
-            else if mynum == 1 {
+            } else if mynum == 1 {
                 print("2x powerup")
                 powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
                 powerUpType = "2xPowerup"
-            }
-            else if maxValue() >= 8 {
-                powerUpNode = SKSpriteNode(imageNamed: "tile_"+String(log2(Double(maxValue()))-2))
+            } else if maxValue() >= 8 {
+                powerUpNode = SKSpriteNode(imageNamed: "tile_" + String(log2(Double(maxValue())) - 2))
                 powerUpType = "TileAddPowerup"
                 updatePowerup = true
-            }
-            else {
+            } else {
                 updatePowerUps(scoreChange: scoreChange)
+                return
             }
+
+            // Set up power-up node properties
             powerUpNode.size = CGSize(width: size.width / 3.5, height: size.width / 4)
             powerUpNode.position = CGPoint(x: size.width / 3.5, y: size.height / 1.57)
             powerUpNode.zPosition = 11
+            powerUpNode.setScale(0) // Start with scale 0 for animation
+            
             addChild(powerUpNode)
+            
+            // Add pop-in animation
+            let scaleUp = SKAction.scale(to: 1.1, duration: 0.2) // Slight overshoot
+            let scaleDown = SKAction.scale(to: 1.0, duration: 0.1) // Settle to final size
+            let popInAction = SKAction.sequence([scaleUp, scaleDown])
+            powerUpNode.run(popInAction)
+
             powerUpScore += scoreChange
-        }
-        else {
+        } else {
             powerUpScore += scoreChange
             updateProgressBar()
         }
+
         if updatePowerup {
             powerUpNode.removeFromParent()
             print("powerup updated")
-            powerUpNode = SKSpriteNode(imageNamed: "tile_"+String(log2(Double(maxValue()))-2))
+            powerUpNode = SKSpriteNode(imageNamed: "tile_" + String(log2(Double(maxValue())) - 2))
             powerUpNode.position = CGPoint(x: size.width / 3.5, y: size.height / 1.57)
             powerUpNode.size = CGSize(width: size.width / 5, height: size.width / 5)
             powerUpNode.zPosition = CGFloat(score)
             addChild(powerUpNode)
         }
     }
+
     
     func maxValue() -> Int {
         var maxValue = 0
@@ -541,11 +580,35 @@ class CSGameBoard: SKSpriteNode {
         } else {
             handleTileAddPowerUp()
         }
-        
+
         powerUpNode.removeFromParent()
+
+        // Get positions of tiles below the second-highest value
+        let positionsBelowSecondHighest = getPositionsBelowSecondHighest(matrix: gameBoardMatrix)
+
+        // Create a pulsing animation for each tile
+        for position in positionsBelowSecondHighest {
+            guard let tileNode = tileMatrix[position.row][position.col] as? SKSpriteNode else { continue }
+            
+            // Save the original size of the tile before pulsing
+            let originalSize = tileNode.size
+            
+            // Create a pulsing effect (scaling up and down continuously)
+            let scaleUp = SKAction.scale(to: 1.2, duration: 0.3)
+            let scaleDown = SKAction.scale(to: 1.0, duration: 0.3)
+            let pulse = SKAction.sequence([scaleUp, scaleDown])
+            let pulsingAction = SKAction.repeatForever(pulse) // Repeat the pulsing forever
+            
+            tileNode.run(pulsingAction)
+            
+            // Store the original size for later restoration
+            tileNode.userData = ["originalSize": originalSize]
+        }
+
         // Add cancel button
         addCancelButton()
     }
+
     // Add cancel button to the board
     func addCancelButton() {
         cancelButton = SKSpriteNode(color: .red, size: CGSize(width: size.width / 5, height: size.width / 5))
@@ -561,6 +624,21 @@ class CSGameBoard: SKSpriteNode {
         powerUpMultiplier *= 2
         powerUpActive = false
         powerUpType = ""
+
+        // Stop pulsing for all tiles below the second-highest value
+        let positionsBelowSecondHighest = getPositionsBelowSecondHighest(matrix: gameBoardMatrix)
+        for position in positionsBelowSecondHighest {
+            guard let tileNode = tileMatrix[position.row][position.col] as? SKSpriteNode else { continue }
+            
+            // Remove the pulsing animation
+            tileNode.removeAllActions()
+
+            // Retrieve the original size and reset the tile size
+            if let originalSize = tileNode.userData?["originalSize"] as? CGSize {
+                tileNode.size = originalSize
+            }
+        }
+        
         cancelButton?.removeFromParent()
         cancelButton = nil
         powerUpNode.removeFromParent() // Remove power-up node after use

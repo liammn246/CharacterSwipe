@@ -83,6 +83,7 @@ class CSGameScene: SKScene {
         addChild(background2)
 
         
+        // Adjust scoreTile settings as before
         scoreTile = SKShapeNode(rectOf: CGSize(width: 90, height: 50), cornerRadius: 25) // Adjust
         scoreTile.fillColor = SKColor(red: 63/255, green: 63/255, blue: 63/255, alpha: 1)
         scoreTile.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
@@ -91,22 +92,21 @@ class CSGameScene: SKScene {
         scoreTile.isHidden = true
         scoreTile.position = CGPoint(x: -80, y: 0) // Adjust x to move left; keep y at 0 for vertical centering
         background2.addChild(scoreTile)
-        
-        
-        // Create the actual score label
+
+        // Adjust scoreLabel settings
         scoreLabel = SKLabelNode(text: "0")
         scoreLabel.fontColor = .white
         scoreLabel.zPosition = 10
         scoreLabel.fontSize = 24
         scoreLabel.fontName = "Arial-BoldMT"
         scoreLabel.verticalAlignmentMode = .center // Ensures vertical centering
-        scoreLabel.horizontalAlignmentMode = .center // Ensures horizontal centering
-        scoreLabel.position = CGPoint(x: 0, y: 0) // Position at the center of scoreTile
+        scoreLabel.horizontalAlignmentMode = .left // Align text to the left
+        scoreLabel.position = CGPoint(x: -30, y: 0) // Move left to align with the left side of the scoreTile
         scoreLabel.isHidden = true
         scoreTile.addChild(scoreLabel) // Add label as a child of the tile
 
 
-        background3 = SKShapeNode(rectOf: CGSize(width: 330, height: 30), cornerRadius: 5)
+        background3 = SKShapeNode(rectOf: CGSize(width: 340, height: 30), cornerRadius: 10)
         background3.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
         background3.position = CGPoint(x: size.width / 2, y: size.height / 1.767)
         background3.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
@@ -198,7 +198,7 @@ class CSGameScene: SKScene {
         }
         if Int(scoreLabel.text ?? "0") != newScore {
             floatingLabel.fontName = scoreLabel.fontName
-            floatingLabel.fontSize = scoreLabel.fontSize - 5
+            floatingLabel.fontSize = scoreLabel.fontSize + 5
             floatingLabel.fontColor = scoreLabel.fontColor
             floatingLabel.position = scoreLabel.position
             floatingLabel.zPosition = scoreLabel.zPosition
