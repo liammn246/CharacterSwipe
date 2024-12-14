@@ -28,8 +28,7 @@ class CSGameplayState: CSGameState {
     override func willExit(to nextState: GKState) {
         super.willExit(to: nextState)
         
-        print("Exiting gameplay state, hiding game board")
-//        gameScene.hideGameBoard()
+
         
     }
     
