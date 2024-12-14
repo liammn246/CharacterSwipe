@@ -81,10 +81,10 @@ class CSGameBoard: SKSpriteNode {
                             gameBoard[r][target + 1] *= 2
                             gameBoard[r][target] = 0
                             score += gameBoard[r][target + 1]
-                            updatePowerUps(scoreChange: gameBoard[r][target + 1])
                             mergedTiles[r][target + 1] = true
                             animateTileMerge(at: (r, target + 1), value: gameBoard[r][target + 1])
-                            
+                            updatePowerUps(scoreChange: gameBoard[r][target + 1])
+
                             // Remove the old tile after the merge
                             if let tileNode = tileMatrix[r][target] as? SKSpriteNode {
                                 tileNode.removeFromParent()
@@ -113,10 +113,10 @@ class CSGameBoard: SKSpriteNode {
                             gameBoard[r][target - 1] *= 2
                             gameBoard[r][target] = 0
                             score += gameBoard[r][target - 1]
-                            updatePowerUps(scoreChange: gameBoard[r][target - 1])
                             mergedTiles[r][target - 1] = true
                             animateTileMerge(at: (r, target - 1), value: gameBoard[r][target - 1])
-                            
+                            updatePowerUps(scoreChange: gameBoard[r][target - 1])
+
                             // Remove the old tile after the merge
                             if let tileNode = tileMatrix[r][target] as? SKSpriteNode {
                                 tileNode.removeFromParent()
@@ -145,10 +145,10 @@ class CSGameBoard: SKSpriteNode {
                             gameBoard[target - 1][c] *= 2
                             gameBoard[target][c] = 0
                             score += gameBoard[target - 1][c]
-                            updatePowerUps(scoreChange: gameBoard[target - 1][c])
                             mergedTiles[target - 1][c] = true
                             animateTileMerge(at: (target - 1, c), value: gameBoard[target - 1][c])
-                            
+                            updatePowerUps(scoreChange: gameBoard[target - 1][c])
+
                             // Remove the old tile after the merge
                             if let tileNode = tileMatrix[target][c] as? SKSpriteNode {
                                 tileNode.removeFromParent()
@@ -177,10 +177,10 @@ class CSGameBoard: SKSpriteNode {
                             gameBoard[target + 1][c] *= 2
                             gameBoard[target][c] = 0
                             score += gameBoard[target + 1][c]
-                            updatePowerUps(scoreChange: gameBoard[target + 1][c])
                             mergedTiles[target + 1][c] = true
                             animateTileMerge(at: (target + 1, c), value: gameBoard[target + 1][c])
-                            
+                            updatePowerUps(scoreChange: gameBoard[target + 1][c])
+
                             // Remove the old tile after the merge
                             if let tileNode = tileMatrix[target][c] as? SKSpriteNode {
                                 tileNode.removeFromParent()
@@ -384,7 +384,7 @@ class CSGameBoard: SKSpriteNode {
     func initializeBoardValues() {
         score = 0
         powerUpScore = 0
-        powerUpMultiplier = 250
+        powerUpMultiplier = 100
         print("Powerup multiplier is 250")
         setupProgressBar()
         updateProgressBar()
@@ -460,29 +460,28 @@ class CSGameBoard: SKSpriteNode {
     
     func removeTile(atRow row: Int, column col: Int) {
         gameBoardMatrix[row][col] = 0
-        updateTiles()
+        (tileMatrix[row][col] as! SKSpriteNode).removeFromParent()
+        tileMatrix[row][col] = nil
     }
     
     func upgradeTile(atRow row: Int, column col: Int) {
         gameBoardMatrix[row][col] *= 2
-        updateTiles()
+        (tileMatrix[row][col] as! SKSpriteNode).texture = getTextureForValue(gameBoardMatrix[row][col])
+        
     }
     
     
     
     func getPositionsBelowSecondHighest(matrix: [[Int?]]) -> [(row: Int, col: Int)] {
-        // Flatten the matrix and extract non-nil values
-        let allValues = matrix.flatMap { $0.compactMap { $0 } }
-        
-        // Ensure there are at least two distinct values
-        guard allValues.count > 1 else { return [] }
-        
-        // Get the sorted unique values in descending order
-        let sortedUniqueValues = Array(Set(allValues)).sorted(by: >)
-        
-        // Find the second highest value
-        let secondHighest = sortedUniqueValues.count > 1 ? sortedUniqueValues[1] : sortedUniqueValues[0]
-        
+        var max = 0
+        for r in 0..<rows {
+            for c in 0..<columns {
+                if gameBoardMatrix[r][c] > max {
+                    max = gameBoardMatrix[r][c]
+                }
+            }
+        }
+        let secondHighest = max / 2
         // Collect all positions with values below the second highest
         var positions: [(row: Int, col: Int)] = []
         for row in 0..<matrix.count {
@@ -686,8 +685,27 @@ extension CSGameBoard {
         // Check if the touch hit the cancel button
         if let cancelButton = cancelButton, cancelButton.contains(location) {
             print("Cancelled powerup")
-            deactivatePowerUp()
-            return
+            powerUpActive = false
+            cancelButton.removeFromParent()
+            addChild(powerUpNode)
+            let positionsBelowSecondHighest = getPositionsBelowSecondHighest(matrix: gameBoardMatrix)
+            for position in positionsBelowSecondHighest {
+                guard let tileNode = tileMatrix[position.row][position.col] as? SKSpriteNode else { continue }
+                
+                // Remove the pulsing animation
+                tileNode.removeAllActions()
+
+                // Retrieve the original size and reset the tile size
+                if let originalSize = tileNode.userData?["originalSize"] as? CGSize {
+                    tileNode.size = originalSize
+                }
+                for row in 0..<rows {
+                    for col in 0..<columns {
+                        if tileMatrix[row][col] == nil { continue }
+                        (tileMatrix[row][col] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
+                    }
+                }
+            }
         }
 
         // Handle tile interactions for power-ups
@@ -701,7 +719,7 @@ extension CSGameBoard {
 
                     // Handle XPowerup
                     if powerUpType == "XPowerup" && powerUpActive {
-                        if value != maxValue() && value > 0 {
+                        if value < maxValue() / 2 && value > 0 {
                             print("Removing tile at (\(row), \(col)) with value \(value)")
                             removeTile(atRow: row, column: col)
                             deactivatePowerUp()
@@ -716,6 +734,8 @@ extension CSGameBoard {
                         if value < maxValue() / 2 && value > 0 {
                             gameBoardMatrix[row][col] *= 2
                             tileNode.texture = getTextureForValue(gameBoardMatrix[row][col])
+                            tileNode.removeAllActions()
+                            tileNode.size = CGSize(width: tileSideLength, height: tileSideLength)
                             print("Doubled tile at (\(row), \(col)) to \(gameBoardMatrix[row][col])")
                             deactivatePowerUp()
                         } else {
