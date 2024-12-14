@@ -770,3 +770,5 @@ extension CSGameBoard {
         progressBar.position.y = -progressBarBackground.size.height / 2 // Adjust position to stay anchored
     }
 }
+
+
