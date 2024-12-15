@@ -10,9 +10,6 @@ class CSGameBoard: SKSpriteNode {
     var powerUpScore = 0
     let rows = 4
     let columns = 4
-    
-    var isGameOver = false
-    
     let tileSideLength: CGFloat = 70
     let spacing: CGFloat = 5
     var gameBoardMatrix = [[2, 4, 8, 16],
@@ -38,20 +35,6 @@ class CSGameBoard: SKSpriteNode {
     private var audioPlayer: AVAudioPlayer?
     var merged = false
     
-    func handleGameOver() {
-        if !canMakeMove() {
-            print("Game Over -- attempting to transition to CSLoseState")
-            
-            updatePowerup = false
-            powerUpNode.removeFromParent()
-            score = 0
-            progressBar.removeFromParent()
-            gameScene.updateScoreLabel(newScore: score)
-            isGameOver = true
-            
-            print("Game Over -- waiting for user tap to transition to CSLoseState")
-        }
-    }
     private func playSwipeSound() {
         print("Attempting to play sound")
         guard let url = Bundle.main.url(forResource: "swipeSound", withExtension: "mp3") else {
@@ -265,7 +248,6 @@ class CSGameBoard: SKSpriteNode {
         if !merged {
             delay(0.1){
                 self.playSwipeSound()
-                self.handleGameOver()
             }
         }
         merged = false
@@ -301,18 +283,22 @@ class CSGameBoard: SKSpriteNode {
         }
 
         // Check for game over
-      
-            
-         
-//            for r in 0...3 {
-//                for c in 0...3 {
-//                    if tileMatrix[r][c] != nil {
-//                        (tileMatrix[r][c] as! SKSpriteNode).removeFromParent()
-//                    }
-//                }
-//            }
-            
-        
+        if !canMakeMove() {
+            print("Game Over -- attempting to transition to CSLoseState")
+            updatePowerup = false
+            powerUpNode.removeFromParent()
+            score = 0
+            progressBar.removeFromParent()
+            gameScene.updateScoreLabel(newScore: score)
+            for r in 0...3 {
+                for c in 0...3 {
+                    if tileMatrix[r][c] != nil {
+                        (tileMatrix[r][c] as! SKSpriteNode).removeFromParent()
+                    }
+                }
+            }
+            gameScene.context?.stateMachine?.enter(CSLoseState.self)
+        }
     }
 
     // Helper to check if any moves are possible
@@ -551,7 +537,6 @@ class CSGameBoard: SKSpriteNode {
             2048: "tile_11",
             4096: "tile_12",
             8192: "tile_13",
-            16384:"tile_lose"
         ]
         if let textureName = tileTextures[value] {
             return SKTexture(imageNamed: textureName)
@@ -559,27 +544,16 @@ class CSGameBoard: SKSpriteNode {
         return nil
     }
     
-    func loseAllTiles() {
-        for row in 0..<rows {
-            for col in 0..<columns {
-                // Set all values in the gameBoardMatrix to 16384
-                gameBoardMatrix[row][col] = 16384
-                
-                // Update the texture for each tile
-                if let tileNode = tileMatrix[row][col] as? SKSpriteNode {
-                    tileNode.texture = SKTexture(imageNamed: "tile_lose")
-                } else {
-                    // If no tile exists, create one and update its texture
-                    let newTileNode = SKSpriteNode(texture: SKTexture(imageNamed: "tile_lose"))
-                    newTileNode.position = calculateTilePosition(row: row, col: col)
-                    newTileNode.size = CGSize(width: tileSideLength, height: tileSideLength)
-                    tileMatrix[row][col] = newTileNode
-                    addChild(newTileNode)
-                }
-            }
-        }
-    }
-
+//    func changeAllTilesToTileLose() {
+//        for row in 0..<rows {
+//            for col in 0..<columns {
+//                if let tileNode = tileMatrix[row][col] as? SKSpriteNode, let tileValue = gameBoardMatrix[row][col], tileValue > 0 {
+//                    tileNode.texture = SKTexture(imageNamed: "tile_lose")
+//                }
+//            }
+//        }
+//    }
+//    
     func removeTile(atRow row: Int, column col: Int) {
         gameBoardMatrix[row][col] = 0
         (tileMatrix[row][col] as! SKSpriteNode).removeFromParent()
@@ -591,6 +565,8 @@ class CSGameBoard: SKSpriteNode {
         (tileMatrix[row][col] as! SKSpriteNode).texture = getTextureForValue(gameBoardMatrix[row][col])
         
     }
+    
+    
     
     func getPositionsBelowSecondHighest(matrix: [[Int?]]) -> [(row: Int, col: Int)] {
         var max = 0
@@ -614,6 +590,12 @@ class CSGameBoard: SKSpriteNode {
         
         return positions
     }
+    
+
+    
+    
+    
+    
     
     func updatePowerUps(scoreChange: Int) {
         if powerUpScore < powerUpMultiplier && powerUpScore + scoreChange >= powerUpMultiplier {
@@ -694,17 +676,6 @@ class CSGameBoard: SKSpriteNode {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
-        
-
-        if isGameOver {
-            gameScene.context?.stateMachine?.enter(CSLoseState.self)
-            print("Transitioning to CSLoseState")
-            //Sound Effect Here
-            isGameOver = false
-            return
-        }
-        
-        // Otherwise, handle the touch as usual
         handleTouch(at: location)
     }
     
@@ -870,7 +841,6 @@ extension CSGameBoard {
         if powerUpNode.contains(location) && powerUpNode.parent != nil {
             activatePowerUp()
             return
-        
         }
 
         // Check if the touch hit the cancel button
