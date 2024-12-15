@@ -544,16 +544,16 @@ class CSGameBoard: SKSpriteNode {
         return nil
     }
     
-    func changeAllTilesToTileLose() {
-        for row in 0..<rows {
-            for col in 0..<columns {
-                if let tileNode = tileMatrix[row][col] as? SKSpriteNode, let tileValue = gameBoardMatrix[row][col], tileValue > 0 {
-                    tileNode.texture = SKTexture(imageNamed: "tile_lose")
-                }
-            }
-        }
-    }
-    
+//    func changeAllTilesToTileLose() {
+//        for row in 0..<rows {
+//            for col in 0..<columns {
+//                if let tileNode = tileMatrix[row][col] as? SKSpriteNode, let tileValue = gameBoardMatrix[row][col], tileValue > 0 {
+//                    tileNode.texture = SKTexture(imageNamed: "tile_lose")
+//                }
+//            }
+//        }
+//    }
+//    
     func removeTile(atRow row: Int, column col: Int) {
         gameBoardMatrix[row][col] = 0
         (tileMatrix[row][col] as! SKSpriteNode).removeFromParent()
