@@ -11,33 +11,6 @@ class CSLoseState: CSGameState {
         super.didEnter(from: previousState)
         gameBoard = gameScene.getGameBoard()
         
-        // Create a semi-transparent dark overlay
-//        let overlay = SKSpriteNode(color: UIColor.black.withAlphaComponent(0.7), size: gameScene.size)
-//        overlay.position = CGPoint(x: gameScene.size.width / 2, y: gameScene.size.height / 2)
-//        overlay.zPosition = 100
-//        overlay.isUserInteractionEnabled = false // Ensure overlay does not block touches
-//        gameScene.addChild(overlay)
-//        overlayNode = overlay
-//        
-//        // Apply blur effect using SKEffectNode
-//        let blurEffect = SKEffectNode()
-//        blurEffect.filter = CIFilter(name: "CIGaussianBlur", parameters: ["inputRadius": 10])
-//        blurEffect.shouldRasterize = true
-//        
-//        // Capture a snapshot of the game scene
-//        if let texture = gameScene.view?.texture(from: gameScene) {
-//            let snapshot = SKSpriteNode(texture: texture)
-//            snapshot.size = gameScene.size
-//            snapshot.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-//            snapshot.position = CGPoint(x: 0, y: 0) // Center inside blurEffect
-//            blurEffect.addChild(snapshot)
-//        }
-//        
-//        // Center the blur effect on the overlay
-//        blurEffect.position = CGPoint(x: 0, y: 0)
-//        overlay.addChild(blurEffect)
-//        
-//        // Create the rectangle background for the button
         rectangleBackgroundEnd = SKShapeNode(rectOf: CGSize(width: 320, height: 500), cornerRadius: 20)
         rectangleBackgroundEnd.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
         rectangleBackgroundEnd.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
