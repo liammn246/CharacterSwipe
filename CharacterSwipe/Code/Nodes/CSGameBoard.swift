@@ -705,9 +705,9 @@ class CSGameBoard: SKSpriteNode {
                 let originalSize = tileNode.size
                 
                 // Create a pulsing effect (scaling up and down continuously)
-                let scaleUp = SKAction.scale(to: 1.2, duration: 0.3)
-                let scaleDown = SKAction.scale(to: 1.0, duration: 0.3)
-                let pulse = SKAction.sequence([scaleUp, scaleDown])
+                let scaleUp = SKAction.scale(to: 1, duration: 0.3)
+                let scaleDown = SKAction.scale(to: 0.8, duration: 0.3)
+                let pulse = SKAction.sequence([scaleDown, scaleUp])
                 let pulsingAction = SKAction.repeatForever(pulse) // Repeat the pulsing forever
                 
                 tileNode.run(pulsingAction)
