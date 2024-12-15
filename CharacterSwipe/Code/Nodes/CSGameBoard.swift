@@ -592,8 +592,6 @@ class CSGameBoard: SKSpriteNode {
         
     }
     
-    
-    
     func getPositionsBelowSecondHighest(matrix: [[Int?]]) -> [(row: Int, col: Int)] {
         var max = 0
         for r in 0..<rows {
@@ -616,12 +614,6 @@ class CSGameBoard: SKSpriteNode {
         
         return positions
     }
-    
-
-    
-    
-    
-    
     
     func updatePowerUps(scoreChange: Int) {
         if powerUpScore < powerUpMultiplier && powerUpScore + scoreChange >= powerUpMultiplier {
