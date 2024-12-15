@@ -3,24 +3,36 @@ import SpriteKit
 
 class CSLoseState: CSGameState {
     
-    private var overlayNode: SKSpriteNode?
     private var rectangleBackgroundEnd: SKShapeNode! // Make this a property to access it later
     var gameBoard: CSGameBoard!
     
     override func didEnter(from previousState: GKState?) {
         super.didEnter(from: previousState)
         
-        create_lose_board()
-        
+        // Schedule the create_lose_board() to run after 5 seconds
+        runAfterDelay(2.0) { [weak self] in
+            create_lose_board()
+        }
+    
+    
+    // Function to run a closure after a delay
+    func runAfterDelay(_ delay: TimeInterval, block: @escaping () -> Void) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: block)
+    }
+    
         func create_lose_board() {
             gameBoard = gameScene.getGameBoard()
             
+            // Create the rectangle background
             rectangleBackgroundEnd = SKShapeNode(rectOf: CGSize(width: 320, height: 500), cornerRadius: 20)
             rectangleBackgroundEnd.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
             rectangleBackgroundEnd.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
             rectangleBackgroundEnd.lineWidth = 3 // Border thickness
             rectangleBackgroundEnd.position = CGPoint(x: gameScene.size.width / 2, y: gameScene.size.height / 2)
             rectangleBackgroundEnd.zPosition = 100 // Ensure it's above other nodes
+            rectangleBackgroundEnd.setScale(0.0) // Start at scale 0 for animation
+
+            // Add rectangle to the scene
             gameScene.addChild(rectangleBackgroundEnd)
             
             // Create the restart button
@@ -44,15 +56,19 @@ class CSLoseState: CSGameState {
             // Add the restart button to the rectangle
             rectangleBackgroundEnd.addChild(restartButton)
             
+            // Animate the pop effect
+            let scaleUp = SKAction.scale(to: 1.2, duration: 0.15)
+            let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
+            let popAnimation = SKAction.sequence([scaleUp, scaleDown])
+            rectangleBackgroundEnd.run(popAnimation)
+            
             print("Lose state entered: Displaying Restart Button with blur")
         }
+
     }
     func startGame() {
         print("Restart button tapped, transitioning to gameplay state")
         stateMachine?.enter(CSGameplayState.self)
-        overlayNode?.removeFromParent()
-        
-        // Remove rectangle background when restarting
         rectangleBackgroundEnd.removeFromParent()
     }
     

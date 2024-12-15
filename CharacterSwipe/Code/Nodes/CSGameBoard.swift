@@ -290,13 +290,14 @@ class CSGameBoard: SKSpriteNode {
             score = 0
             progressBar.removeFromParent()
             gameScene.updateScoreLabel(newScore: score)
-            for r in 0...3 {
-                for c in 0...3 {
-                    if tileMatrix[r][c] != nil {
-                        (tileMatrix[r][c] as! SKSpriteNode).removeFromParent()
-                    }
-                }
-            }
+            loseAllTiles()
+//            for r in 0...3 {
+//                for c in 0...3 {
+//                    if tileMatrix[r][c] != nil {
+//                        (tileMatrix[r][c] as! SKSpriteNode).removeFromParent()
+//                    }
+//                }
+//            }
             gameScene.context?.stateMachine?.enter(CSLoseState.self)
         }
     }
@@ -537,6 +538,7 @@ class CSGameBoard: SKSpriteNode {
             2048: "tile_11",
             4096: "tile_12",
             8192: "tile_13",
+            16384:"tile_lose"
         ]
         if let textureName = tileTextures[value] {
             return SKTexture(imageNamed: textureName)
@@ -544,16 +546,27 @@ class CSGameBoard: SKSpriteNode {
         return nil
     }
     
-//    func changeAllTilesToTileLose() {
-//        for row in 0..<rows {
-//            for col in 0..<columns {
-//                if let tileNode = tileMatrix[row][col] as? SKSpriteNode, let tileValue = gameBoardMatrix[row][col], tileValue > 0 {
-//                    tileNode.texture = SKTexture(imageNamed: "tile_lose")
-//                }
-//            }
-//        }
-//    }
-//    
+    func loseAllTiles() {
+        for row in 0..<rows {
+            for col in 0..<columns {
+                // Set all values in the gameBoardMatrix to 16384
+                gameBoardMatrix[row][col] = 16384
+                
+                // Update the texture for each tile
+                if let tileNode = tileMatrix[row][col] as? SKSpriteNode {
+                    tileNode.texture = SKTexture(imageNamed: "tile_lose")
+                } else {
+                    // If no tile exists, create one and update its texture
+                    let newTileNode = SKSpriteNode(texture: SKTexture(imageNamed: "tile_lose"))
+                    newTileNode.position = calculateTilePosition(row: row, col: col)
+                    newTileNode.size = CGSize(width: tileSideLength, height: tileSideLength)
+                    tileMatrix[row][col] = newTileNode
+                    addChild(newTileNode)
+                }
+            }
+        }
+    }
+
     func removeTile(atRow row: Int, column col: Int) {
         gameBoardMatrix[row][col] = 0
         (tileMatrix[row][col] as! SKSpriteNode).removeFromParent()
