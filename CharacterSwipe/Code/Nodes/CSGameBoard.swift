@@ -274,10 +274,10 @@ class CSGameBoard: SKSpriteNode {
             updateTiles()
             delay(0.1) {
                 self.addRandomTile()
-            }
-            delay(0.25) {
-                self.resetSize()
                 self.updatePowerUps(scoreChange: 0)
+            }
+            delay(0.3) {
+                self.resetSize()
             }
             gameScene.updateScoreLabel(newScore: score)
         }
