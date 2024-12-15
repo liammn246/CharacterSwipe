@@ -638,11 +638,11 @@ class CSGameBoard: SKSpriteNode {
             let mynum = Int.random(in: 0...2)
             progressBarBackground.isHidden = true
 
-            if mynum == 0 {
+            if mynum == -1 {
                 print("x powerup")
                 powerUpNode = SKSpriteNode(imageNamed: "delete_powerup")
                 powerUpType = "XPowerup"
-            } else if mynum == 1 {
+            } else if mynum == -1 {
                 print("")
                 powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
                 powerUpType = "2xPowerup"
@@ -891,19 +891,107 @@ extension CSGameBoard {
         }
     }
 
+    func reinitializePowerUp() {
+        print("Reinitializing power-up...")
+
+        // Reset power-up-related flags
+        powerUpActive = false
+        updatePowerup = false
+
+        // Remove any existing power-up node
+        powerUpNode.removeFromParent()
+
+        // Restore specific power-up type and behaviors
+        switch powerUpType {
+        case "XPowerup":
+            print("Reinitializing XPowerup.")
+            powerUpNode = SKSpriteNode(imageNamed: "delete_powerup")
+        case "2xPowerup":
+            print("Reinitializing 2xPowerup.")
+            powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
+        case "TileAddPowerup":
+            print("Reinitializing TileAddPowerup.")
+            updatePowerup = true
+            powerUpNode = SKSpriteNode(imageNamed: "place_tile" + String(maxValue() / 4))
+        default:
+            print("No active power-up to reinitialize.")
+            return // Exit early if no valid power-up type
+        }
+
+        // Set power-up node properties
+        powerUpNode.size = CGSize(width: size.width / 5, height: size.width / 5)
+        powerUpNode.position = calculatePowerupPosition()
+        powerUpNode.zPosition = 100
+        addChild(powerUpNode)
+        powerUpNode.isHidden = false
+        
+
+        // Ensure all tiles and UI are in the correct state
+        for row in 0..<rows {
+            for col in 0..<columns {
+                if let tileNode = tileMatrix[row][col] as? SKSpriteNode {
+                    tileNode.alpha = 1.0 // Reset opacity
+                    tileNode.removeAllActions() // Remove animations
+                }
+
+                if let backgroundNode = backgroundGrid[row][col] as? SKSpriteNode {
+                    backgroundNode.removeAllActions()
+                    backgroundNode.children.forEach { $0.removeFromParent() } // Remove glowing effects
+                }
+            }
+        }
+
+        print("Power-up successfully reinitialized.")
+    }
+
+
     
     func handleTouch(at location: CGPoint) {
-        // Check if the touch hit the power-up node
-        if powerUpNode.contains(location) && powerUpNode.parent != nil {
-            activatePowerUp()
+        // Check if the touch hit the cancel button first
+        if let cancelButton = cancelButton, cancelButton.contains(location) {
+            print("Cancel button pressed. Reinitializing power-up.")
+
+            // Stop all animations and restore tile appearances
+            for row in 0..<rows {
+                for col in 0..<columns {
+                    if let tileNode = tileMatrix[row][col] as? SKSpriteNode {
+                        tileNode.removeAllActions() // Stop animations
+                        tileNode.alpha = 1.0 // Restore full opacity
+
+                        // Reset size if modified during animations
+                        if let originalSize = tileNode.userData?["originalSize"] as? CGSize {
+                            tileNode.size = originalSize
+                        }
+                    }
+
+                    if let backgroundNode = backgroundGrid[row][col] as? SKSpriteNode {
+                        backgroundNode.removeAllActions() // Stop background animations
+                        backgroundNode.children.forEach { $0.removeFromParent() } // Remove glowing effects
+                        backgroundNode.size = CGSize(width: tileSideLength, height: tileSideLength) // Reset size
+                    }
+                }
+            }
+
+            // Remove the cancel button
+            cancelButton.removeFromParent()
+            self.cancelButton = nil
+
+            // Reset progress bar visibility
+            progressBarBackground.isHidden = false
+            updateProgressBar() // Update the progress bar to reflect its pre-power-up state
+
+            // Reinitialize power-up logic
+            reinitializePowerUp()
+
+            print("Power-up reinitialized. Ready for reuse.")
             return
         }
 
-        // Check if the touch hit the cancel button
-        if let cancelButton = cancelButton, cancelButton.contains(location) {
-            print("Cancelled powerup")
-            stopTileAnimations()
-            deactivatePowerUp()
+
+
+        // Check if the touch hit the power-up node
+        if powerUpNode.contains(location) && powerUpNode.parent != nil {
+            activatePowerUp()
             return
         }
 
@@ -967,6 +1055,7 @@ extension CSGameBoard {
             }
         }
     }
+
 
 
     func setupProgressBar() {
