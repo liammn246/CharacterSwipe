@@ -963,11 +963,6 @@ extension CSGameBoard {
                         }
                         return
                     }
-
-                    // Handle other interactions outside power-ups
-                    if !powerUpActive {
-                        print("Touched tile at (\(row), \(col)) with value \(value)")
-                    }
                 }
             }
         }
