@@ -406,6 +406,7 @@ class CSGameBoard: SKSpriteNode {
 
     
     func setupGrid() {
+        updateProgressBar()
         for row in 0..<rows {
             for col in 0..<columns {
                 if tileMatrix[row][col] != nil {
@@ -433,12 +434,47 @@ class CSGameBoard: SKSpriteNode {
 
     
     private func calculateTilePosition(row: Int, col: Int) -> CGPoint {
-        let gridWidth = CGFloat(columns) * (tileSideLength + spacing) - spacing
-        let gridHeight = CGFloat(rows) * (tileSideLength + spacing) - spacing
-        let xPosition = CGFloat(col) * (tileSideLength + spacing) - gridWidth / 2 + tileSideLength / 2
-        let yPosition = (CGFloat(3-row) * (tileSideLength + spacing) - gridHeight / 2 + tileSideLength / 2)-100
- 
-        return CGPoint(x: xPosition, y: yPosition)
+        // iphone pro max/plus
+        if UIScreen.main.bounds.width > 420 {
+            let gridWidth = CGFloat(columns) * (tileSideLength + spacing) - spacing
+            let gridHeight = CGFloat(rows) * (tileSideLength + spacing) - spacing
+            let xPosition = CGFloat(col) * (tileSideLength + spacing) - gridWidth / 2 + tileSideLength / 2
+            let yPosition = (CGFloat(3-row) * (tileSideLength + spacing) - gridHeight / 2 + tileSideLength / 2)-108
+            return CGPoint(x: xPosition, y: yPosition)
+        }
+        // iphone se
+        else if UIScreen.main.bounds.width < 380 {
+            print("iphone se")
+            let gridWidth = CGFloat(columns) * (tileSideLength + spacing) - spacing
+            let gridHeight = CGFloat(rows) * (tileSideLength + spacing) - spacing
+            let xPosition = CGFloat(col) * (tileSideLength + spacing) - gridWidth / 2 + tileSideLength / 2
+            let yPosition = (CGFloat(3-row) * (tileSideLength + spacing) - gridHeight / 2 + tileSideLength / 2)-76
+            return CGPoint(x: xPosition, y: yPosition)
+        }
+        // iphone pro
+        else{
+            let gridWidth = CGFloat(columns) * (tileSideLength + spacing) - spacing
+            let gridHeight = CGFloat(rows) * (tileSideLength + spacing) - spacing
+            let xPosition = CGFloat(col) * (tileSideLength + spacing) - gridWidth / 2 + tileSideLength / 2
+            let yPosition = (CGFloat(3-row) * (tileSideLength + spacing) - gridHeight / 2 + tileSideLength / 2)-100
+            return CGPoint(x: xPosition, y: yPosition)
+        }
+    }
+    
+    func calculatePowerupPosition() -> CGPoint {
+        // iphone pro max/plus
+        if UIScreen.main.bounds.width > 420 {
+            return CGPoint(x: size.width / 3.5, y: size.height / 1.43)
+        }
+        // iphone se
+        else if UIScreen.main.bounds.width < 380 {
+            print("iphone se")
+            return CGPoint(x: size.width / 3.5, y: size.height / 1.39)
+        }
+        // iphone pro
+        else{
+            return CGPoint(x: size.width / 3.5, y: size.height / 1.57)
+        }
     }
     
     // Update tiles on the board (with animation)
@@ -622,7 +658,7 @@ class CSGameBoard: SKSpriteNode {
 
             // Set up power-up node properties
             powerUpNode.size = CGSize(width: size.width / 5, height: size.width / 5)
-            powerUpNode.position = CGPoint(x: size.width / 3.5, y: size.height / 1.57)
+            powerUpNode.position = calculatePowerupPosition()
             powerUpNode.zPosition = 5
             powerUpNode.setScale(0) // Start with scale 0 for animation
 
@@ -652,7 +688,7 @@ class CSGameBoard: SKSpriteNode {
             powerUpNode.removeFromParent()
             print("powerup updated")
             powerUpNode = SKSpriteNode(imageNamed: "place_tile" + String(maxValue()/4))
-            powerUpNode.position = CGPoint(x: size.width / 3.5, y: size.height / 1.57)
+            powerUpNode.position = calculatePowerupPosition()
             powerUpNode.size = CGSize(width: size.width / 5, height: size.width / 5)
             powerUpNode.zPosition = CGFloat(score)
             addChild(powerUpNode)
@@ -681,7 +717,7 @@ class CSGameBoard: SKSpriteNode {
     
     func activatePowerUp() {
         powerUpActive = true
-        
+
         // Call specific power-up function based on the type
         if powerUpType == "XPowerup" {
             handleXPowerUp()
@@ -691,32 +727,52 @@ class CSGameBoard: SKSpriteNode {
             handleTileAddPowerUp()
         }
 
-        powerUpNode.removeFromParent()
+        // Grey out tiles that can't have the power-up applied
+        for row in 0..<rows {
+            for col in 0..<columns {
+                guard let tileNode = tileMatrix[row][col] as? SKSpriteNode else { continue }
 
-        // Get positions of tiles below the second-highest value
+                let value = gameBoardMatrix[row][col]
+                let isEligible: Bool
+
+                // Determine eligibility based on the power-up type
+                if powerUpType == "XPowerup" {
+                    isEligible = value < maxValue() / 2 && value > 0
+                } else if powerUpType == "2xPowerup" {
+                    isEligible = value < maxValue() / 2 && value > 0
+                } else if powerUpType == "TileAddPowerup" {
+                    isEligible = value == 0
+                } else {
+                    isEligible = false
+                }
+
+                if !isEligible {
+                    // Grey out non-eligible tiles
+                    tileNode.alpha = 0.3
+                }
+            }
+        }
+
+        // Handle animations for eligible tiles
         let positionsBelowSecondHighest = getPositionsBelowSecondHighest(matrix: gameBoardMatrix)
 
-        // Create a pulsing animation for each tile, except for TileAddPowerup
-        if powerUpType != "TileAddPowerup" {  // Check to avoid pulsing for TileAddPowerup
+        if powerUpType != "TileAddPowerup" {
             for position in positionsBelowSecondHighest {
                 guard let tileNode = tileMatrix[position.row][position.col] as? SKSpriteNode else { continue }
-                
-                // Save the original size of the tile before pulsing
                 let originalSize = tileNode.size
-                
-                // Create a pulsing effect (scaling up and down continuously)
+
+                // Create a pulsing effect for eligible tiles
                 let scaleUp = SKAction.scale(to: 1, duration: 0.3)
                 let scaleDown = SKAction.scale(to: 0.8, duration: 0.3)
                 let pulse = SKAction.sequence([scaleDown, scaleUp])
-                let pulsingAction = SKAction.repeatForever(pulse) // Repeat the pulsing forever
-                
+                let pulsingAction = SKAction.repeatForever(pulse)
                 tileNode.run(pulsingAction)
-                
+
                 // Store the original size for later restoration
                 tileNode.userData = ["originalSize": originalSize]
             }
-        }
-        else if powerUpType == "TileAddPowerup" {
+        } else {
+            // Highlight empty tiles for TileAddPowerup
             for r in 0...3 {
                 for c in 0...3 {
                     if gameBoardMatrix[r][c] == 0 {
@@ -727,67 +783,67 @@ class CSGameBoard: SKSpriteNode {
                         blueGlow.strokeColor = .blue
                         blueGlow.lineWidth = 4.0
                         blueGlow.glowWidth = 10.0
-                        blueGlow.zPosition = tileNode.zPosition + 1 // Render above the tileNode
+                        blueGlow.zPosition = tileNode.zPosition + 1
                         tileNode.addChild(blueGlow)
 
-                        // Create a pulsing opacity animation for the glow
+                        // Create a pulsing opacity animation
                         let fadeOut = SKAction.fadeAlpha(to: 0.3, duration: 0.5)
                         let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 0.5)
                         let pulse = SKAction.sequence([fadeOut, fadeIn])
-                        let pulsingAction = SKAction.repeatForever(pulse)
-
-                        blueGlow.run(pulsingAction)
+                        blueGlow.run(SKAction.repeatForever(pulse))
                     }
                 }
             }
         }
-
 
         // Add cancel button
         addCancelButton()
     }
 
 
+
     // Add cancel button to the board
     func addCancelButton() {
         cancelButton = SKSpriteNode(imageNamed: "cancel")
         cancelButton?.size = CGSize(width: size.width / 5, height: size.width / 5)
-        cancelButton?.position = CGPoint(x: size.width / 3.5, y: size.height / 1.57)
+        cancelButton?.position = calculatePowerupPosition()
         cancelButton?.zPosition = 900
         cancelButton?.name = "CancelButton"
         addChild(cancelButton!)
     }
 
-    // Deactivate power-up and remove cancel button
     func deactivatePowerUp() {
         powerUpScore = 0
         powerUpMultiplier *= 2
         powerUpActive = false
         powerUpType = ""
 
-        // Stop pulsing for all tiles below the second-highest value
-        let positionsBelowSecondHighest = getPositionsBelowSecondHighest(matrix: gameBoardMatrix)
-        for position in positionsBelowSecondHighest {
-            guard let tileNode = tileMatrix[position.row][position.col] as? SKSpriteNode else { continue }
-            
-            // Remove the pulsing animation
-            tileNode.removeAllActions()
+        // Reset the opacity and animations of all tiles
+        for row in 0..<rows {
+            for col in 0..<columns {
+                if let tileNode = tileMatrix[row][col] as? SKSpriteNode {
+                    tileNode.alpha = 1.0 // Restore full opacity
+                    tileNode.removeAllActions() // Remove animations
 
-            // Retrieve the original size and reset the tile size
-            tileNode.size = CGSize(width: tileSideLength, height: tileSideLength)
+                    // Restore the original size if previously modified
+                    if let originalSize = tileNode.userData?["originalSize"] as? CGSize {
+                        tileNode.size = originalSize
+                    }
+                }
+
+                // Remove glowing effects for background tiles (TileAddPowerup)
+                if let backgroundNode = backgroundGrid[row][col] as? SKSpriteNode {
+                    backgroundNode.removeAllActions()
+                    backgroundNode.children.forEach { $0.removeFromParent() } // Remove glowing effects
+                }
+            }
         }
-        for r in 0...3 {
-            for c in 0...3 {
-                (backgroundGrid[r][c] as! SKSpriteNode).removeAllActions()
-                (backgroundGrid[r][c] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)            }
-        }
-        
+
         cancelButton?.removeFromParent()
         cancelButton = nil
-        powerUpNode.removeFromParent() // Remove power-up node after use
-        updateProgressBar()
         powerUpNode.removeFromParent()
         progressBarBackground.isHidden = false
+        updateProgressBar()
     }
 
     // Specific power-up handlers (empty for now)
@@ -847,30 +903,8 @@ extension CSGameBoard {
         if let cancelButton = cancelButton, cancelButton.contains(location) {
             print("Cancelled powerup")
             stopTileAnimations()
-            powerUpActive = false
-            cancelButton.removeFromParent()
-            addChild(powerUpNode)
-            let positionsBelowSecondHighest = getPositionsBelowSecondHighest(matrix: gameBoardMatrix)
-            for position in positionsBelowSecondHighest {
-                guard let tileNode = tileMatrix[position.row][position.col] as? SKSpriteNode else { continue }
-                
-                // Remove the pulsing animation
-                tileNode.removeAllActions()
-
-                // Retrieve the original size and reset the tile size
-                if let originalSize = tileNode.userData?["originalSize"] as? CGSize {
-                    tileNode.size = originalSize
-                }
-            }
-            for row in 0..<rows {
-                for col in 0..<columns {
-                    if tileMatrix[row][col] == nil { continue }
-                    (tileMatrix[row][col] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
-                    (backgroundGrid[row][col] as! SKSpriteNode).removeAllActions()
-                    (backgroundGrid[row][col] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
-                }
-            }
-            
+            deactivatePowerUp()
+            return
         }
 
         // Handle tile interactions for power-ups
@@ -898,9 +932,9 @@ extension CSGameBoard {
                     if powerUpType == "2xPowerup" && powerUpActive {
                         if value < maxValue() / 2 && value > 0 {
                             gameBoardMatrix[row][col] *= 2
+                            tileNode.alpha = 1.0 // Restore full opacity
                             tileNode.removeAllActions()
                             (tileMatrix[row][col] as! SKSpriteNode).texture = getTextureForValue(gameBoardMatrix[row][col])
-                            (tileMatrix[row][col] as! SKSpriteNode).removeAllActions()
                             (tileMatrix[row][col] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
                             print("Doubled tile at (\(row), \(col)) to \(gameBoardMatrix[row][col])")
                             deactivatePowerUp()
@@ -929,16 +963,22 @@ extension CSGameBoard {
                         }
                         return
                     }
+
+                    // Handle other interactions outside power-ups
+                    if !powerUpActive {
+                        print("Touched tile at (\(row), \(col)) with value \(value)")
+                    }
                 }
             }
         }
     }
 
+
     func setupProgressBar() {
         // Create the background asset
         let assetTexture = SKTexture(imageNamed: "powerup_base")
         progressBarBackground = SKSpriteNode(texture: assetTexture, size: CGSize(width: size.width / 5, height: size.width / 5)) // A square size
-        progressBarBackground.position = CGPoint(x: size.width / 3.5, y: size.height / 1.57)
+        progressBarBackground.position = calculatePowerupPosition()
         progressBarBackground.zPosition = 10
         addChild(progressBarBackground)
         

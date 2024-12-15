@@ -108,16 +108,26 @@ class CSGameScene: SKScene {
     override func didMove(to view: SKView) {
         super.didMove(to: view)
         context?.stateMachine?.enter(CSStartState.self)
-        
+        var background2YOffset: CGFloat = 0
+        var background3YOffset: CGFloat = 0
+        // Conditional logic for screen width
+        if UIScreen.main.bounds.width < 380 {
+            background2YOffset = 70 // Adjust this value as needed
+            background3YOffset = 52
+        } else {
+            background2YOffset = 0 // No adjustment for larger screens
+        }
+
+        // Setup for rectangleBackground
         rectangleBackground = SKShapeNode(rectOf: CGSize(width: 320, height: 320), cornerRadius: 20)
         rectangleBackground.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
         rectangleBackground.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
-        rectangleBackground.lineWidth = 3 // Border thickness
-        rectangleBackground.position = CGPoint(x: size.width / 2, y: size.height / 3) // WHEN MOVING THE MATRIX, ONLY USE HERE
+        rectangleBackground.lineWidth = 3
+        rectangleBackground.position = CGPoint(x: size.width / 2, y: size.height / 3)
         rectangleBackground.zPosition = -4
         rectangleBackground.isHidden = true
         addChild(rectangleBackground)
-        
+
         // Set up the game board
         let boardSize = CGSize(width: 300, height: 300)
         gameBoard = CSGameBoard(size: boardSize)
@@ -127,85 +137,74 @@ class CSGameScene: SKScene {
         gameBoard.isHidden = true  // Start hidden
         rectangleBackground.addChild(gameBoard)
 
-        
-         
-         
-
+        // Setup for background2
         background2 = SKShapeNode(rectOf: CGSize(width: 320, height: 80), cornerRadius: 10)
         background2.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
-        background2.position = CGPoint(x: size.width / 2, y: size.height / 1.5)
-        background2.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
-        background2.lineWidth = 3 // Border thickness
+        background2.position = CGPoint(x: size.width / 2, y: size.height / 1.5 + background2YOffset)
+        background2.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
+        background2.lineWidth = 3
         background2.name = "scoreTile"
         background2.isHidden = true
         addChild(background2)
 
-        
-        // Adjust scoreTile settings as before
-        scoreTile = SKShapeNode(rectOf: CGSize(width: 90, height: 50), cornerRadius: 25) // Adjust
+        // Setup for scoreTile
+        scoreTile = SKShapeNode(rectOf: CGSize(width: 90, height: 50), cornerRadius: 25)
         scoreTile.fillColor = SKColor(red: 63/255, green: 63/255, blue: 63/255, alpha: 1)
-        scoreTile.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
-        scoreTile.lineWidth = 3 // Border thickness
-        scoreTile.zPosition = 9 // Set zPosition to layer it properly
+        scoreTile.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
+        scoreTile.lineWidth = 3
+        scoreTile.zPosition = 9
         scoreTile.isHidden = true
-        scoreTile.position = CGPoint(x: -80, y: 0) // Adjust x to move left; keep y at 0 for vertical centering
+        scoreTile.position = CGPoint(x: -80, y: 0)
         background2.addChild(scoreTile)
 
-        // Adjust scoreLabel settings
+        // Setup for scoreLabel
         scoreLabel = SKLabelNode(text: "0")
         scoreLabel.fontColor = .white
         scoreLabel.zPosition = 10
         scoreLabel.fontSize = 24
         scoreLabel.fontName = "Arial-BoldMT"
-        scoreLabel.verticalAlignmentMode = .center // Ensures vertical centering
-        scoreLabel.horizontalAlignmentMode = .left // Align text to the left
-        scoreLabel.position = CGPoint(x: -30, y: 0) // Move left to align with the left side of the scoreTile
+        scoreLabel.verticalAlignmentMode = .center
+        scoreLabel.horizontalAlignmentMode = .left
+        scoreLabel.position = CGPoint(x: -30, y: 0)
         scoreLabel.isHidden = true
-        scoreTile.addChild(scoreLabel) // Add label as a child of the tile
+        scoreTile.addChild(scoreLabel)
 
-
+        // Setup for background3
         background3 = SKShapeNode(rectOf: CGSize(width: 250, height: 25), cornerRadius: 10)
         background3.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
-        background3.position = CGPoint(x: size.width / 2, y: size.height / 1.767)
-        background3.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1) //border
-        background3.lineWidth = 3 // Border thickness
+        background3.position = CGPoint(x: size.width / 2, y: size.height / 1.767 + background3YOffset)
+        background3.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
+        background3.lineWidth = 3
         background3.name = "scoreTile"
         background3.isHidden = true
         background3.zPosition = 10
         addChild(background3)
-        
+
         // Generate the tile names directly based on asset naming convention
         let numberOfTiles = 13
-        let tileWidth: CGFloat = 10 // Tile dimensions (adjust as needed)
+        let tileWidth: CGFloat = 10
         let tileHeight: CGFloat = 10
-        let spacing: CGFloat = 8 // Space between tiles
+        let spacing: CGFloat = 8
 
         // Create and add tiles
-        for i in 1...numberOfTiles { // Start from 1 to match asset naming
-            let tileName = "tile_\(i)" // Match asset names
+        for i in 1...numberOfTiles {
+            let tileName = "tile_\(i)"
             let tile = SKSpriteNode(imageNamed: tileName)
             tile.size = CGSize(width: tileWidth, height: tileHeight)
             tile.position = CGPoint(
                 x: -CGFloat(numberOfTiles - 1) / 2 * (tileWidth + spacing) + CGFloat(i - 1) * (tileWidth + spacing),
                 y: 0
             )
-            tile.zPosition = background3.zPosition + 1 // Ensure it's above the background
-
-            // Set initial opacity
+            tile.zPosition = background3.zPosition + 1
             tile.alpha = startingOpacity
-            tile.name = tileName // Assign a name to identify the tile
+            tile.name = tileName
             background3.addChild(tile)
-            
-
         }
-
-        // Example: Unlock tiles up to tile_5 (can be dynamically triggered in the game)
-
 
         // Add swipe functionality
         setupSwipeGestures()
-        
     }
+
     
     func getGameBoard() -> CSGameBoard? {
         return gameBoard
