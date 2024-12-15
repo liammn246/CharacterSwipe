@@ -9,17 +9,8 @@ class CSLoseState: CSGameState {
     override func didEnter(from previousState: GKState?) {
         super.didEnter(from: previousState)
         
-        // Schedule the create_lose_board() to run after 5 seconds
-        runAfterDelay(2.0) { [weak self] in
-            create_lose_board()
-        }
-    
-    
-    // Function to run a closure after a delay
-    func runAfterDelay(_ delay: TimeInterval, block: @escaping () -> Void) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: block)
-    }
-    
+        create_lose_board()
+        
         func create_lose_board() {
             gameBoard = gameScene.getGameBoard()
             
@@ -64,11 +55,12 @@ class CSLoseState: CSGameState {
             
             print("Lose state entered: Displaying Restart Button with blur")
         }
-
     }
     func startGame() {
         print("Restart button tapped, transitioning to gameplay state")
         stateMachine?.enter(CSGameplayState.self)
+        
+        // Remove rectangle background when restarting
         rectangleBackgroundEnd.removeFromParent()
     }
     

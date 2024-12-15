@@ -10,6 +10,9 @@ class CSGameBoard: SKSpriteNode {
     var powerUpScore = 0
     let rows = 4
     let columns = 4
+    
+    var isGameOver = false
+    
     let tileSideLength: CGFloat = 70
     let spacing: CGFloat = 5
     var gameBoardMatrix = [[2, 4, 8, 16],
@@ -35,6 +38,20 @@ class CSGameBoard: SKSpriteNode {
     private var audioPlayer: AVAudioPlayer?
     var merged = false
     
+    func handleGameOver() {
+        if !canMakeMove() {
+            print("Game Over -- attempting to transition to CSLoseState")
+            
+            updatePowerup = false
+            powerUpNode.removeFromParent()
+            score = 0
+            progressBar.removeFromParent()
+            gameScene.updateScoreLabel(newScore: score)
+            isGameOver = true
+            
+            print("Game Over -- waiting for user tap to transition to CSLoseState")
+        }
+    }
     private func playSwipeSound() {
         print("Attempting to play sound")
         guard let url = Bundle.main.url(forResource: "swipeSound", withExtension: "mp3") else {
@@ -248,6 +265,7 @@ class CSGameBoard: SKSpriteNode {
         if !merged {
             delay(0.1){
                 self.playSwipeSound()
+                self.handleGameOver()
             }
         }
         merged = false
@@ -283,14 +301,9 @@ class CSGameBoard: SKSpriteNode {
         }
 
         // Check for game over
-        if !canMakeMove() {
-            print("Game Over -- attempting to transition to CSLoseState")
-            updatePowerup = false
-            powerUpNode.removeFromParent()
-            score = 0
-            progressBar.removeFromParent()
-            gameScene.updateScoreLabel(newScore: score)
-            loseAllTiles()
+      
+            
+         
 //            for r in 0...3 {
 //                for c in 0...3 {
 //                    if tileMatrix[r][c] != nil {
@@ -298,8 +311,8 @@ class CSGameBoard: SKSpriteNode {
 //                    }
 //                }
 //            }
-            gameScene.context?.stateMachine?.enter(CSLoseState.self)
-        }
+            
+        
     }
 
     // Helper to check if any moves are possible
@@ -689,6 +702,17 @@ class CSGameBoard: SKSpriteNode {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
+        
+
+        if isGameOver {
+            gameScene.context?.stateMachine?.enter(CSLoseState.self)
+            print("Transitioning to CSLoseState")
+            //Sound Effect Here
+            isGameOver = false
+            return
+        }
+        
+        // Otherwise, handle the touch as usual
         handleTouch(at: location)
     }
     
@@ -854,6 +878,7 @@ extension CSGameBoard {
         if powerUpNode.contains(location) && powerUpNode.parent != nil {
             activatePowerUp()
             return
+        
         }
 
         // Check if the touch hit the cancel button
