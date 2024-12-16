@@ -112,8 +112,8 @@ class CSGameScene: SKScene {
         var background3YOffset: CGFloat = 0
         // Conditional logic for screen width
         if UIScreen.main.bounds.width < 380 {
-            background2YOffset = 70 // Adjust this value as needed
-            background3YOffset = 52
+            background2YOffset = 49 // Adjust this value as needed
+            background3YOffset = 42
         } else {
             background2YOffset = 0 // No adjustment for larger screens
         }

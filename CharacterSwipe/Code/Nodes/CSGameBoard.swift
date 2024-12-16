@@ -36,7 +36,8 @@ class CSGameBoard: SKSpriteNode {
     private var audioPlayer: AVAudioPlayer?
     var merged = false
     var lose_game = false
-    var lose_rectangle_name: SKLabelNode!
+    var line1: SKLabelNode!
+    var line2: SKLabelNode!
     
     private func playSwipeSound() {
         print("Attempting to play sound")
@@ -85,27 +86,44 @@ class CSGameBoard: SKSpriteNode {
         updateTiles()
         self.isUserInteractionEnabled = true
         
+        // Initialize lose_rectangle
         lose_rectangle = SKShapeNode(rectOf: CGSize(width: 250, height: 100), cornerRadius: 10)
         lose_rectangle.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
-        lose_rectangle.position = CGPoint(x: size.width / 2, y: size.height)
+        lose_rectangle.position = calculateLosePosition()
         lose_rectangle.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
         lose_rectangle.lineWidth = 3
         lose_rectangle.name = "lose_rectangle"
         lose_rectangle.zPosition = 10
         addChild(lose_rectangle)
-      
-        lose_rectangle_name = SKLabelNode(text: "Game Over! Tap to Continue")
-        lose_rectangle_name.fontColor = .white
-        lose_rectangle_name.zPosition = 10
-        lose_rectangle_name.fontSize = 24
-        lose_rectangle_name.fontName = "Arial-BoldMT"
-        lose_rectangle_name.verticalAlignmentMode = .center
-        lose_rectangle_name.horizontalAlignmentMode = .left
-//        lose_rectangle_name.position = CGPoint(x: -30, y: 0)
-        lose_rectangle.addChild(lose_rectangle_name)
-        
-        lose_rectangle_name.isHidden = true
+
+        // First line
+        line1 = SKLabelNode(text: "Game Over!")
+        line1.fontColor = .white
+        line1.zPosition = 10
+        line1.fontSize = 24
+        line1.fontName = "Arial-BoldMT"
+        line1.verticalAlignmentMode = .center
+        line1.horizontalAlignmentMode = .left
+        line1.position = CGPoint(x: -66, y: 20)
+
+        // Second line
+        line2 = SKLabelNode(text: "Tap to Continue")
+        line2.fontColor = .white
+        line2.zPosition = 10
+        line2.fontSize = 24
+        line2.fontName = "Arial-BoldMT"
+        line2.verticalAlignmentMode = .center
+        line2.horizontalAlignmentMode = .left
+        line2.position = CGPoint(x: -86, y: -20)
+
+        // Add both lines to the parent node
+        lose_rectangle.addChild(line1)
+        lose_rectangle.addChild(line2)
+
+        // Initially hide them
         lose_rectangle.isHidden = true
+        line1.isHidden = true
+        line2.isHidden = true
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -311,7 +329,8 @@ class CSGameBoard: SKSpriteNode {
         // Check for game over
         if !canMakeMove() {
  
-            lose_rectangle_name.isHidden = false
+            line1.isHidden = false
+            line2.isHidden = false
             lose_rectangle.isHidden = false
             lose_game = true
         }
@@ -485,7 +504,7 @@ class CSGameBoard: SKSpriteNode {
         // iphone se
         else if UIScreen.main.bounds.width < 380 {
             print("iphone se")
-            return CGPoint(x: size.width / 3.5, y: size.height / 1.39)
+            return CGPoint(x: size.width / 3.5, y: size.height / 1.53)
         }
         // iphone pro
         else{
@@ -960,7 +979,20 @@ extension CSGameBoard {
         print("Power-up successfully reinitialized.")
     }
 
-
+    func calculateLosePosition() -> CGPoint {
+        //iphone promax
+        if UIScreen.main.bounds.width > 420 {
+            return CGPoint(x: 0, y: size.height+43)
+        }
+        //iphone se
+        else if UIScreen.main.bounds.width < 380 {
+            return CGPoint(x: 0, y: size.height + 8)
+        }
+        //regular iphone
+        else{
+            return CGPoint(x: 0, y: size.height+12)
+        }
+    }
     
     func handleTouch(at location: CGPoint) {
         if lose_game {
@@ -980,7 +1012,8 @@ extension CSGameBoard {
             
             lose_game = false
             lose_rectangle.isHidden = true
-            lose_rectangle_name.isHidden = true
+            line1.isHidden = true
+            line2.isHidden = true
             gameScene.context?.stateMachine?.enter(CSLoseState.self)
         }
         
