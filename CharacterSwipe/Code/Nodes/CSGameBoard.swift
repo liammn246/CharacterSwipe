@@ -31,9 +31,12 @@ class CSGameBoard: SKSpriteNode {
     var powerUpType: String?
     var powerUpMultiplier = 250
     var progressBarBackground: SKSpriteNode!
+    var lose_rectangle: SKShapeNode!
     var progressBar: SKSpriteNode!
     private var audioPlayer: AVAudioPlayer?
     var merged = false
+    var lose_game = false
+    var lose_rectangle_name: SKLabelNode!
     
     private func playSwipeSound() {
         print("Attempting to play sound")
@@ -73,6 +76,7 @@ class CSGameBoard: SKSpriteNode {
         }
     }
     
+    
     // Initialize
     init(size: CGSize) {
         super.init(texture: nil, color: .clear, size: size)
@@ -80,6 +84,28 @@ class CSGameBoard: SKSpriteNode {
         setupGrid()
         updateTiles()
         self.isUserInteractionEnabled = true
+        
+        lose_rectangle = SKShapeNode(rectOf: CGSize(width: 250, height: 100), cornerRadius: 10)
+        lose_rectangle.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
+        lose_rectangle.position = CGPoint(x: size.width / 2, y: size.height)
+        lose_rectangle.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
+        lose_rectangle.lineWidth = 3
+        lose_rectangle.name = "lose_rectangle"
+        lose_rectangle.zPosition = 10
+        addChild(lose_rectangle)
+      
+        lose_rectangle_name = SKLabelNode(text: "Game Over! Tap to Continue")
+        lose_rectangle_name.fontColor = .white
+        lose_rectangle_name.zPosition = 10
+        lose_rectangle_name.fontSize = 24
+        lose_rectangle_name.fontName = "Arial-BoldMT"
+        lose_rectangle_name.verticalAlignmentMode = .center
+        lose_rectangle_name.horizontalAlignmentMode = .left
+//        lose_rectangle_name.position = CGPoint(x: -30, y: 0)
+        lose_rectangle.addChild(lose_rectangle_name)
+        
+        lose_rectangle_name.isHidden = true
+        lose_rectangle.isHidden = true
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -284,20 +310,10 @@ class CSGameBoard: SKSpriteNode {
 
         // Check for game over
         if !canMakeMove() {
-            print("Game Over -- attempting to transition to CSLoseState")
-            updatePowerup = false
-            powerUpNode.removeFromParent()
-            score = 0
-            progressBar.removeFromParent()
-            gameScene.updateScoreLabel(newScore: score)
-            for r in 0...3 {
-                for c in 0...3 {
-                    if tileMatrix[r][c] != nil {
-                        (tileMatrix[r][c] as! SKSpriteNode).removeFromParent()
-                    }
-                }
-            }
-            gameScene.context?.stateMachine?.enter(CSLoseState.self)
+ 
+            lose_rectangle_name.isHidden = false
+            lose_rectangle.isHidden = false
+            lose_game = true
         }
     }
 
@@ -947,7 +963,27 @@ extension CSGameBoard {
 
     
     func handleTouch(at location: CGPoint) {
-        // Check if the touch hit the cancel button first
+        if lose_game {
+            print("Game Over -- attempting to transition to CSLoseState")
+            updatePowerup = false
+            powerUpNode.removeFromParent()
+            score = 0
+            progressBar.removeFromParent()
+            gameScene.updateScoreLabel(newScore: score)
+            for r in 0...3 {
+                for c in 0...3 {
+                    if tileMatrix[r][c] != nil {
+                        (tileMatrix[r][c] as! SKSpriteNode).removeFromParent()
+                    }
+                }
+            }
+            
+            lose_game = false
+            lose_rectangle.isHidden = true
+            lose_rectangle_name.isHidden = true
+            gameScene.context?.stateMachine?.enter(CSLoseState.self)
+        }
+        
         if let cancelButton = cancelButton, cancelButton.contains(location) {
             print("Cancel button pressed. Reinitializing power-up.")
 
