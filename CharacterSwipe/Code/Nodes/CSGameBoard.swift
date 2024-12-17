@@ -673,11 +673,11 @@ class CSGameBoard: SKSpriteNode {
             let mynum = Int.random(in: 0...2)
             progressBarBackground.isHidden = true
 
-            if mynum == -1 {
+            if mynum == 0 {
                 print("x powerup")
                 powerUpNode = SKSpriteNode(imageNamed: "delete_powerup")
                 powerUpType = "XPowerup"
-            } else if mynum == -1 {
+            } else if mynum == 1 {
                 print("")
                 powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
                 powerUpType = "2xPowerup"
@@ -696,9 +696,21 @@ class CSGameBoard: SKSpriteNode {
             powerUpNode.position = calculatePowerupPosition()
             powerUpNode.zPosition = 5
             powerUpNode.setScale(0) // Start with scale 0 for animation
-
             addChild(powerUpNode)
-
+            delay(0.1) {
+                print("powerup should glow")
+                let glow = SKShapeNode(rectOf: CGSize(width: self.tileSideLength, height: self.tileSideLength), cornerRadius: 10)
+                glow.strokeColor = .white
+                glow.lineWidth = 2.0
+                glow.glowWidth = 6.0
+                glow.zPosition = self.powerUpNode.zPosition + 1
+                glow.alpha = 0
+                self.powerUpNode.addChild(glow)
+                let fadeIn = SKAction.fadeAlpha(to: 0.3, duration: 1)
+                let fadeOut = SKAction.fadeAlpha(to: 0.0, duration: 1)
+                let pulse = SKAction.sequence([fadeIn, fadeOut])
+                glow.run(SKAction.repeatForever(pulse))
+            }
             // Shrink the progress bar before showing the power-up
             let shrinkProgressBar = SKAction.scaleY(to: 0, duration: 0.3)
             let switchToPowerUp = SKAction.run {
@@ -720,17 +732,9 @@ class CSGameBoard: SKSpriteNode {
         }
 
         if updatePowerup {
-            powerUpNode.removeFromParent()
-            print("powerup updated")
-            powerUpNode = SKSpriteNode(imageNamed: "place_tile" + String(maxValue()/4))
-            powerUpNode.position = calculatePowerupPosition()
-            powerUpNode.size = CGSize(width: size.width / 5, height: size.width / 5)
-            powerUpNode.zPosition = CGFloat(score)
-            addChild(powerUpNode)
+            powerUpNode.texture = SKTexture(imageNamed: "place_tile" + String(maxValue()/4))
         }
     }
-
-
     
     func maxValue() -> Int {
         var maxValue = 0
@@ -783,7 +787,9 @@ class CSGameBoard: SKSpriteNode {
 
                 if !isEligible {
                     // Grey out non-eligible tiles
-                    tileNode.alpha = 0.3
+                    let fadeToAlpha = SKAction.fadeAlpha(to: 0.3, duration: 0.1)
+                    tileNode.run(fadeToAlpha)
+
                 }
             }
         }
@@ -811,21 +817,40 @@ class CSGameBoard: SKSpriteNode {
             for r in 0...3 {
                 for c in 0...3 {
                     if gameBoardMatrix[r][c] == 0 {
-                        guard let tileNode = backgroundGrid[r][c] as? SKSpriteNode else { continue }
+                        let tileNode = backgroundGrid[r][c] as! SKSpriteNode
+
+                        // Set the texture for the tile
+                        tileNode.texture = getTextureForValue(maxValue() / 4)
+
+                        // Start with 0 opacity
+                        tileNode.alpha = 0
+
+                        // Define the fade-in and fade-out actions
+                        let tileFadeIn = SKAction.fadeAlpha(to: 1.0, duration: 1) // Fade in over 0.5 seconds
+                        let tileFadeOut = SKAction.fadeAlpha(to: 0.5, duration: 1) // Fade out over 0.5 seconds
+
+                        // Sequence to fade in and out
+                        let fadeSequence = SKAction.sequence([tileFadeIn, tileFadeOut])
+
+                        // Repeat the sequence forever
+                        tileNode.run(SKAction.repeatForever(fadeSequence))
 
                         // Create a glowing blue border effect
                         let blueGlow = SKShapeNode(rectOf: tileNode.size, cornerRadius: 10)
-                        blueGlow.strokeColor = .blue
-                        blueGlow.lineWidth = 4.0
-                        blueGlow.glowWidth = 10.0
+                        blueGlow.strokeColor = .white
+                        blueGlow.lineWidth = 2.0
+                        blueGlow.glowWidth = 6.0
                         blueGlow.zPosition = tileNode.zPosition + 1
+                        blueGlow.alpha = 0
                         tileNode.addChild(blueGlow)
 
                         // Create a pulsing opacity animation
-                        let fadeOut = SKAction.fadeAlpha(to: 0.3, duration: 0.5)
-                        let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 0.5)
-                        let pulse = SKAction.sequence([fadeOut, fadeIn])
+                        let fadeOut = SKAction.fadeAlpha(to: 0, duration: 1)
+                        let fadeIn = SKAction.fadeAlpha(to: 0.3, duration: 1)
+                        let pulse = SKAction.sequence([fadeIn, fadeOut])
                         blueGlow.run(SKAction.repeatForever(pulse))
+                        
+                        
                     }
                 }
             }
@@ -839,26 +864,47 @@ class CSGameBoard: SKSpriteNode {
 
     // Add cancel button to the board
     func addCancelButton() {
+        powerUpNode.isHidden = true
+        progressBar.isHidden = true
+        progressBarBackground.isHidden = true
+        // Create the cancel button
         cancelButton = SKSpriteNode(imageNamed: "cancel")
         cancelButton?.size = CGSize(width: size.width / 5, height: size.width / 5)
         cancelButton?.position = calculatePowerupPosition()
         cancelButton?.zPosition = 900
         cancelButton?.name = "CancelButton"
+        
+        // Start at scale 0 (invisible)
+        cancelButton?.setScale(0.0)
+
+        // Add the button to the scene
         addChild(cancelButton!)
+        
+        // Create a scale animation to grow in
+        let scaleUp = SKAction.scale(to: 1.0, duration: 0.3)
+        scaleUp.timingMode = .easeOut // Smooth growth effect
+        
+        // Run the animation
+        cancelButton?.run(scaleUp)
     }
 
+
     func deactivatePowerUp() {
+        progressBarBackground.isHidden = false
+        progressBar.isHidden = false
+        print("deactivate powerup")
         powerUpScore = 0
         powerUpMultiplier *= 2
         powerUpActive = false
         powerUpType = ""
 
         // Reset the opacity and animations of all tiles
-        for row in 0..<rows {
-            for col in 0..<columns {
+        for row in 0..<4 {
+            for col in 0..<4 {
                 if let tileNode = tileMatrix[row][col] as? SKSpriteNode {
-                    tileNode.alpha = 1.0 // Restore full opacity
                     tileNode.removeAllActions() // Remove animations
+                    let fadeToAlpha = SKAction.fadeAlpha(to: 1, duration: 0.5)
+                    tileNode.run(fadeToAlpha)
 
                     // Restore the original size if previously modified
                     if let originalSize = tileNode.userData?["originalSize"] as? CGSize {
@@ -877,7 +923,6 @@ class CSGameBoard: SKSpriteNode {
         cancelButton?.removeFromParent()
         cancelButton = nil
         powerUpNode.removeFromParent()
-        progressBarBackground.isHidden = false
         updateProgressBar()
     }
 
@@ -959,7 +1004,18 @@ extension CSGameBoard {
         powerUpNode.zPosition = 100
         addChild(powerUpNode)
         powerUpNode.isHidden = false
-        
+        let glow = SKShapeNode(rectOf: CGSize(width: tileSideLength, height: tileSideLength), cornerRadius: 10)
+        glow.strokeColor = .white
+        glow.lineWidth = 2.0
+        glow.glowWidth = 6.0
+        glow.zPosition = powerUpNode.zPosition + 1
+        glow.alpha = 0
+        powerUpNode.addChild(glow)
+        let fadeOut = SKAction.fadeAlpha(to: 0, duration: 1)
+        let fadeIn = SKAction.fadeAlpha(to: 0.3, duration: 1)
+        let pulse = SKAction.sequence([fadeIn, fadeOut])
+        glow.run(SKAction.repeatForever(pulse))
+
 
         // Ensure all tiles and UI are in the correct state
         for row in 0..<rows {
@@ -1018,8 +1074,9 @@ extension CSGameBoard {
         }
         
         if let cancelButton = cancelButton, cancelButton.contains(location) {
-            print("Cancel button pressed. Reinitializing power-up.")
-
+            powerUpNode.isHidden = false
+            progressBar.isHidden = false
+            progressBarBackground.isHidden = false
             // Stop all animations and restore tile appearances
             for row in 0..<rows {
                 for col in 0..<columns {
@@ -1034,6 +1091,7 @@ extension CSGameBoard {
                     }
 
                     if let backgroundNode = backgroundGrid[row][col] as? SKSpriteNode {
+                        backgroundNode.texture = getTextureForValue(0)
                         backgroundNode.removeAllActions() // Stop background animations
                         backgroundNode.children.forEach { $0.removeFromParent() } // Remove glowing effects
                         backgroundNode.size = CGSize(width: tileSideLength, height: tileSideLength) // Reset size
@@ -1046,7 +1104,6 @@ extension CSGameBoard {
             self.cancelButton = nil
 
             // Reset progress bar visibility
-            progressBarBackground.isHidden = false
             updateProgressBar() // Update the progress bar to reflect its pre-power-up state
 
             // Reinitialize power-up logic
@@ -1060,6 +1117,7 @@ extension CSGameBoard {
 
         // Check if the touch hit the power-up node
         if powerUpNode.contains(location) && powerUpNode.parent != nil {
+            powerUpNode.removeAllChildren()
             activatePowerUp()
             return
         }
@@ -1109,12 +1167,27 @@ extension CSGameBoard {
                             tileMatrix[row][col] = SKSpriteNode(texture: getTextureForValue(newTileValue))
                             (tileMatrix[row][col] as! SKSpriteNode).position = calculateTilePosition(row: row, col: col)
                             (tileMatrix[row][col] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
+                            (tileMatrix[row][col] as! SKSpriteNode).setScale(0.0)
                             addChild(tileMatrix[row][col] as! SKSpriteNode)
+                            
+                            let scaleUp = SKAction.scale(to: 1.0, duration: 0.3) // Smooth scale-up animation
+                            scaleUp.timingMode = .easeOut
+                            (tileMatrix[row][col] as! SKSpriteNode).run(scaleUp)
+                            
 
                             print("Added tile at (\(row), \(col)) with value \(newTileValue)")
                             updatePowerup = false
-                            stopTileAnimations()
-                            deactivatePowerUp()
+                            for r in 0...3 {
+                                for c in 0...3 {
+                                    (backgroundGrid[r][c] as! SKSpriteNode).texture = getTextureForValue(0)
+                                    (backgroundGrid[r][c] as! SKSpriteNode).alpha = 1.0
+                                    (backgroundGrid[r][c] as! SKSpriteNode).removeAllChildren()
+                                }
+                            }
+                            delay(0.3) {
+                                self.stopTileAnimations()
+                                self.deactivatePowerUp()
+                            }
                         } else {
                             print("Invalid location! Tap an empty space to place the new tile.")
                         }
