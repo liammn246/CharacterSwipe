@@ -694,7 +694,7 @@ class CSGameBoard: SKSpriteNode {
             // Set up power-up node properties
             powerUpNode.size = CGSize(width: size.width / 5, height: size.width / 5)
             powerUpNode.position = calculatePowerupPosition()
-            powerUpNode.zPosition = 5
+            powerUpNode.zPosition = 10
             powerUpNode.setScale(0) // Start with scale 0 for animation
             addChild(powerUpNode)
             delay(0.1) {
