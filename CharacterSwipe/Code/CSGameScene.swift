@@ -148,7 +148,7 @@ class CSGameScene: SKScene {
         addChild(background2)
 
         // Setup for scoreTile
-        scoreTile = SKShapeNode(rectOf: CGSize(width: 90, height: 50), cornerRadius: 25)
+        scoreTile = SKShapeNode(rectOf: CGSize(width: 100, height: 40), cornerRadius: 25)
         scoreTile.fillColor = SKColor(red: 63/255, green: 63/255, blue: 63/255, alpha: 1)
         scoreTile.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
         scoreTile.lineWidth = 3
@@ -161,11 +161,11 @@ class CSGameScene: SKScene {
         scoreLabel = SKLabelNode(text: "0")
         scoreLabel.fontColor = .white
         scoreLabel.zPosition = 10
-        scoreLabel.fontSize = 24
+        scoreLabel.fontSize = 20
         scoreLabel.fontName = "Arial-BoldMT"
         scoreLabel.verticalAlignmentMode = .center
         scoreLabel.horizontalAlignmentMode = .left
-        scoreLabel.position = CGPoint(x: -30, y: 0)
+        scoreLabel.position = CGPoint(x: -35, y: 0)
         scoreLabel.isHidden = true
         scoreTile.addChild(scoreLabel)
 
@@ -229,9 +229,8 @@ class CSGameScene: SKScene {
         background2.isHidden = true
         background3.isHidden = true
     }
-    
     func updateScoreLabel(newScore: Int) {
-        guard let scoreLabel = scoreLabel else { return }
+        guard let scoreLabel = scoreLabel, let scoreTile = scoreLabel.parent as? SKShapeNode else { return }
 
         // Create a floating label to show the old score
         let floatingLabel: SKLabelNode
@@ -240,22 +239,32 @@ class CSGameScene: SKScene {
         } else {
             floatingLabel = SKLabelNode(text: "+ " + String(newScore))
         }
+        
         if Int(scoreLabel.text ?? "0") != newScore {
             floatingLabel.fontName = scoreLabel.fontName
-            floatingLabel.fontSize = scoreLabel.fontSize + 5
+            floatingLabel.fontSize = scoreLabel.fontSize
             floatingLabel.fontColor = scoreLabel.fontColor
-            floatingLabel.position = scoreLabel.position
-            floatingLabel.zPosition = scoreLabel.zPosition
-            scoreLabel.parent?.addChild(floatingLabel)
+            floatingLabel.zPosition = scoreTile.zPosition + 1 // Ensure it's above the scoreTile
+
+            // Position the floating label at the top-right corner of the scoreTile
+            let tileWidth = scoreTile.frame.width
+            let tileHeight = scoreTile.frame.height
+            floatingLabel.position = CGPoint(
+                x: scoreTile.position.x + tileWidth / 2 - 10, // Top-right with slight padding
+                y: scoreTile.position.y + tileHeight / 2 - 10
+            )
+
+            // Add the floating label as a child of scoreTile's parent
+            scoreTile.parent?.addChild(floatingLabel)
 
             // Update the score label text
             scoreLabel.text = "\(newScore)"
 
-            // Create the floating, scaling, and fading animations
+            // Create the floating, scaling, and fading animations for the floating label
             let floatUp = SKAction.moveBy(x: 0, y: 20, duration: 0.5)
             let fadeOut = SKAction.fadeOut(withDuration: 0.5)
-            let scaleUp = SKAction.scale(to: 1.5, duration: 0.25) // Scale up to 1.5x
-            let scaleDown = SKAction.scale(to: 1.0, duration: 0.25) // Scale back to 1x
+            let scaleUp = SKAction.scale(to: 1.1, duration: 0.25) // Smaller scale up (1.1 instead of 1.2)
+            let scaleDown = SKAction.scale(to: 1.0, duration: 0.25)
             let scalingSequence = SKAction.sequence([scaleUp, scaleDown])
 
             // Combine all animations into a group
@@ -263,10 +272,18 @@ class CSGameScene: SKScene {
             let remove = SKAction.removeFromParent()
             let sequence = SKAction.sequence([group, remove])
 
-            // Run the animation
+            // Run the animation for the floating label
             floatingLabel.run(sequence)
+
+            // Add a bounce animation to the scoreLabel
+            let labelScaleUp = SKAction.scale(to: 1.2, duration: 0.15)
+            let labelScaleDown = SKAction.scale(to: 1.0, duration: 0.15)
+            let labelBounce = SKAction.sequence([labelScaleUp, labelScaleDown])
+            scoreLabel.run(labelBounce)
         }
     }
+
+
 
     
     // MARK: - Swipe Detection Setup

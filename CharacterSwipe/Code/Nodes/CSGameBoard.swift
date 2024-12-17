@@ -577,19 +577,19 @@ class CSGameBoard: SKSpriteNode {
                 let newTileNode = SKSpriteNode(texture: getTextureForValue(gameBoardMatrix[randomRow][randomColumn]))
                 newTileNode.position = calculateTilePosition(row: randomRow, col: randomColumn)
                 newTileNode.size = CGSize(width: tileSideLength, height: tileSideLength)
+                newTileNode.setScale(0.5) // Start at a scale of 0
                 tileMatrix[randomRow][randomColumn] = newTileNode
                 addChild(newTileNode)
                 
-                // Add bounce animation to the new tile
-                let scaleUp = SKAction.scale(to: 1.2, duration: 0.05)
-                let scaleDown = SKAction.scale(to: 1.0, duration: 0.05)
-                let bounce = SKAction.sequence([scaleUp, scaleDown])
-                newTileNode.run(bounce)
+                // Scale animation to grow the tile from 0 to full size
+                let scaleUp = SKAction.scale(to: 1.0, duration: 0.1)
+                newTileNode.run(scaleUp)
                 
                 break
             }
         }
     }
+
     
     // Return texture based on value (no changes)
     func getTextureForValue(_ value: Int) -> SKTexture? {
@@ -1129,21 +1129,22 @@ extension CSGameBoard {
 
     func setupProgressBar() {
         // Create the background asset
-        let assetTexture = SKTexture(imageNamed: "powerup_base")
+        let assetTexture = SKTexture(imageNamed: "powerup_base_2")
         progressBarBackground = SKSpriteNode(texture: assetTexture, size: CGSize(width: size.width / 5, height: size.width / 5)) // A square size
         progressBarBackground.position = calculatePowerupPosition()
         progressBarBackground.zPosition = 10
         addChild(progressBarBackground)
         
-
-        progressBar = SKSpriteNode(color: .black, size: CGSize(width: progressBarBackground.size.width, height: progressBarBackground.size.height)) // Initially covers the background
-        progressBar.anchorPoint = CGPoint(x: 0.5, y: 0) // Anchor at bottom-center
-        progressBar.position = CGPoint(x: 0, y: -progressBarBackground.size.height / 2) // Start at the bottom
-        progressBar.alpha = 0.7 // Slightly opaque to create the revealing effect
+        // Create the progress bar, initially covering the entire background
+        progressBar = SKSpriteNode(color: .black, size: CGSize(width: progressBarBackground.size.width, height: progressBarBackground.size.height)) // Start full size
+        progressBar.anchorPoint = CGPoint(x: 0.5, y: 1.0) // Anchor at the top-center
+        progressBar.position = CGPoint(x: 0, y: progressBarBackground.size.height / 2) // Top of progressBar aligns with top of background
+        progressBar.alpha = 0.7 // Slightly opaque for visual effect
         progressBar.zPosition = 11
         progressBarBackground.addChild(progressBar)
     }
-    
+
+
     func delay(_ seconds: Double, execute: @escaping () -> Void) {
         DispatchQueue.main.asyncAfter(deadline: .now() + seconds, execute: execute)
     }
@@ -1151,8 +1152,14 @@ extension CSGameBoard {
     
     func updateProgressBar() {
         let progress = min(CGFloat(powerUpScore) / CGFloat(powerUpMultiplier), 1.0) // Clamp progress to a max of 1.0
-        progressBar.size.height = progressBarBackground.size.height * (1.0 - progress) // Shrink from top to bottom
-        progressBar.position.y = -progressBarBackground.size.height / 2 // Adjust position to stay anchored
+        let newHeight = progressBarBackground.size.height * (1.0 - progress) // Calculate the remaining height of the black bar
+        
+        // Animate the height change while keeping the top anchored
+        let resizeAction = SKAction.resize(toHeight: newHeight, duration: 0.3) // Adjust duration as needed
+        progressBar.run(resizeAction)
     }
+
+
+
 }
 
