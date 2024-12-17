@@ -626,19 +626,51 @@ class CSGameBoard: SKSpriteNode {
 //    }
 //    
     func removeTile(atRow row: Int, column col: Int) {
-        gameBoardMatrix[row][col] = 0
-        (tileMatrix[row][col] as! SKSpriteNode).removeFromParent()
-        tileMatrix[row][col] = nil
-    }
-    
-    func upgradeTile(atRow row: Int, column col: Int) {
-        gameBoardMatrix[row][col] *= 2
-        (tileMatrix[row][col] as! SKSpriteNode).texture = getTextureForValue(gameBoardMatrix[row][col])
+        guard let tile = tileMatrix[row][col] as? SKSpriteNode else { return }
         
+        // Animate the tile shrinking out
+        let shrinkOut = SKAction.scale(to: 0.0, duration: 0.3) // Shrink to 0 over 0.3 seconds
+        shrinkOut.timingMode = .easeInEaseOut // Smooth shrinking animation
+        
+        // Remove the tile after shrinking
+        let removeAction = SKAction.removeFromParent()
+        let shrinkAndRemove = SKAction.sequence([shrinkOut, removeAction])
+        
+        // Run the shrink and remove sequence
+        tile.run(shrinkAndRemove) {
+            // Clean up the game board matrix and tile matrix
+            self.gameBoardMatrix[row][col] = 0
+            self.tileMatrix[row][col] = nil
+        }
     }
-    
-    
-    
+
+    func upgradeTile(atRow row: Int, column col: Int) {
+        guard let tile = tileMatrix[row][col] as? SKSpriteNode else { return }
+        
+        // Define the shrink action (instant shrink)
+        let shrink = SKAction.scale(to: 0.0, duration: 0.1)
+        
+        // Action to update the texture after shrinking
+        let updateTexture = SKAction.run {
+            self.gameBoardMatrix[row][col] *= 2
+            tile.texture = self.getTextureForValue(self.gameBoardMatrix[row][col])
+        }
+        
+        // Define the scale-up action (grow back smoothly)
+        let scaleUp = SKAction.scale(to: 1.0, duration: 0.2)
+        scaleUp.timingMode = .easeOut // Smooth growth animation
+        
+        // Sequence: Shrink -> Update Texture -> Scale Back Up
+        let shrinkAndGrow = SKAction.sequence([shrink, updateTexture, scaleUp])
+        
+        // Run the animation
+        tile.run(shrinkAndGrow)
+        
+        delay(0.4) {
+            tile.size = CGSize(width: self.tileSideLength, height: self.tileSideLength)
+        }
+    }
+
     func getPositionsBelowSecondHighest(matrix: [[Int?]]) -> [(row: Int, col: Int)] {
         var max = 0
         for r in 0..<rows {
@@ -673,7 +705,7 @@ class CSGameBoard: SKSpriteNode {
             let mynum = Int.random(in: 0...2)
             progressBarBackground.isHidden = true
 
-            if mynum == 0 {
+            if mynum == -1 {
                 print("x powerup")
                 powerUpNode = SKSpriteNode(imageNamed: "delete_powerup")
                 powerUpType = "XPowerup"
@@ -681,7 +713,7 @@ class CSGameBoard: SKSpriteNode {
                 print("")
                 powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
                 powerUpType = "2xPowerup"
-            } else if maxValue() >= 8 {
+            } else if maxValue() == 8 {
                 print("Should do place tile image")
                 powerUpNode = SKSpriteNode(imageNamed: "place_tile"+String(maxValue()/4))
                 powerUpType = "TileAddPowerup"
@@ -799,12 +831,14 @@ class CSGameBoard: SKSpriteNode {
 
         if powerUpType != "TileAddPowerup" {
             for position in positionsBelowSecondHighest {
+                progressBar.isHidden = true
+                progressBarBackground.isHidden = true
                 guard let tileNode = tileMatrix[position.row][position.col] as? SKSpriteNode else { continue }
                 let originalSize = tileNode.size
 
                 // Create a pulsing effect for eligible tiles
-                let scaleUp = SKAction.scale(to: 1, duration: 0.3)
-                let scaleDown = SKAction.scale(to: 0.8, duration: 0.3)
+                let scaleUp = SKAction.scale(to: 1, duration: 0.5)
+                let scaleDown = SKAction.scale(to: 0.9, duration: 0.5)
                 let pulse = SKAction.sequence([scaleDown, scaleUp])
                 let pulsingAction = SKAction.repeatForever(pulse)
                 tileNode.run(pulsingAction)
@@ -1135,8 +1169,8 @@ extension CSGameBoard {
                     if powerUpType == "XPowerup" && powerUpActive {
                         if value < maxValue() / 2 && value > 0 {
                             print("Removing tile at (\(row), \(col)) with value \(value)")
-                            removeTile(atRow: row, column: col)
                             deactivatePowerUp()
+                            removeTile(atRow: row, column: col)
                         } else {
                             print("Cannot remove the highest-value tile!")
                         }
@@ -1146,13 +1180,11 @@ extension CSGameBoard {
                     // Handle 2xPowerup
                     if powerUpType == "2xPowerup" && powerUpActive {
                         if value < maxValue() / 2 && value > 0 {
-                            gameBoardMatrix[row][col] *= 2
                             tileNode.alpha = 1.0 // Restore full opacity
                             tileNode.removeAllActions()
-                            (tileMatrix[row][col] as! SKSpriteNode).texture = getTextureForValue(gameBoardMatrix[row][col])
-                            (tileMatrix[row][col] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
                             print("Doubled tile at (\(row), \(col)) to \(gameBoardMatrix[row][col])")
                             deactivatePowerUp()
+                            upgradeTile(atRow: row, column: col)
                         } else {
                             print("Cannot double the highest-value tile!")
                         }
