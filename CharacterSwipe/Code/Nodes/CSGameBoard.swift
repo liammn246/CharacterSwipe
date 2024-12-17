@@ -694,12 +694,6 @@ class CSGameBoard: SKSpriteNode {
         return positions
     }
     
-
-    
-    
-    
-    
-    
     func updatePowerUps(scoreChange: Int) {
         if powerUpScore < powerUpMultiplier && powerUpScore + scoreChange >= powerUpMultiplier {
             let mynum = Int.random(in: 0...2)
@@ -709,11 +703,11 @@ class CSGameBoard: SKSpriteNode {
                 print("x powerup")
                 powerUpNode = SKSpriteNode(imageNamed: "delete_powerup")
                 powerUpType = "XPowerup"
-            } else if mynum == 1 {
+            } else if mynum == -1 {
                 print("")
                 powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
                 powerUpType = "2xPowerup"
-            } else if maxValue() == 8 {
+            } else if maxValue() >= 8 {
                 print("Should do place tile image")
                 powerUpNode = SKSpriteNode(imageNamed: "place_tile"+String(maxValue()/4))
                 powerUpType = "TileAddPowerup"
@@ -786,7 +780,18 @@ class CSGameBoard: SKSpriteNode {
         handleTouch(at: location)
     }
     
+    func isZero() -> Bool {
+        for c in 0...3 {
+            for r in 0...3 {
+                if gameBoardMatrix[c][r] == 0 {return true}
+            }
+        }
+        return false
+    }
+    
     func activatePowerUp() {
+        if powerUpType == "TileAddPowerup" && !isZero() {return}
+        powerUpNode.removeAllChildren()
         powerUpActive = true
 
         // Call specific power-up function based on the type
@@ -860,8 +865,8 @@ class CSGameBoard: SKSpriteNode {
                         tileNode.alpha = 0
 
                         // Define the fade-in and fade-out actions
-                        let tileFadeIn = SKAction.fadeAlpha(to: 1.0, duration: 1) // Fade in over 0.5 seconds
-                        let tileFadeOut = SKAction.fadeAlpha(to: 0.5, duration: 1) // Fade out over 0.5 seconds
+                        let tileFadeIn = SKAction.fadeAlpha(to: 0.8, duration: 0.5) // Fade in over 0.5 seconds
+                        let tileFadeOut = SKAction.fadeAlpha(to: 0.5, duration: 0.5) // Fade out over 0.5 seconds
 
                         // Sequence to fade in and out
                         let fadeSequence = SKAction.sequence([tileFadeIn, tileFadeOut])
@@ -1151,7 +1156,6 @@ extension CSGameBoard {
 
         // Check if the touch hit the power-up node
         if powerUpNode.contains(location) && powerUpNode.parent != nil {
-            powerUpNode.removeAllChildren()
             activatePowerUp()
             return
         }
