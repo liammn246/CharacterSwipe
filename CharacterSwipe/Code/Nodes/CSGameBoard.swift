@@ -11,7 +11,7 @@ class CSGameBoard: SKSpriteNode {
     let rows = 4
     let columns = 4
     let tileSideLength: CGFloat = 78
-    let spacing: CGFloat = 5
+    let spacing: CGFloat = 7
     var gameBoardMatrix = [[2, 4, 8, 16],
                            [32, 64, 128, 256],
                            [512, 1024, 2048, 4096],

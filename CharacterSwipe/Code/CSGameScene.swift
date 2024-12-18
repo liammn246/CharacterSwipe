@@ -119,7 +119,7 @@ class CSGameScene: SKScene {
         }
 
         // Setup for rectangleBackground
-        rectangleBackground = SKShapeNode(rectOf: CGSize(width: 350, height: 350), cornerRadius: 20)
+        rectangleBackground = SKShapeNode(rectOf: CGSize(width: 350, height: 350), cornerRadius: 15)
         rectangleBackground.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
         rectangleBackground.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
         rectangleBackground.lineWidth = 3
