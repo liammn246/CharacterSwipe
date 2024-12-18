@@ -104,6 +104,22 @@ class CSGameScene: SKScene {
         context?.previousHighestUnlockedIndex = highestUnlockedIndex
     }
 
+    func resetTileOpacity() {
+        // Ensure background3 is not nil
+        guard let background3 = self.childNode(withName: "game progress") as? SKShapeNode else {
+            print("Error: background3 not found")
+            return
+        }
+
+        // Iterate through all children of background3
+        for child in background3.children {
+            if let tile = child as? SKSpriteNode, tile.name?.starts(with: "tile_") == true {
+                tile.alpha = 0.3 // Set opacity to 0.3
+            }
+        }
+
+        print("All tiles have been reset to opacity: 0.3")
+    }
 
     override func didMove(to view: SKView) {
         super.didMove(to: view)
@@ -169,13 +185,13 @@ class CSGameScene: SKScene {
         scoreLabel.isHidden = true
         scoreTile.addChild(scoreLabel)
 
-        // Setup for background3
+        // Setup for the game progress bar, boxes
         background3 = SKShapeNode(rectOf: CGSize(width: 250, height: 25), cornerRadius: 10)
         background3.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
         background3.position = CGPoint(x: size.width / 2, y: size.height / 1.91 + background3YOffset)
         background3.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
         background3.lineWidth = 3
-        background3.name = "scoreTile"
+        background3.name = "game progress"
         background3.isHidden = true
         background3.zPosition = 10
         addChild(background3)

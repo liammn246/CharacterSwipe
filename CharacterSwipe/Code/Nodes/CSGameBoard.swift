@@ -76,6 +76,23 @@ class CSGameBoard: SKSpriteNode {
             print("Error playing merge sound: \(error)")
         }
     }
+    private func playLoseSound() {
+        print("Attempting to play sound")
+        guard let url = Bundle.main.url(forResource: "lose", withExtension: "mp3") else {
+            print("Swipe sound file not found")
+            return
+        }
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            
+            audioPlayer?.volume = 0.4
+
+            audioPlayer?.play()
+            print("Playing sound")
+        } catch {
+            print("Error playing lose sound: \(error)")
+        }
+    }
     
     
     // Initialize
@@ -329,6 +346,7 @@ class CSGameBoard: SKSpriteNode {
         // Check for game over
         if !canMakeMove() {
             gameOverAnimation()
+            playLoseSound()
             line1.isHidden = false
             line2.isHidden = false
             lose_rectangle.isHidden = false
@@ -541,6 +559,7 @@ class CSGameBoard: SKSpriteNode {
     
     // Initialize board values (no changes)
     func initializeBoardValues() {
+        gameScene?.resetTileOpacity()
         score = 0
         powerUpScore = 0
         powerUpMultiplier = 100
@@ -1094,6 +1113,7 @@ extension CSGameBoard {
     func handleTouch(at location: CGPoint) {
         if lose_game {
             print("Game Over -- attempting to transition to CSLoseState")
+            
             updatePowerup = false
             powerUpNode.removeFromParent()
             score = 0
