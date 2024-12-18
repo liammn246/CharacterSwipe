@@ -119,11 +119,11 @@ class CSGameScene: SKScene {
         }
 
         // Setup for rectangleBackground
-        rectangleBackground = SKShapeNode(rectOf: CGSize(width: 320, height: 320), cornerRadius: 20)
+        rectangleBackground = SKShapeNode(rectOf: CGSize(width: 350, height: 350), cornerRadius: 20)
         rectangleBackground.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
         rectangleBackground.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
         rectangleBackground.lineWidth = 3
-        rectangleBackground.position = CGPoint(x: size.width / 2, y: size.height / 3)
+        rectangleBackground.position = CGPoint(x: size.width / 2, y: size.height / 3.5)
         rectangleBackground.zPosition = -4
         rectangleBackground.isHidden = true
         addChild(rectangleBackground)
@@ -138,9 +138,9 @@ class CSGameScene: SKScene {
         rectangleBackground.addChild(gameBoard)
 
         // Setup for background2
-        background2 = SKShapeNode(rectOf: CGSize(width: 320, height: 80), cornerRadius: 10)
+        background2 = SKShapeNode(rectOf: CGSize(width: 350, height: 80), cornerRadius: 10)
         background2.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
-        background2.position = CGPoint(x: size.width / 2, y: size.height / 1.5 + background2YOffset)
+        background2.position = CGPoint(x: size.width / 2, y: size.height / 1.65 + background2YOffset)
         background2.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
         background2.lineWidth = 3
         background2.name = "scoreTile"
@@ -172,7 +172,7 @@ class CSGameScene: SKScene {
         // Setup for background3
         background3 = SKShapeNode(rectOf: CGSize(width: 250, height: 25), cornerRadius: 10)
         background3.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
-        background3.position = CGPoint(x: size.width / 2, y: size.height / 1.767 + background3YOffset)
+        background3.position = CGPoint(x: size.width / 2, y: size.height / 1.91 + background3YOffset)
         background3.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
         background3.lineWidth = 3
         background3.name = "scoreTile"

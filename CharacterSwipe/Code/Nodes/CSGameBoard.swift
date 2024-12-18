@@ -10,7 +10,7 @@ class CSGameBoard: SKSpriteNode {
     var powerUpScore = 0
     let rows = 4
     let columns = 4
-    let tileSideLength: CGFloat = 70
+    let tileSideLength: CGFloat = 78
     let spacing: CGFloat = 5
     var gameBoardMatrix = [[2, 4, 8, 16],
                            [32, 64, 128, 256],
@@ -328,11 +328,13 @@ class CSGameBoard: SKSpriteNode {
 
         // Check for game over
         if !canMakeMove() {
- 
+            gameOverAnimation()
             line1.isHidden = false
             line2.isHidden = false
             lose_rectangle.isHidden = false
-            lose_game = true
+            delay(2.0) {
+                self.lose_game = true
+            }
         }
     }
 
@@ -499,7 +501,7 @@ class CSGameBoard: SKSpriteNode {
     func calculatePowerupPosition() -> CGPoint {
         // iphone pro max/plus
         if UIScreen.main.bounds.width > 420 {
-            return CGPoint(x: size.width / 3.5, y: size.height / 1.43)
+            return CGPoint(x: size.width / 3.5, y: size.height / 1.7)
         }
         // iphone se
         else if UIScreen.main.bounds.width < 380 {
@@ -508,7 +510,7 @@ class CSGameBoard: SKSpriteNode {
         }
         // iphone pro
         else{
-            return CGPoint(x: size.width / 3.5, y: size.height / 1.57)
+            return CGPoint(x: size.width / 3.5, y: size.height / 1.65)
         }
     }
     
@@ -1233,6 +1235,48 @@ extension CSGameBoard {
             }
         }
     }
+
+    func dimAllTiles() {
+        for row in 0..<rows {
+            for col in 0..<columns {
+                guard let tileNode = tileMatrix[row][col] as? SKSpriteNode else { continue }
+                
+                // Fade to 30% opacity
+                let fadeToAlpha = SKAction.fadeAlpha(to: 0.3, duration: 0.1)
+                tileNode.run(fadeToAlpha)
+            }
+        }
+    }
+
+
+    func gameOverAnimation() {
+        // Get the full screen size
+        let screenSize = UIScreen.main.bounds.size
+        
+        // Create a red overlay that covers the entire screen
+        let redOverlay = SKSpriteNode(color: .red, size: screenSize)
+        redOverlay.position = CGPoint(x: screenSize.width / 2, y: screenSize.height / 2) // Center the overlay
+        redOverlay.zPosition = 100 // Ensure it is on top of everything
+        redOverlay.alpha = 0.0 // Initially invisible
+        self.scene?.addChild(redOverlay) // Add directly to the scene for proper scaling
+        
+        // Flash the screen red
+        let fadeIn = SKAction.fadeAlpha(to: 0.8, duration: 0.2) // Bright red flash
+        let fadeOut = SKAction.fadeAlpha(to: 0.0, duration: 0.2) // Fade back to invisible
+        let remove = SKAction.removeFromParent() // Clean up the node
+        let flashSequence = SKAction.sequence([fadeIn, fadeOut, remove])
+        
+        // Run the flash animation
+        redOverlay.run(flashSequence)
+        
+        // Delay dimming the tiles slightly to align with the flash timing
+        delay(0.2) {
+            self.dimAllTiles()
+        }
+    }
+
+
+
 
 
 
