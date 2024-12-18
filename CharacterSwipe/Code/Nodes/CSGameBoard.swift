@@ -39,62 +39,9 @@ class CSGameBoard: SKSpriteNode {
     var line1: SKLabelNode!
     var line2: SKLabelNode!
     
-    private func playSwipeSound() {
-        print("Attempting to play sound")
-        guard let url = Bundle.main.url(forResource: "swipeSound", withExtension: "mp3") else {
-            print("Swipe sound file not found")
-            return
-        }
-        do {
-            // Initialize the audio player
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            
-            // Set the volume (0.0 is mute, 1.0 is the maximum)
-            audioPlayer?.volume = 0.1
-            
-            // Play the sound
-            audioPlayer?.play()
-            print("Playing sound")
-        } catch {
-            print("Error playing swipe sound: \(error)")
-        }
-    }
-    
-    private func playMergeSound() {
-        audioPlayer?.volume = 0.5
-        print("Attempting to play merge sound")
-        guard let url = Bundle.main.url(forResource: "mergeSound", withExtension: "mp3") else {
-            print(" merge sound file not found")
-            return
-        }
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.volume = 0.1
-            audioPlayer?.play()
-            print("Playing sound")
-        } catch {
-            print("Error playing merge sound: \(error)")
-        }
-    }
-    private func playLoseSound() {
-        print("Attempting to play sound")
-        guard let url = Bundle.main.url(forResource: "lose", withExtension: "mp3") else {
-            print("Swipe sound file not found")
-            return
-        }
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            
-            audioPlayer?.volume = 0.4
+    private var activeAudioPlayers: [AVAudioPlayer] = []
+    private var preloadedSounds: [String: AVAudioPlayer] = [:]
 
-            audioPlayer?.play()
-            print("Playing sound")
-        } catch {
-            print("Error playing lose sound: \(error)")
-        }
-    }
-    
-    
     // Initialize
     init(size: CGSize) {
         super.init(texture: nil, color: .clear, size: size)
@@ -141,12 +88,64 @@ class CSGameBoard: SKSpriteNode {
         lose_rectangle.isHidden = true
         line1.isHidden = true
         line2.isHidden = true
+        
+        preloadSoundsInBackground()
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
+    private func preloadSoundsInBackground() {
+        DispatchQueue.global(qos: .background).async {
+            let soundFiles = ["swipeSound.mp3", "mergeSound.mp3", "lose.mp3"]
+            for sound in soundFiles {
+                if let url = Bundle.main.url(forResource: sound, withExtension: nil) {
+                    do {
+                        let player = try AVAudioPlayer(contentsOf: url)
+                        player.prepareToPlay()
+                        self.preloadedSounds[sound] = player
+                        print("Preloaded sound: \(sound)")
+                    } catch {
+                        print("Error preloading sound \(sound): \(error)")
+                    }
+                }
+            }
+        }
+    }
+        
+    // Play preloaded sound
+    private func playPreloadedSound(named name: String, volume: Float) {
+        guard let player = preloadedSounds[name] else {
+            print("Sound not found in preloaded list: \(name)")
+            return
+        }
+        player.volume = volume
+        player.play()
+        activeAudioPlayers.append(player)
+
+        // Cleanup after playback
+        DispatchQueue.global().asyncAfter(deadline: .now() + player.duration) {
+            if let index = self.activeAudioPlayers.firstIndex(of: player) {
+                self.activeAudioPlayers.remove(at: index)
+                print("Cleaned up audio player for: \(name)")
+            }
+        }
+    }
+
+    // Specific sound playback methods
+    func playSwipeSound() {
+        playPreloadedSound(named: "swipeSound.mp3", volume: 0.1)
+    }
+
+    func playMergeSound() {
+        playPreloadedSound(named: "mergeSound.mp3", volume: 0.2)
+    }
+
+    func playLoseSound() {
+        playPreloadedSound(named: "lose.mp3", volume: 0.4)
+    }
+
     func boardMove(direction: String) -> [[Int]] {
         var gameBoard = gameBoardMatrix
         var mergedTiles = Array(repeating: Array(repeating: false, count: columns), count: rows)
