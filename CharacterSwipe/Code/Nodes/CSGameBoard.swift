@@ -133,13 +133,13 @@ class CSGameBoard: SKSpriteNode {
                 oldTile.run(SKAction.sequence([moveAction, removeOldTile]))
 
                 // Bounce animation for the new tile
-                let scaleUp = SKAction.scale(to: 1.2, duration: 0.05)
-                let scaleDown = SKAction.scale(to: 1.0, duration: 0.05)
+                let scaleUp = SKAction.scale(to: 1.2, duration: 0.08)
+                let scaleDown = SKAction.scale(to: 1.0, duration: 0.08)
                 let bounce = SKAction.sequence([scaleUp, scaleDown])
 
-                // Fade out old texture and fade in new texture
-                let fadeOutOldTexture = SKAction.fadeOut(withDuration: 0.05)
-                let fadeInNewTexture = SKAction.fadeIn(withDuration: 0.05)
+                // Fade out old texture to half opacity and fade in new texture
+                let fadeOutOldTexture = SKAction.fadeAlpha(to: 0.5, duration: 0.08)
+                let fadeInNewTexture = SKAction.fadeAlpha(to: 1.0, duration: 0.08)
                 let updateTexture = SKAction.run {
                     newTileNode.texture = self.getTextureForValue(value)
                 }
@@ -158,10 +158,11 @@ class CSGameBoard: SKSpriteNode {
                     self.playMergeSound()
                 }
 
-                // Run animations with texture fade, sound, haptic feedback, and ensure correct size
+                // Run animations with texture fade to half opacity, sound, haptic feedback, and ensure correct size
                 newTileNode.run(SKAction.sequence([bounce, textureChangeSequence, triggerHaptic, playMergeSound, ensureCorrectSize]))
             }
         }
+
 
 
 
