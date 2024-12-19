@@ -133,18 +133,24 @@ class CSGameBoard: SKSpriteNode {
                 oldTile.run(SKAction.sequence([moveAction, removeOldTile]))
 
                 // Bounce animation for the new tile
-                let scaleUp = SKAction.scale(to: 1.2, duration: 0.1)
-                let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
+                let scaleUp = SKAction.scale(to: 1.2, duration: 0.05)
+                let scaleDown = SKAction.scale(to: 1.0, duration: 0.05)
                 let bounce = SKAction.sequence([scaleUp, scaleDown])
+
+                // Fade out old texture and fade in new texture
+                let fadeOutOldTexture = SKAction.fadeOut(withDuration: 0.05)
+                let fadeInNewTexture = SKAction.fadeIn(withDuration: 0.05)
+                let updateTexture = SKAction.run {
+                    newTileNode.texture = self.getTextureForValue(value)
+                }
+                let textureChangeSequence = SKAction.sequence([fadeOutOldTexture, updateTexture, fadeInNewTexture])
+
+                // Ensure tile returns to correct size
+                let ensureCorrectSize = SKAction.scale(to: 1.0, duration: 0.0)
 
                 // Trigger haptic feedback
                 let triggerHaptic = SKAction.run {
                     feedbackGenerator.impactOccurred()
-                }
-
-                // Update texture action
-                let updateTexture = SKAction.run {
-                    newTileNode.texture = self.getTextureForValue(value)
                 }
 
                 // Play merge sound action
@@ -152,10 +158,11 @@ class CSGameBoard: SKSpriteNode {
                     self.playMergeSound()
                 }
 
-                // Run animations with sound and haptic feedback
-                newTileNode.run(SKAction.sequence([bounce, triggerHaptic, updateTexture, playMergeSound]))
+                // Run animations with texture fade, sound, haptic feedback, and ensure correct size
+                newTileNode.run(SKAction.sequence([bounce, textureChangeSequence, triggerHaptic, playMergeSound, ensureCorrectSize]))
             }
         }
+
 
 
         switch direction {
@@ -573,23 +580,31 @@ class CSGameBoard: SKSpriteNode {
             if gameBoardMatrix[randomRow][randomColumn] == 0 {
                 // Assign a random value to the tile (e.g., 2 or 4)
                 gameBoardMatrix[randomRow][randomColumn] = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4].randomElement()!
-                
+
                 // Create the new tile node
                 let newTileNode = SKSpriteNode(texture: getTextureForValue(gameBoardMatrix[randomRow][randomColumn]))
                 newTileNode.position = calculateTilePosition(row: randomRow, col: randomColumn)
                 newTileNode.size = CGSize(width: tileSideLength, height: tileSideLength)
-                newTileNode.setScale(0.5) // Start at a scale of 0
+                newTileNode.setScale(0.5) // Start at a scale of 0.5
                 tileMatrix[randomRow][randomColumn] = newTileNode
                 addChild(newTileNode)
-                
-                // Scale animation to grow the tile from 0 to full size
+
+                // Scale animation to grow the tile from 0.5 to full size, with continuous correction to cap size
                 let scaleUp = SKAction.scale(to: 1.0, duration: 0.1)
-                newTileNode.run(scaleUp)
-                
+                let restrictScale = SKAction.customAction(withDuration: 0.1) { node, elapsedTime in
+                    if node.xScale > 1.0 || node.yScale > 1.0 {
+                        node.setScale(1.0)
+                    }
+                }
+                let group = SKAction.group([scaleUp, restrictScale])
+                newTileNode.run(group)
+
                 break
             }
         }
     }
+
+
 
     
     // Return texture based on value (no changes)
