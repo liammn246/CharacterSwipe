@@ -3,7 +3,6 @@ import SpriteKit
 
 class CSLoseState: CSGameState {
     
-    private var overlayNode: SKSpriteNode?
     private var rectangleBackgroundEnd: SKShapeNode!
     private var end_rectangle_dec: SKShapeNode!// Make this a property to access it later
     var gameBoard: CSGameBoard!
@@ -53,16 +52,16 @@ class CSLoseState: CSGameState {
             // Add the restart button to the rectangle
             rectangleBackgroundEnd.addChild(restartButton)
             
-            print("Lose state entered: Displaying Restart Button with blur")
+     
         }
     }
     func startGame() {
         print("Restart button tapped, transitioning to gameplay state")
-        stateMachine?.enter(CSGameplayState.self)
-        overlayNode?.removeFromParent()
-        
-        // Remove rectangle background when restarting
         rectangleBackgroundEnd.removeFromParent()
+        stateMachine?.enter(CSGameplayState.self)
+        print("removed end")
+        // Remove rectangle background when restarting
+        
     }
     
     func handleTouch(at location: CGPoint) {

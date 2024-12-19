@@ -34,8 +34,7 @@ class CSGameBoard: SKSpriteNode {
     var progressBar: SKSpriteNode!
     private var audioPlayer: AVAudioPlayer?
     var merged = false
-    var lose_game = false
-    
+
     private var activeAudioPlayers: [AVAudioPlayer] = []
     private var preloadedSounds: [String: AVAudioPlayer] = [:]
 
@@ -79,16 +78,24 @@ class CSGameBoard: SKSpriteNode {
         }
         player.volume = volume
         player.play()
-        activeAudioPlayers.append(player)
+        
+        // Thread-safe update of activeAudioPlayers
+        DispatchQueue.main.async {
+            self.activeAudioPlayers.append(player)
+        }
 
         // Cleanup after playback
-        DispatchQueue.global().asyncAfter(deadline: .now() + player.duration) {
-            if let index = self.activeAudioPlayers.firstIndex(of: player) {
-                self.activeAudioPlayers.remove(at: index)
-                print("Cleaned up audio player for: \(name)")
+        DispatchQueue.global().asyncAfter(deadline: .now() + player.duration) { [weak self] in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                if let index = self.activeAudioPlayers.firstIndex(of: player) {
+                    self.activeAudioPlayers.remove(at: index)
+                    print("Cleaned up audio player for: \(name)")
+                }
             }
         }
     }
+
 
     // Specific sound playback methods
     func playSwipeSound() {
@@ -318,11 +325,30 @@ class CSGameBoard: SKSpriteNode {
 
         // Check for game over
         if !canMakeMove() {
+            print("Game Over -- attempting to transition to CSLoseState")
             triggerLossHapticFeedback()
-            gameOverAnimation()
             playLoseSound()
-            delay(2.0) {
-                self.lose_game = true
+            
+            dimAllTiles()
+            
+            // Delay the execution of the following block by 3 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
+                guard let self = self else { return }
+                
+                updatePowerup = false
+                powerUpNode.removeFromParent()
+                score = 0
+                progressBar.removeFromParent()
+                gameScene.updateScoreLabel(newScore: score)
+                
+                for r in 0...3 {
+                    for c in 0...3 {
+                        if let tile = self.tileMatrix[r][c] as? SKSpriteNode {
+                            tile.removeFromParent()
+                        }
+                    }
+                }
+                gameScene.context?.stateMachine?.enter(CSLoseState.self)
             }
         }
     }
@@ -1117,26 +1143,7 @@ extension CSGameBoard {
     }
     
     func handleTouch(at location: CGPoint) {
-        if lose_game {
-            print("Game Over -- attempting to transition to CSLoseState")
-            
-            updatePowerup = false
-            powerUpNode.removeFromParent()
-            score = 0
-            progressBar.removeFromParent()
-            gameScene.updateScoreLabel(newScore: score)
-            for r in 0...3 {
-                for c in 0...3 {
-                    if tileMatrix[r][c] != nil {
-                        (tileMatrix[r][c] as! SKSpriteNode).removeFromParent()
-                    }
-                }
-            }
-            
-            lose_game = false
-            gameScene.context?.stateMachine?.enter(CSLoseState.self)
-        }
-        
+
         if let cancelButton = cancelButton, cancelButton.contains(location) {
             powerUpNode.isHidden = false
             progressBar.isHidden = false
@@ -1266,39 +1273,15 @@ extension CSGameBoard {
             for col in 0..<columns {
                 guard let tileNode = tileMatrix[row][col] as? SKSpriteNode else { continue }
                 
-                // Fade to 30% opacity
-                let fadeToAlpha = SKAction.fadeAlpha(to: 0.3, duration: 0.1)
+                // Fade to 30% opacity over 3 seconds
+                let fadeToAlpha = SKAction.fadeAlpha(to: 0.3, duration: 1.5)
                 tileNode.run(fadeToAlpha)
             }
         }
     }
 
 
-    func gameOverAnimation() {
-        // Get the full screen size
-        let screenSize = UIScreen.main.bounds.size
-        
-        // Create a red overlay that covers the entire screen
-        let redOverlay = SKSpriteNode(color: .red, size: screenSize)
-        redOverlay.position = CGPoint(x: screenSize.width / 2, y: screenSize.height / 2) // Center the overlay
-        redOverlay.zPosition = 100 // Ensure it is on top of everything
-        redOverlay.alpha = 0.0 // Initially invisible
-        self.scene?.addChild(redOverlay) // Add directly to the scene for proper scaling
-        
-        // Flash the screen red
-        let fadeIn = SKAction.fadeAlpha(to: 0.8, duration: 0.2) // Bright red flash
-        let fadeOut = SKAction.fadeAlpha(to: 0.0, duration: 0.2) // Fade back to invisible
-        let remove = SKAction.removeFromParent() // Clean up the node
-        let flashSequence = SKAction.sequence([fadeIn, fadeOut, remove])
-        
-        // Run the flash animation
-        redOverlay.run(flashSequence)
-        
-        // Delay dimming the tiles slightly to align with the flash timing
-        delay(0.2) {
-            self.dimAllTiles()
-        }
-    }
+
 
 
 
