@@ -70,6 +70,10 @@ class CSLoseState: CSGameState {
         if let restartButton = rectangleBackgroundEnd.childNode(withName: "restartButton"),
            restartButton.contains(convertedLocation) {
             print("Restart button tapped")
+            rectangleBackgroundEnd.removeFromParent()
+            end_rectangle_dec.removeFromParent()
+            restartButton.removeAllChildren()
+            restartButton.removeFromParent()
             gameBoard.initializeBoardValues()
             gameBoard.setupGrid()
             gameScene.updateTiles()

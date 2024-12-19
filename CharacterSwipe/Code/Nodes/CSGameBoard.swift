@@ -778,7 +778,7 @@ class CSGameBoard: SKSpriteNode {
             addChild(powerUpNode)
             delay(0.1) {
                 print("powerup should glow")
-                let glow = SKShapeNode(rectOf: CGSize(width: self.tileSideLength, height: self.tileSideLength), cornerRadius: 10)
+                let glow = SKShapeNode(rectOf: CGSize(width: 65, height: 65), cornerRadius: 10)
                 glow.strokeColor = .white
                 glow.lineWidth = 2.0
                 glow.glowWidth = 6.0
@@ -1096,7 +1096,7 @@ extension CSGameBoard {
         powerUpNode.zPosition = 100
         addChild(powerUpNode)
         powerUpNode.isHidden = false
-        let glow = SKShapeNode(rectOf: CGSize(width: tileSideLength, height: tileSideLength), cornerRadius: 10)
+        let glow = SKShapeNode(rectOf: CGSize(width: 65, height: 65), cornerRadius: 10)
         glow.strokeColor = .white
         glow.lineWidth = 2.0
         glow.glowWidth = 6.0
