@@ -78,7 +78,19 @@ class CSGameScene: SKScene {
                 let isUnlocked = tileIndex <= highestUnlockedIndex
                 let newOpacity: CGFloat = isUnlocked ? maxOpacity : startingOpacity
 
-                // Only animate the newly unlocked tile
+                // Find or create the underglow
+                let underglowNodeName = "\(tile.name ?? "")_underglow"
+                let underglow = tile.childNode(withName: underglowNodeName) as? SKSpriteNode ?? {
+                    let glow = SKSpriteNode(color: .yellow, size: tile.size)
+                    glow.alpha = 0 // Start invisible
+                    glow.zPosition = -1 // Ensure it is behind the tile
+                    glow.name = underglowNodeName
+                    glow.setScale(1.2) // Slightly larger than the tile
+                    tile.addChild(glow)
+                    return glow
+                }()
+
+                // Animate newly unlocked tiles
                 if isUnlocked && tileIndex > previousHighestUnlockedIndex {
                     // Apply pop animation for the newly unlocked tile
                     let opacityAction = SKAction.fadeAlpha(to: newOpacity, duration: 0.2)
@@ -91,11 +103,18 @@ class CSGameScene: SKScene {
                     // Combine the opacity and scale animations
                     let group = SKAction.group([opacityAction, scaleSequence])
 
-                    // Run the animation
+                    // Run the animation on the tile
                     tile.run(group)
+
+                    // Animate the underglow
+                    let fadeIn = SKAction.fadeAlpha(to: 0.5, duration: 0.4)
+                    let fadeOut = SKAction.fadeAlpha(to: 0, duration: 0.4)
+                    let underglowAnimation = SKAction.sequence([fadeIn, fadeOut,fadeIn,fadeOut])
+                    underglow.run(underglowAnimation)
                 } else {
                     // Just update opacity without animation for other tiles
                     tile.alpha = newOpacity
+                    underglow.alpha = 0 // Ensure the underglow is hidden
                 }
             }
         }
@@ -103,6 +122,7 @@ class CSGameScene: SKScene {
         // Update the previous highest unlocked index after the opacity update
         context?.previousHighestUnlockedIndex = highestUnlockedIndex
     }
+
 
     func resetTileOpacity() {
         // Ensure background3 is not nil
