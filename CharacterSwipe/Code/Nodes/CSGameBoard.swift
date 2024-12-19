@@ -55,7 +55,7 @@ class CSGameBoard: SKSpriteNode {
     
     private func preloadSoundsInBackground() {
         DispatchQueue.global(qos: .background).async {
-            let soundFiles = ["swipeSound.mp3", "mergeSound.mp3", "lose.mp3"]
+            let soundFiles = ["swipeSound.mp3", "mergeSound.mp3", "lose.mp3","powerup_press.mp3","powerup_unlocked.mp3","powerup_place.mp3"]
             for sound in soundFiles {
                 if let url = Bundle.main.url(forResource: sound, withExtension: nil) {
                     do {
@@ -101,6 +101,15 @@ class CSGameBoard: SKSpriteNode {
 
     func playLoseSound() {
         playPreloadedSound(named: "lose.mp3", volume: 0.4)
+    }
+    func playUnlockSound() {
+        playPreloadedSound(named: "powerup_unlocked.mp3", volume: 0.8)
+    }
+    func playPowerupSound() {
+        playPreloadedSound(named: "powerup_press.mp3", volume: 0.8)
+    }
+    func playPlaceSound() {
+        playPreloadedSound(named: "powerup_place.mp3", volume: 0.8)
     }
 
     func boardMove(direction: String) -> [[Int]] {
@@ -713,6 +722,7 @@ class CSGameBoard: SKSpriteNode {
     
     func updatePowerUps(scoreChange: Int) {
         if powerUpScore < powerUpMultiplier && powerUpScore + scoreChange >= powerUpMultiplier {
+            playUnlockSound()
             let mynum = Int.random(in: 0...2)
             progressBarBackground.isHidden = true
 
@@ -1171,6 +1181,8 @@ extension CSGameBoard {
 
         // Check if the touch hit the power-up node
         if powerUpNode.contains(location) && powerUpNode.parent != nil {
+            playPowerupSound()
+            print("powerup sound play")
             activatePowerUp()
             return
         }
@@ -1225,7 +1237,7 @@ extension CSGameBoard {
                             scaleUp.timingMode = .easeOut
                             (tileMatrix[row][col] as! SKSpriteNode).run(scaleUp)
                             
-
+                            playPlaceSound() 
                             print("Added tile at (\(row), \(col)) with value \(newTileValue)")
                             updatePowerup = false
                             for r in 0...3 {
