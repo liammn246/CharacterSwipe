@@ -129,9 +129,9 @@ class CSGameScene: SKScene {
         // Conditional logic for screen width
         if UIScreen.main.bounds.width < 380 {
             background2YOffset = 49 // Adjust this value as needed
-            background3YOffset = 42
-        } else {
-            background2YOffset = 0 // No adjustment for larger screens
+            background3YOffset = 41 // progress bar
+        } else if UIScreen.main.bounds.width > 420 {
+            background3YOffset = -6
         }
 
         // Setup for rectangleBackground

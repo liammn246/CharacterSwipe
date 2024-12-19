@@ -499,12 +499,12 @@ class CSGameBoard: SKSpriteNode {
     func calculatePowerupPosition() -> CGPoint {
         // iphone pro max/plus
         if UIScreen.main.bounds.width > 420 {
-            return CGPoint(x: size.width / 3.5, y: size.height / 1.7)
+            return CGPoint(x: size.width / 3.5, y: size.height / 1.52)
         }
         // iphone se
         else if UIScreen.main.bounds.width < 380 {
             print("iphone se")
-            return CGPoint(x: size.width / 3.5, y: size.height / 1.53)
+            return CGPoint(x: size.width / 3.5, y: size.height / 1.60)
         }
         // iphone pro
         else{
