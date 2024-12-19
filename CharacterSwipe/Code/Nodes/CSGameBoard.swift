@@ -618,12 +618,11 @@ class CSGameBoard: SKSpriteNode {
                 gameBoardMatrix[randomRow][randomColumn] = [2, 2, 2, 2, 2, 2, 2, 2, 2, 4].randomElement()!
 
                 // Create the new tile node
-                let newTileNode = SKSpriteNode(texture: getTextureForValue(gameBoardMatrix[randomRow][randomColumn]))
-                newTileNode.position = calculateTilePosition(row: randomRow, col: randomColumn)
-                newTileNode.size = CGSize(width: tileSideLength, height: tileSideLength)
-                newTileNode.setScale(0.5) // Start at a scale of 0.5
-                tileMatrix[randomRow][randomColumn] = newTileNode
-                addChild(newTileNode)
+                tileMatrix[randomRow][randomColumn] = SKSpriteNode(texture: getTextureForValue(gameBoardMatrix[randomRow][randomColumn]))
+                (tileMatrix[randomRow][randomColumn] as! SKSpriteNode).position = calculateTilePosition(row: randomRow, col: randomColumn)
+                (tileMatrix[randomRow][randomColumn] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
+                (tileMatrix[randomRow][randomColumn] as! SKSpriteNode).setScale(0.5) // Start at a scale of 0.5
+                addChild(tileMatrix[randomRow][randomColumn] as! SKSpriteNode)
 
                 // Scale animation to grow the tile from 0.5 to full size, with continuous correction to cap size
                 let scaleUp = SKAction.scale(to: 1.0, duration: 0.1)
@@ -633,7 +632,7 @@ class CSGameBoard: SKSpriteNode {
                     }
                 }
                 let group = SKAction.group([scaleUp, restrictScale])
-                newTileNode.run(group)
+                (tileMatrix[randomRow][randomColumn] as! SKSpriteNode).run(group)
 
                 break
             }
