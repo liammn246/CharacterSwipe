@@ -31,13 +31,10 @@ class CSGameBoard: SKSpriteNode {
     var powerUpType: String?
     var powerUpMultiplier = 250
     var progressBarBackground: SKSpriteNode!
-    var lose_rectangle: SKShapeNode!
     var progressBar: SKSpriteNode!
     private var audioPlayer: AVAudioPlayer?
     var merged = false
     var lose_game = false
-    var line1: SKLabelNode!
-    var line2: SKLabelNode!
     
     private var activeAudioPlayers: [AVAudioPlayer] = []
     private var preloadedSounds: [String: AVAudioPlayer] = [:]
@@ -49,46 +46,6 @@ class CSGameBoard: SKSpriteNode {
         setupGrid()
         updateTiles()
         self.isUserInteractionEnabled = true
-        
-        // Initialize lose_rectangle
-        lose_rectangle = SKShapeNode(rectOf: CGSize(width: 250, height: 100), cornerRadius: 10)
-        lose_rectangle.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
-        lose_rectangle.position = calculateLosePosition()
-        lose_rectangle.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
-        lose_rectangle.lineWidth = 3
-        lose_rectangle.name = "lose_rectangle"
-        lose_rectangle.zPosition = 10
-        addChild(lose_rectangle)
-
-        // First line
-        line1 = SKLabelNode(text: "Game Over!")
-        line1.fontColor = .white
-        line1.zPosition = 10
-        line1.fontSize = 24
-        line1.fontName = "Arial-BoldMT"
-        line1.verticalAlignmentMode = .center
-        line1.horizontalAlignmentMode = .left
-        line1.position = CGPoint(x: -66, y: 20)
-
-        // Second line
-        line2 = SKLabelNode(text: "Tap to Continue")
-        line2.fontColor = .white
-        line2.zPosition = 10
-        line2.fontSize = 24
-        line2.fontName = "Arial-BoldMT"
-        line2.verticalAlignmentMode = .center
-        line2.horizontalAlignmentMode = .left
-        line2.position = CGPoint(x: -86, y: -20)
-
-        // Add both lines to the parent node
-        lose_rectangle.addChild(line1)
-        lose_rectangle.addChild(line2)
-
-        // Initially hide them
-        lose_rectangle.isHidden = true
-        line1.isHidden = true
-        line2.isHidden = true
-        
         preloadSoundsInBackground()
     }
     
@@ -344,11 +301,9 @@ class CSGameBoard: SKSpriteNode {
 
         // Check for game over
         if !canMakeMove() {
+            triggerLossHapticFeedback()
             gameOverAnimation()
             playLoseSound()
-            line1.isHidden = false
-            line2.isHidden = false
-            lose_rectangle.isHidden = false
             delay(2.0) {
                 self.lose_game = true
             }
@@ -369,6 +324,32 @@ class CSGameBoard: SKSpriteNode {
         return false // No valid moves
     }
 
+    func triggerLossHapticFeedback() {
+        // Prepare haptic generators for a dramatic effect
+        let heavyFeedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
+        let rigidFeedbackGenerator = UIImpactFeedbackGenerator(style: .rigid)
+        let softFeedbackGenerator = UIImpactFeedbackGenerator(style: .soft)
+
+        // Prepare for reduced latency
+        heavyFeedbackGenerator.prepare()
+        rigidFeedbackGenerator.prepare()
+        softFeedbackGenerator.prepare()
+
+        // Trigger a sequence of haptic feedback
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.0) {
+            heavyFeedbackGenerator.impactOccurred()
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            rigidFeedbackGenerator.impactOccurred()
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            softFeedbackGenerator.impactOccurred()
+        }
+        print("loss haptic")
+    }
+
+    
+    
     // Simulate a move without modifying the actual game state
     private func boardMoveSimulated(direction: String, board: [[Int]]) -> [[Int]] {
         var simulatedBoard = board
@@ -1127,9 +1108,6 @@ extension CSGameBoard {
             }
             
             lose_game = false
-            lose_rectangle.isHidden = true
-            line1.isHidden = true
-            line2.isHidden = true
             gameScene.context?.stateMachine?.enter(CSLoseState.self)
         }
         
