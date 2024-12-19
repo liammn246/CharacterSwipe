@@ -54,7 +54,7 @@ class CSGameBoard: SKSpriteNode {
     
     private func preloadSoundsInBackground() {
         DispatchQueue.global(qos: .background).async {
-            let soundFiles = ["swipeSound.mp3", "mergeSound.mp3", "lose.mp3","powerup_press.mp3","powerup_unlocked.mp3","powerup_place.mp3"]
+            let soundFiles = ["swipeSound.mp3", "mergeSound.mp3", "lose.mp3","powerup_press.mp3","powerup_unlocked.mp3","powerup_place.mp3","powerup_delete.mp3","powerup_2x.mp3"]
             for sound in soundFiles {
                 if let url = Bundle.main.url(forResource: sound, withExtension: nil) {
                     do {
@@ -117,6 +117,12 @@ class CSGameBoard: SKSpriteNode {
     }
     func playPlaceSound() {
         playPreloadedSound(named: "powerup_place.mp3", volume: 0.8)
+    }
+    func playDeleteSound() {
+        playPreloadedSound(named: "powerup_delete.mp3", volume: 0.8)
+    }
+    func playUpgradeSound() {
+        playPreloadedSound(named: "powerup_2x.mp3", volume: 0.8)
     }
 
     func boardMove(direction: String) -> [[Int]] {
@@ -666,16 +672,6 @@ class CSGameBoard: SKSpriteNode {
         return nil
     }
     
-//    func changeAllTilesToTileLose() {
-//        for row in 0..<rows {
-//            for col in 0..<columns {
-//                if let tileNode = tileMatrix[row][col] as? SKSpriteNode, let tileValue = gameBoardMatrix[row][col], tileValue > 0 {
-//                    tileNode.texture = SKTexture(imageNamed: "tile_lose")
-//                }
-//            }
-//        }
-//    }
-//    
     func removeTile(atRow row: Int, column col: Int) {
         guard let tile = tileMatrix[row][col] as? SKSpriteNode else { return }
         
@@ -1207,6 +1203,7 @@ extension CSGameBoard {
                         if value < maxValue() / 2 && value > 0 {
                             print("Removing tile at (\(row), \(col)) with value \(value)")
                             deactivatePowerUp()
+                            playDeleteSound()
                             removeTile(atRow: row, column: col)
                         } else {
                             print("Cannot remove the highest-value tile!")
@@ -1221,6 +1218,7 @@ extension CSGameBoard {
                             tileNode.removeAllActions()
                             print("Doubled tile at (\(row), \(col)) to \(gameBoardMatrix[row][col])")
                             deactivatePowerUp()
+                            playUpgradeSound()
                             upgradeTile(atRow: row, column: col)
                         } else {
                             print("Cannot double the highest-value tile!")
