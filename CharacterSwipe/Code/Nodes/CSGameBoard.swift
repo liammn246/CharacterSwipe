@@ -752,11 +752,11 @@ class CSGameBoard: SKSpriteNode {
             let mynum = Int.random(in: 0...2)
             progressBarBackground.isHidden = true
 
-            if mynum == -1 {
+            if mynum == 0 {
                 print("x powerup")
                 powerUpNode = SKSpriteNode(imageNamed: "delete_powerup")
                 powerUpType = "XPowerup"
-            } else if mynum == -1 {
+            } else if mynum == 1 {
                 print("")
                 powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
                 powerUpType = "2xPowerup"
