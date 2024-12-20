@@ -34,6 +34,7 @@ class CSGameBoard: SKSpriteNode {
     var progressBar: SKSpriteNode!
     private var audioPlayer: AVAudioPlayer?
     var merged = false
+    var canSwipe = true
 
     private var activeAudioPlayers: [AVAudioPlayer] = []
     private var preloadedSounds: [String: AVAudioPlayer] = [:]
@@ -155,13 +156,13 @@ class CSGameBoard: SKSpriteNode {
                 oldTile.run(SKAction.sequence([moveAction, removeOldTile]))
 
                 // Bounce animation for the new tile
-                let scaleUp = SKAction.scale(to: 1.2, duration: 0.08)
-                let scaleDown = SKAction.scale(to: 1.0, duration: 0.08)
+                let scaleUp = SKAction.scale(to: 1.2, duration: 0.05)
+                let scaleDown = SKAction.scale(to: 1.0, duration: 0.05)
                 let bounce = SKAction.sequence([scaleUp, scaleDown])
 
                 // Fade out old texture to half opacity and fade in new texture
-                let fadeOutOldTexture = SKAction.fadeAlpha(to: 0.5, duration: 0.08)
-                let fadeInNewTexture = SKAction.fadeAlpha(to: 1.0, duration: 0.08)
+                let fadeOutOldTexture = SKAction.fadeAlpha(to: 0.5, duration: 0.05)
+                let fadeInNewTexture = SKAction.fadeAlpha(to: 1.0, duration: 0.05)
                 let updateTexture = SKAction.run {
                     newTileNode.texture = self.getTextureForValue(value)
                 }
@@ -308,13 +309,22 @@ class CSGameBoard: SKSpriteNode {
             for r in 0...3 {
                 if tileMatrix[r][c] != nil {
                     (tileMatrix[r][c] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
+                    (tileMatrix[r][c] as! SKSpriteNode).setScale(1.0)
                 }
             }
         }
     }
+    
     // Handle swipe input
     func onUserInput(direction: String) {
+        if powerUpActive || !canSwipe {
+            delay(0.1) {
+                self.canSwipe = true
+            }
+            return
+        }
         // Perform the actual move
+        canSwipe = false
         let newBoard = boardMove(direction: direction)
         if newBoard != gameBoardMatrix {
             gameBoardMatrix = newBoard
@@ -323,14 +333,13 @@ class CSGameBoard: SKSpriteNode {
                 self.addRandomTile()
                 self.updatePowerUps(scoreChange: 0)
             }
-            delay(0.3) {
-                self.resetSize()
-            }
+            
+            delay(0.2) {self.canSwipe = true}
             gameScene.updateScoreLabel(newScore: score)
         }
 
         // Check for game over
-        if !canMakeMove() {
+        if !canMakeMove() && powerUpType != "XPowerup" {
             
             triggerLossHapticFeedback()
             playLoseSound()
@@ -591,8 +600,7 @@ class CSGameBoard: SKSpriteNode {
         gameScene?.resetTileOpacity()
         score = 0
         powerUpScore = 0
-        powerUpMultiplier = 100
-        print("Powerup multiplier is 250")
+        powerUpMultiplier = 250
         setupProgressBar()
         updateProgressBar()
         self.gameBoardMatrix = [[0, 0, 0, 0],
@@ -706,16 +714,15 @@ class CSGameBoard: SKSpriteNode {
         // Define the scale-up action (grow back smoothly)
         let scaleUp = SKAction.scale(to: 1.0, duration: 0.2)
         scaleUp.timingMode = .easeOut // Smooth growth animation
+        let resetSize = SKAction.scale(to: 1.0, duration: 0)
         
         // Sequence: Shrink -> Update Texture -> Scale Back Up
-        let shrinkAndGrow = SKAction.sequence([shrink, updateTexture, scaleUp])
+        let shrinkAndGrow = SKAction.sequence([shrink, updateTexture, scaleUp, resetSize])
         
         // Run the animation
         tile.run(shrinkAndGrow)
         
-        delay(0.4) {
-            tile.size = CGSize(width: self.tileSideLength, height: self.tileSideLength)
-        }
+        delay(0.35) {self.resetSize()}
     }
 
     func getPositionsBelowSecondHighest(matrix: [[Int?]]) -> [(row: Int, col: Int)] {
@@ -776,7 +783,7 @@ class CSGameBoard: SKSpriteNode {
                 let glow = SKShapeNode(rectOf: CGSize(width: 65, height: 65), cornerRadius: 10)
                 glow.strokeColor = .white
                 glow.lineWidth = 2.0
-                glow.glowWidth = 6.0
+                glow.glowWidth = 3.0
                 glow.zPosition = self.powerUpNode.zPosition + 1
                 glow.alpha = 0
                 self.powerUpNode.addChild(glow)
@@ -982,7 +989,7 @@ class CSGameBoard: SKSpriteNode {
         print("deactivate powerup")
         powerUpScore = 0
         powerUpMultiplier *= 2
-        powerUpActive = false
+        delay(0.6){self.powerUpActive = false}
         powerUpType = ""
 
         // Reset the opacity and animations of all tiles
@@ -1094,7 +1101,7 @@ extension CSGameBoard {
         let glow = SKShapeNode(rectOf: CGSize(width: 65, height: 65), cornerRadius: 10)
         glow.strokeColor = .white
         glow.lineWidth = 2.0
-        glow.glowWidth = 6.0
+        glow.glowWidth = 3.0
         glow.zPosition = powerUpNode.zPosition + 1
         glow.alpha = 0
         powerUpNode.addChild(glow)
@@ -1251,10 +1258,7 @@ extension CSGameBoard {
                                     (backgroundGrid[r][c] as! SKSpriteNode).removeAllChildren()
                                 }
                             }
-                            delay(0.3) {
-                                self.stopTileAnimations()
-                                self.deactivatePowerUp()
-                            }
+                            delay(0.3) {self.deactivatePowerUp()}
                         } else {
                             print("Invalid location! Tap an empty space to place the new tile.")
                         }

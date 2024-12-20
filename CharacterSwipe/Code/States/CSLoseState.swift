@@ -6,6 +6,7 @@ class CSLoseState: CSGameState {
     private var rectangleBackgroundEnd: SKShapeNode!
     private var end_rectangle_dec: SKShapeNode!// Make this a property to access it later
     var gameBoard: CSGameBoard!
+    let seFactor = UIScreen.main.bounds.width < 380 ? -160 : 0
     
     override func didEnter(from previousState: GKState?) {
         super.didEnter(from: previousState)
@@ -15,7 +16,7 @@ class CSLoseState: CSGameState {
         func create_lose_board() {
             gameBoard = gameScene.getGameBoard()
             
-            rectangleBackgroundEnd = SKShapeNode(rectOf: CGSize(width: 350, height: 800), cornerRadius: 20)
+            rectangleBackgroundEnd = SKShapeNode(rectOf: CGSize(width: 350, height: 760 + seFactor), cornerRadius: 20)
             rectangleBackgroundEnd.fillColor = SKColor(red: 28/255, green: 28/255, blue: 28/255, alpha: 1)
             rectangleBackgroundEnd.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
             rectangleBackgroundEnd.lineWidth = 3 // Border thickness
