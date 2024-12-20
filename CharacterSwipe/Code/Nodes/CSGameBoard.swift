@@ -527,12 +527,20 @@ class CSGameBoard: SKSpriteNode {
 
     
     private func calculateTilePosition(row: Int, col: Int) -> CGPoint {
-        // iphone pro max/plus
-        if UIScreen.main.bounds.width > 420 {
+        //6.9 inch iphone
+        if UIScreen.main.bounds.width == 440 {
             let gridWidth = CGFloat(columns) * (tileSideLength + spacing) - spacing
             let gridHeight = CGFloat(rows) * (tileSideLength + spacing) - spacing
             let xPosition = CGFloat(col) * (tileSideLength + spacing) - gridWidth / 2 + tileSideLength / 2
             let yPosition = (CGFloat(3-row) * (tileSideLength + spacing) - gridHeight / 2 + tileSideLength / 2)-108
+            return CGPoint(x: xPosition, y: yPosition)
+        }
+        //6.7 inch iphone
+        else if UIScreen.main.bounds.width == 430 {
+            let gridWidth = CGFloat(columns) * (tileSideLength + spacing) - spacing
+            let gridHeight = CGFloat(rows) * (tileSideLength + spacing) - spacing
+            let xPosition = CGFloat(col) * (tileSideLength + spacing) - gridWidth / 2 + tileSideLength / 2
+            let yPosition = (CGFloat(3-row) * (tileSideLength + spacing) - gridHeight / 2 + tileSideLength / 2)-105
             return CGPoint(x: xPosition, y: yPosition)
         }
         // iphone se
@@ -544,7 +552,15 @@ class CSGameBoard: SKSpriteNode {
             let yPosition = (CGFloat(3-row) * (tileSideLength + spacing) - gridHeight / 2 + tileSideLength / 2)-76
             return CGPoint(x: xPosition, y: yPosition)
         }
-        // iphone pro
+        //6.1 inch iphone
+        else if UIScreen.main.bounds.width == 393 {
+            let gridWidth = CGFloat(columns) * (tileSideLength + spacing) - spacing
+            let gridHeight = CGFloat(rows) * (tileSideLength + spacing) - spacing
+            let xPosition = CGFloat(col) * (tileSideLength + spacing) - gridWidth / 2 + tileSideLength / 2
+            let yPosition = (CGFloat(3-row) * (tileSideLength + spacing) - gridHeight / 2 + tileSideLength / 2)-97
+            return CGPoint(x: xPosition, y: yPosition)
+        }
+        //6.3 inch iphone
         else{
             let gridWidth = CGFloat(columns) * (tileSideLength + spacing) - spacing
             let gridHeight = CGFloat(rows) * (tileSideLength + spacing) - spacing
@@ -555,8 +571,12 @@ class CSGameBoard: SKSpriteNode {
     }
     
     func calculatePowerupPosition() -> CGPoint {
-        // iphone pro max/plus
-        if UIScreen.main.bounds.width > 420 {
+        //6.1 inch iphone
+        if UIScreen.main.bounds.width == 393 {
+            return CGPoint(x: size.width / 3.5, y: size.height / 1.70)
+        }
+        //6.9 inch iphone
+        else if UIScreen.main.bounds.width == 440 {
             return CGPoint(x: size.width / 3.5, y: size.height / 1.52)
         }
         // iphone se
@@ -564,7 +584,11 @@ class CSGameBoard: SKSpriteNode {
             print("iphone se")
             return CGPoint(x: size.width / 3.5, y: size.height / 1.60)
         }
-        // iphone pro
+        //6.7 inch iphone
+        else if UIScreen.main.bounds.width == 430 {
+            return CGPoint(x: size.width / 3.5, y: size.height / 1.55)
+        }
+        //6.3 inch iphone
         else{
             return CGPoint(x: size.width / 3.5, y: size.height / 1.65)
         }
