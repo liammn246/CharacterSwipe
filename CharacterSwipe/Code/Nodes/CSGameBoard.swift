@@ -958,7 +958,7 @@ class CSGameBoard: SKSpriteNode {
         cancelButton = SKSpriteNode(imageNamed: "cancel")
         cancelButton?.size = CGSize(width: size.width / 5, height: size.width / 5)
         cancelButton?.position = calculatePowerupPosition()
-        cancelButton?.zPosition = 900
+        cancelButton?.zPosition = 10
         cancelButton?.name = "CancelButton"
         
         // Start at scale 0 (invisible)
