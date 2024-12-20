@@ -184,7 +184,7 @@ class CSGameScene: SKScene {
         addChild(background2)
 
         // Setup for scoreTile
-        scoreTile = SKShapeNode(rectOf: CGSize(width: 100, height: 40), cornerRadius: 25)
+        scoreTile = SKShapeNode(rectOf: CGSize(width: 140, height: 60), cornerRadius: 25)
         scoreTile.fillColor = SKColor(red: 63/255, green: 63/255, blue: 63/255, alpha: 1)
         scoreTile.strokeColor = SKColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
         scoreTile.lineWidth = 3
@@ -194,14 +194,14 @@ class CSGameScene: SKScene {
         background2.addChild(scoreTile)
 
         // Setup for scoreLabel
-        scoreLabel = SKLabelNode(text: "0")
+        scoreLabel = SKLabelNode(text: "250000")
         scoreLabel.fontColor = .white
         scoreLabel.zPosition = 10
-        scoreLabel.fontSize = 20
+        scoreLabel.fontSize = 26
         scoreLabel.fontName = "Arial-BoldMT"
         scoreLabel.verticalAlignmentMode = .center
         scoreLabel.horizontalAlignmentMode = .left
-        scoreLabel.position = CGPoint(x: -35, y: 0)
+        scoreLabel.position = CGPoint(x: -50, y: 0)
         scoreLabel.isHidden = true
         scoreTile.addChild(scoreLabel)
 
