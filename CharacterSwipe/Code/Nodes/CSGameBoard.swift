@@ -34,6 +34,8 @@ class CSGameBoard: SKSpriteNode {
     var progressBar: SKSpriteNode!
     private var audioPlayer: AVAudioPlayer?
     var merged = false
+    var canSwipe = true
+    var oldMaxValue = 4
 
     private var activeAudioPlayers: [AVAudioPlayer] = []
     private var preloadedSounds: [String: AVAudioPlayer] = [:]
@@ -46,6 +48,7 @@ class CSGameBoard: SKSpriteNode {
         updateTiles()
         self.isUserInteractionEnabled = true
         preloadSoundsInBackground()
+        oldMaxValue = 4
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -155,15 +158,20 @@ class CSGameBoard: SKSpriteNode {
                 oldTile.run(SKAction.sequence([moveAction, removeOldTile]))
 
                 // Bounce animation for the new tile
-                let scaleUp = SKAction.scale(to: 1.2, duration: 0.08)
-                let scaleDown = SKAction.scale(to: 1.0, duration: 0.08)
+                let scaleUp = SKAction.scale(to: 1.2, duration: 0.05)
+                let scaleDown = SKAction.scale(to: 1.0, duration: 0.05)
                 let bounce = SKAction.sequence([scaleUp, scaleDown])
 
                 // Fade out old texture to half opacity and fade in new texture
-                let fadeOutOldTexture = SKAction.fadeAlpha(to: 0.5, duration: 0.08)
-                let fadeInNewTexture = SKAction.fadeAlpha(to: 1.0, duration: 0.08)
+                let fadeOutOldTexture = SKAction.fadeAlpha(to: 0.5, duration: 0.05)
+                let fadeInNewTexture = SKAction.fadeAlpha(to: 1.0, duration: 0.05)
                 let updateTexture = SKAction.run {
                     newTileNode.texture = self.getTextureForValue(value)
+                }
+                
+                if value > oldMaxValue {
+                    oldMaxValue = value
+                    print(oldMaxValue)
                 }
                 let textureChangeSequence = SKAction.sequence([fadeOutOldTexture, updateTexture, fadeInNewTexture])
 
@@ -174,10 +182,9 @@ class CSGameBoard: SKSpriteNode {
                 let triggerHaptic = SKAction.run {
                     feedbackGenerator.impactOccurred()
                 }
-
                 // Play merge sound action
-                let playMergeSound = SKAction.run {
-                    self.playMergeSound()
+                    let playMergeSound = SKAction.run {
+                        self.playMergeSound()
                 }
 
                 // Run animations with texture fade to half opacity, sound, haptic feedback, and ensure correct size
@@ -308,13 +315,22 @@ class CSGameBoard: SKSpriteNode {
             for r in 0...3 {
                 if tileMatrix[r][c] != nil {
                     (tileMatrix[r][c] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
+                    (tileMatrix[r][c] as! SKSpriteNode).setScale(1.0)
                 }
             }
         }
     }
+    
     // Handle swipe input
     func onUserInput(direction: String) {
+        if powerUpActive || !canSwipe {
+            delay(0.1) {
+                self.canSwipe = true
+            }
+            return
+        }
         // Perform the actual move
+        canSwipe = false
         let newBoard = boardMove(direction: direction)
         if newBoard != gameBoardMatrix {
             gameBoardMatrix = newBoard
@@ -323,14 +339,13 @@ class CSGameBoard: SKSpriteNode {
                 self.addRandomTile()
                 self.updatePowerUps(scoreChange: 0)
             }
-            delay(0.3) {
-                self.resetSize()
-            }
+            
+            delay(0.2) {self.canSwipe = true}
             gameScene.updateScoreLabel(newScore: score)
         }
 
         // Check for game over
-        if !canMakeMove() {
+        if !canMakeMove() && powerUpType != "XPowerup" {
             
             triggerLossHapticFeedback()
             playLoseSound()
@@ -518,12 +533,20 @@ class CSGameBoard: SKSpriteNode {
 
     
     private func calculateTilePosition(row: Int, col: Int) -> CGPoint {
-        // iphone pro max/plus
-        if UIScreen.main.bounds.width > 420 {
+        //6.9 inch iphone
+        if UIScreen.main.bounds.width == 440 {
             let gridWidth = CGFloat(columns) * (tileSideLength + spacing) - spacing
             let gridHeight = CGFloat(rows) * (tileSideLength + spacing) - spacing
             let xPosition = CGFloat(col) * (tileSideLength + spacing) - gridWidth / 2 + tileSideLength / 2
             let yPosition = (CGFloat(3-row) * (tileSideLength + spacing) - gridHeight / 2 + tileSideLength / 2)-108
+            return CGPoint(x: xPosition, y: yPosition)
+        }
+        //6.7 inch iphone
+        else if UIScreen.main.bounds.width == 430 {
+            let gridWidth = CGFloat(columns) * (tileSideLength + spacing) - spacing
+            let gridHeight = CGFloat(rows) * (tileSideLength + spacing) - spacing
+            let xPosition = CGFloat(col) * (tileSideLength + spacing) - gridWidth / 2 + tileSideLength / 2
+            let yPosition = (CGFloat(3-row) * (tileSideLength + spacing) - gridHeight / 2 + tileSideLength / 2)-105
             return CGPoint(x: xPosition, y: yPosition)
         }
         // iphone se
@@ -535,7 +558,15 @@ class CSGameBoard: SKSpriteNode {
             let yPosition = (CGFloat(3-row) * (tileSideLength + spacing) - gridHeight / 2 + tileSideLength / 2)-76
             return CGPoint(x: xPosition, y: yPosition)
         }
-        // iphone pro
+        //6.1 inch iphone
+        else if UIScreen.main.bounds.width == 393 {
+            let gridWidth = CGFloat(columns) * (tileSideLength + spacing) - spacing
+            let gridHeight = CGFloat(rows) * (tileSideLength + spacing) - spacing
+            let xPosition = CGFloat(col) * (tileSideLength + spacing) - gridWidth / 2 + tileSideLength / 2
+            let yPosition = (CGFloat(3-row) * (tileSideLength + spacing) - gridHeight / 2 + tileSideLength / 2)-97
+            return CGPoint(x: xPosition, y: yPosition)
+        }
+        //6.3 inch iphone
         else{
             let gridWidth = CGFloat(columns) * (tileSideLength + spacing) - spacing
             let gridHeight = CGFloat(rows) * (tileSideLength + spacing) - spacing
@@ -546,8 +577,12 @@ class CSGameBoard: SKSpriteNode {
     }
     
     func calculatePowerupPosition() -> CGPoint {
-        // iphone pro max/plus
-        if UIScreen.main.bounds.width > 420 {
+        //6.1 inch iphone
+        if UIScreen.main.bounds.width == 393 {
+            return CGPoint(x: size.width / 3.5, y: size.height / 1.70)
+        }
+        //6.9 inch iphone
+        else if UIScreen.main.bounds.width == 440 {
             return CGPoint(x: size.width / 3.5, y: size.height / 1.52)
         }
         // iphone se
@@ -555,7 +590,11 @@ class CSGameBoard: SKSpriteNode {
             print("iphone se")
             return CGPoint(x: size.width / 3.5, y: size.height / 1.60)
         }
-        // iphone pro
+        //6.7 inch iphone
+        else if UIScreen.main.bounds.width == 430 {
+            return CGPoint(x: size.width / 3.5, y: size.height / 1.55)
+        }
+        //6.3 inch iphone
         else{
             return CGPoint(x: size.width / 3.5, y: size.height / 1.65)
         }
@@ -591,8 +630,7 @@ class CSGameBoard: SKSpriteNode {
         gameScene?.resetTileOpacity()
         score = 0
         powerUpScore = 0
-        powerUpMultiplier = 100
-        print("Powerup multiplier is 250")
+        powerUpMultiplier = 250
         setupProgressBar()
         updateProgressBar()
         self.gameBoardMatrix = [[0, 0, 0, 0],
@@ -706,16 +744,15 @@ class CSGameBoard: SKSpriteNode {
         // Define the scale-up action (grow back smoothly)
         let scaleUp = SKAction.scale(to: 1.0, duration: 0.2)
         scaleUp.timingMode = .easeOut // Smooth growth animation
+        let resetSize = SKAction.scale(to: 1.0, duration: 0)
         
         // Sequence: Shrink -> Update Texture -> Scale Back Up
-        let shrinkAndGrow = SKAction.sequence([shrink, updateTexture, scaleUp])
+        let shrinkAndGrow = SKAction.sequence([shrink, updateTexture, scaleUp, resetSize])
         
         // Run the animation
         tile.run(shrinkAndGrow)
         
-        delay(0.4) {
-            tile.size = CGSize(width: self.tileSideLength, height: self.tileSideLength)
-        }
+        delay(0.35) {self.resetSize()}
     }
 
     func getPositionsBelowSecondHighest(matrix: [[Int?]]) -> [(row: Int, col: Int)] {
@@ -776,7 +813,7 @@ class CSGameBoard: SKSpriteNode {
                 let glow = SKShapeNode(rectOf: CGSize(width: 65, height: 65), cornerRadius: 10)
                 glow.strokeColor = .white
                 glow.lineWidth = 2.0
-                glow.glowWidth = 6.0
+                glow.glowWidth = 3.0
                 glow.zPosition = self.powerUpNode.zPosition + 1
                 glow.alpha = 0
                 self.powerUpNode.addChild(glow)
@@ -982,7 +1019,7 @@ class CSGameBoard: SKSpriteNode {
         print("deactivate powerup")
         powerUpScore = 0
         powerUpMultiplier *= 2
-        powerUpActive = false
+        delay(0.6){self.powerUpActive = false}
         powerUpType = ""
 
         // Reset the opacity and animations of all tiles
@@ -1094,7 +1131,7 @@ extension CSGameBoard {
         let glow = SKShapeNode(rectOf: CGSize(width: 65, height: 65), cornerRadius: 10)
         glow.strokeColor = .white
         glow.lineWidth = 2.0
-        glow.glowWidth = 6.0
+        glow.glowWidth = 3.0
         glow.zPosition = powerUpNode.zPosition + 1
         glow.alpha = 0
         powerUpNode.addChild(glow)
@@ -1251,10 +1288,7 @@ extension CSGameBoard {
                                     (backgroundGrid[r][c] as! SKSpriteNode).removeAllChildren()
                                 }
                             }
-                            delay(0.3) {
-                                self.stopTileAnimations()
-                                self.deactivatePowerUp()
-                            }
+                            delay(0.3) {self.deactivatePowerUp()}
                         } else {
                             print("Invalid location! Tap an empty space to place the new tile.")
                         }
