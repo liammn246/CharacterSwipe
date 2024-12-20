@@ -331,13 +331,12 @@ class CSGameBoard: SKSpriteNode {
 
         // Check for game over
         if !canMakeMove() {
-            print("Game Over -- attempting to transition to CSLoseState")
+            
             triggerLossHapticFeedback()
             playLoseSound()
-            
             dimAllTiles()
             
-            // Delay the execution of the following block by 3 seconds
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
                 guard let self = self else { return }
                 
@@ -355,6 +354,7 @@ class CSGameBoard: SKSpriteNode {
                     }
                 }
                 gameScene.context?.stateMachine?.enter(CSLoseState.self)
+                print("Game Over -- attempting to transition to CSLoseState")
             }
         }
     }
