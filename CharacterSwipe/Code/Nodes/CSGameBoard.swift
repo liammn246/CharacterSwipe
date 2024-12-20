@@ -35,7 +35,7 @@ class CSGameBoard: SKSpriteNode {
     private var audioPlayer: AVAudioPlayer?
     var merged = false
     var canSwipe = true
-    var oldMax = 4
+    var oldMaxValue = 4
 
     private var activeAudioPlayers: [AVAudioPlayer] = []
     private var preloadedSounds: [String: AVAudioPlayer] = [:]
@@ -48,7 +48,7 @@ class CSGameBoard: SKSpriteNode {
         updateTiles()
         self.isUserInteractionEnabled = true
         preloadSoundsInBackground()
-        oldMax = 4
+        oldMaxValue = 4
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -168,6 +168,11 @@ class CSGameBoard: SKSpriteNode {
                 let updateTexture = SKAction.run {
                     newTileNode.texture = self.getTextureForValue(value)
                 }
+                
+                if value > oldMaxValue {
+                    oldMaxValue = value
+                    print(oldMaxValue)
+                }
                 let textureChangeSequence = SKAction.sequence([fadeOutOldTexture, updateTexture, fadeInNewTexture])
 
                 // Ensure tile returns to correct size
@@ -177,16 +182,9 @@ class CSGameBoard: SKSpriteNode {
                 let triggerHaptic = SKAction.run {
                     feedbackGenerator.impactOccurred()
                 }
-
                 // Play merge sound action
-                if value > oldMax {
-                    //LIAM ADD NEW SOUND STUFF HERE
-                    oldMax *= 2
-                }
-                else {
                     let playMergeSound = SKAction.run {
                         self.playMergeSound()
-                    }
                 }
 
                 // Run animations with texture fade to half opacity, sound, haptic feedback, and ensure correct size
