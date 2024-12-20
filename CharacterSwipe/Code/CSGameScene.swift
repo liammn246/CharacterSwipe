@@ -194,7 +194,7 @@ class CSGameScene: SKScene {
         background2.addChild(scoreTile)
 
         // Setup for scoreLabel
-        scoreLabel = SKLabelNode(text: "250000")
+        scoreLabel = SKLabelNode(text: "0")
         scoreLabel.fontColor = .white
         scoreLabel.zPosition = 10
         scoreLabel.fontSize = 26

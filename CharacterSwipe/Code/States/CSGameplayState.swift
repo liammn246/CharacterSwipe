@@ -20,9 +20,26 @@ class CSGameplayState: CSGameState {
         gameplayBackground.zPosition = -100
         gameplayBackground.name = "gameplayBackground" // Name it for easy removal
         gameScene.addChild(gameplayBackground)
+
+        // Add title asset
+        let title_asset = SKSpriteNode(imageNamed: "title")
+        title_asset.position = calculateTitlePosition()
+        title_asset.size = CGSize(width: 350, height: 150)
+        title_asset.zPosition = 11
+        title_asset.name = "title"
+        gameScene.addChild(title_asset)
         
-        // Play background music
+        // Use the calculatePowerupPosition() function
         playBackgroundMusic()
+    }
+    
+    private func calculateTitlePosition() -> CGPoint {
+        if UIScreen.main.bounds.width < 380 {
+            print("iPhone SE")
+            return CGPoint(x: gameScene.size.width / 2, y: gameScene.size.height / 1.15)
+        } else {
+            return CGPoint(x: gameScene.size.width / 2, y: gameScene.size.height / 1.25)
+        }
     }
     
     private func playBackgroundMusic() {
@@ -40,8 +57,6 @@ class CSGameplayState: CSGameState {
             print("Error: Could not play background music: \(error.localizedDescription)")
         }
     }
-    
-    
     
     override func willExit(to nextState: GKState) {
         super.willExit(to: nextState)
