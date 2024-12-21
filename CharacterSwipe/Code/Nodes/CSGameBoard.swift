@@ -40,7 +40,9 @@ class CSGameBoard: SKSpriteNode {
                     [0, 0, 0, 0],
                     [0, 0, 0, 0],
                     [0, 0, 0, 0]]
-
+    var gameOver = false
+    var mergeSoundPlayed = false
+    
     private var activeAudioPlayers: [AVAudioPlayer] = []
     private var preloadedSounds: [String: AVAudioPlayer] = [:]
 
@@ -52,6 +54,7 @@ class CSGameBoard: SKSpriteNode {
         self.isUserInteractionEnabled = true
         preloadSoundsInBackground()
         oldMaxValue = 4
+        gameOver = false
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -184,10 +187,19 @@ class CSGameBoard: SKSpriteNode {
                     feedbackGenerator.impactOccurred()
                 }
                 // Play merge sound action
-                let playMergeSound = SKAction.playSoundFileNamed("CS_mergeSound.mp3",  waitForCompletion: false)
+                if !mergeSoundPlayed {
+                    let playMergeSound = SKAction.playSoundFileNamed("CS_mergeSound.mp3",  waitForCompletion: false)
+                    newTileNode.run(SKAction.sequence([bounce, textureChangeSequence, triggerHaptic, playMergeSound, ensureCorrectSize]))
+                    mergeSoundPlayed = true
+                }
+                else {
+                    newTileNode.run(SKAction.sequence([bounce, textureChangeSequence, triggerHaptic, ensureCorrectSize]))
 
+                }
+                delay(0.1) {
+                    self.mergeSoundPlayed = false
+                }
                 // Run animations with texture fade to half opacity, sound, haptic feedback, and ensure correct size
-                newTileNode.run(SKAction.sequence([bounce, textureChangeSequence, triggerHaptic, playMergeSound, ensureCorrectSize]))
             }
         }
 
@@ -346,8 +358,9 @@ class CSGameBoard: SKSpriteNode {
         }
 
         // Check for game over
-        if !canMakeMove() && powerUpType != "XPowerup" {
+        if !canMakeMove() && powerUpType != "XPowerup" && !gameOver {
             
+            gameOver = true
             triggerLossHapticFeedback()
             playLoseSound()
             dimAllTiles()
@@ -628,6 +641,7 @@ class CSGameBoard: SKSpriteNode {
     
     // Initialize board values (no changes)
     func initializeBoardValues() {
+        gameOver = false
         gameScene?.resetTileOpacity()
         score = 0
         powerUpScore = 0
