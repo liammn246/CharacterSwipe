@@ -43,7 +43,7 @@ class CSGameplayState: CSGameState {
     }
     
     private func playBackgroundMusic() {
-        guard let musicURL = Bundle.main.url(forResource: "Sleepy", withExtension: "m4a") else {
+        guard let musicURL = Bundle.main.url(forResource: "CS_Sleepy", withExtension: "m4a") else {
             print("Error: Could not find music file Sleepy.m4a")
             return
         }
