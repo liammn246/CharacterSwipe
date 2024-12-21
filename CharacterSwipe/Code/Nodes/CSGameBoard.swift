@@ -1106,10 +1106,10 @@ extension CSGameBoard {
         switch powerUpType {
         case "XPowerup":
             print("Reinitializing XPowerup.")
-            powerUpNode = SKSpriteNode(imageNamed: "delete_powerup")
+            powerUpNode = SKSpriteNode(imageNamed: "CS_delete_powerup")
         case "2xPowerup":
             print("Reinitializing 2xPowerup.")
-            powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
+            powerUpNode = SKSpriteNode(imageNamed: "CS_2xPowerup")
         case "TileAddPowerup":
             print("Reinitializing TileAddPowerup.")
             updatePowerup = true
