@@ -149,7 +149,7 @@ class CSGameBoard: SKSpriteNode {
                 feedbackGenerator.prepare()
 
                 // Ensure old tile moves below the new tile
-                oldTile.zPosition = -1
+                oldTile.zPosition = 0
 
                 // Animation for the old tile to swipe into position
                 let moveAction = SKAction.move(to: calculateTilePosition(row: at.row, col: at.col), duration: 0.1)
@@ -338,12 +338,12 @@ class CSGameBoard: SKSpriteNode {
         if newBoard != gameBoardMatrix {
             gameBoardMatrix = newBoard
             updateTiles()
-            delay(0.05) {
+            delay(0.08) {
                 self.addRandomTile()
                 self.updatePowerUps(scoreChange: 0)
             }
             
-            delay(0.12) {self.canSwipe = true}
+            delay(0.15) {self.canSwipe = true}
             gameScene.updateScoreLabel(newScore: score)
         }
 
@@ -644,12 +644,14 @@ class CSGameBoard: SKSpriteNode {
         let randomColumn = Int.random(in: 0..<3)
         gameBoardMatrix[randomRow][randomColumn] = [2, 4].randomElement()!
         tileMatrix[randomRow][randomColumn] = SKSpriteNode(texture: getTextureForValue(gameBoardMatrix[randomRow][randomColumn]))
+        (tileMatrix[randomRow][randomColumn] as! SKSpriteNode).zPosition = 1
         while(true) {
             let randomRow = Int.random(in: 0..<3)
             let randomColumn = Int.random(in: 0..<3)
             if gameBoardMatrix[randomRow][randomColumn] == 0 {
                 gameBoardMatrix[randomRow][randomColumn] = [2, 4].randomElement()!
                 tileMatrix[randomRow][randomColumn] = SKSpriteNode(texture: getTextureForValue(gameBoardMatrix[randomRow][randomColumn]))
+                (tileMatrix[randomRow][randomColumn] as! SKSpriteNode).zPosition = 1
                 break
             }
         }
@@ -667,6 +669,7 @@ class CSGameBoard: SKSpriteNode {
                 // Create the new tile node
                 tileMatrix[randomRow][randomColumn] = SKSpriteNode(texture: getTextureForValue(gameBoardMatrix[randomRow][randomColumn]))
                 (tileMatrix[randomRow][randomColumn] as! SKSpriteNode).position = calculateTilePosition(row: randomRow, col: randomColumn)
+                (tileMatrix[randomRow][randomColumn] as! SKSpriteNode).zPosition = 1
                 (tileMatrix[randomRow][randomColumn] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
                 (tileMatrix[randomRow][randomColumn] as! SKSpriteNode).setScale(0.5) // Start at a scale of 0.5
                 addChild(tileMatrix[randomRow][randomColumn] as! SKSpriteNode)
