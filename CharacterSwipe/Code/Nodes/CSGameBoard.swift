@@ -141,7 +141,7 @@ class CSGameBoard: SKSpriteNode {
                 tileMatrix[from.row][from.col] = nil
             }
         }
-
+//merge animation
         func animateTileMerge(at: (row: Int, col: Int), value: Int, oldTile: SKSpriteNode) {
             if let newTileNode = tileMatrix[at.row][at.col] as? SKSpriteNode {
                 // Prepare haptic generator to reduce delay
@@ -159,13 +159,13 @@ class CSGameBoard: SKSpriteNode {
                 oldTile.run(SKAction.sequence([moveAction, removeOldTile]))
 
                 // Bounce animation for the new tile
-                let scaleUp = SKAction.scale(to: 1.2, duration: 0.05)
-                let scaleDown = SKAction.scale(to: 1.0, duration: 0.05)
+                let scaleUp = SKAction.scale(to: 1.2, duration: 0.03)
+                let scaleDown = SKAction.scale(to: 1.0, duration: 0.03)
                 let bounce = SKAction.sequence([scaleUp, scaleDown])
 
                 // Fade out old texture to half opacity and fade in new texture
-                let fadeOutOldTexture = SKAction.fadeAlpha(to: 0.5, duration: 0.05)
-                let fadeInNewTexture = SKAction.fadeAlpha(to: 1.0, duration: 0.05)
+                let fadeOutOldTexture = SKAction.fadeAlpha(to: 0.5, duration: 0.03)
+                let fadeInNewTexture = SKAction.fadeAlpha(to: 1.0, duration: 0.03)
                 let updateTexture = SKAction.run {
                     newTileNode.texture = self.getTextureForValue(value)
                 }
@@ -327,7 +327,7 @@ class CSGameBoard: SKSpriteNode {
     // Handle swipe input
     func onUserInput(direction: String) {
         if powerUpActive || !canSwipe {
-            delay(0.04) {
+            delay(0.1) {
                 self.canSwipe = true
             }
             return
@@ -343,7 +343,7 @@ class CSGameBoard: SKSpriteNode {
                 self.updatePowerUps(scoreChange: 0)
             }
             
-            delay(0.06) {self.canSwipe = true}
+            delay(0.12) {self.canSwipe = true}
             gameScene.updateScoreLabel(newScore: score)
         }
 
@@ -672,8 +672,8 @@ class CSGameBoard: SKSpriteNode {
                 addChild(tileMatrix[randomRow][randomColumn] as! SKSpriteNode)
 
                 // Scale animation to grow the tile from 0.5 to full size, with continuous correction to cap size
-                let scaleUp = SKAction.scale(to: 1.0, duration: 0.1)
-                let restrictScale = SKAction.customAction(withDuration: 0.1) { node, elapsedTime in
+                let scaleUp = SKAction.scale(to: 1.0, duration: 0.07)
+                let restrictScale = SKAction.customAction(withDuration: 0.07) { node, elapsedTime in
                     if node.xScale > 1.0 || node.yScale > 1.0 {
                         node.setScale(1.0)
                     }
