@@ -323,16 +323,6 @@ class CSGameBoard: SKSpriteNode {
     }
 
 
-    func resetSize() {
-        for c in 0...3 {
-            for r in 0...3 {
-                if tileMatrix[r][c] != nil {
-                    (tileMatrix[r][c] as! SKSpriteNode).size = CGSize(width: tileSideLength, height: tileSideLength)
-                    (tileMatrix[r][c] as! SKSpriteNode).setScale(1.0)
-                }
-            }
-        }
-    }
     
     // Handle swipe input
     func onUserInput(direction: String) {
@@ -769,9 +759,7 @@ class CSGameBoard: SKSpriteNode {
         
         // Run the animation
         tile.run(shrinkAndGrow)
-        
-        delay(0.35) {self.resetSize()}
-    }
+        }
 
     func getPositionsBelowSecondHighest(matrix: [[Int?]]) -> [(row: Int, col: Int)] {
         var max = 0
@@ -1037,13 +1025,14 @@ class CSGameBoard: SKSpriteNode {
         print("deactivate powerup")
         powerUpScore = 0
         powerUpMultiplier *= 2
-        delay(0.6){self.powerUpActive = false}
+        delay(0.7){self.powerUpActive = false}
         powerUpType = ""
 
         // Reset the opacity and animations of all tiles
         for row in 0..<4 {
             for col in 0..<4 {
                 if let tileNode = tileMatrix[row][col] as? SKSpriteNode {
+                    tileNode.setScale(1.0)
                     tileNode.removeAllActions() // Remove animations
                     let fadeToAlpha = SKAction.fadeAlpha(to: 1, duration: 0.5)
                     tileNode.run(fadeToAlpha)
@@ -1098,7 +1087,7 @@ extension CSGameBoard {
                 if let tileNode = tileMatrix[r][c] as? SKSpriteNode {
                     // Stop animations for tile nodes
                     tileNode.removeAllActions()
-                    
+                    tileNode.setScale(1.0)
                     // Restore the original size, or reset to tileSideLength
                     if let originalSize = tileNode.userData?["originalSize"] as? CGSize {
                         tileNode.size = originalSize
@@ -1204,6 +1193,7 @@ extension CSGameBoard {
                     if let tileNode = tileMatrix[row][col] as? SKSpriteNode {
                         tileNode.removeAllActions() // Stop animations
                         tileNode.alpha = 1.0 // Restore full opacity
+                        tileNode.setScale(1.0)
 
                         // Reset size if modified during animations
                         if let originalSize = tileNode.userData?["originalSize"] as? CGSize {
@@ -1248,6 +1238,7 @@ extension CSGameBoard {
         for row in 0..<rows {
             for col in 0..<columns {
                 guard let tileNode = backgroundGrid[row][col] as? SKSpriteNode else { continue }
+                tileNode.setScale(1.0)
 
                 // Check if the touch intersects the tile's frame
                 if tileNode.frame.contains(location) {
