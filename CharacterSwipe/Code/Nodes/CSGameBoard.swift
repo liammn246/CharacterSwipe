@@ -36,6 +36,10 @@ class CSGameBoard: SKSpriteNode {
     var merged = false
     var canSwipe = true
     var oldMaxValue = 4
+    var oldBoard = [[0, 0, 0, 0],
+                    [0, 0, 0, 0],
+                    [0, 0, 0, 0],
+                    [0, 0, 0, 0]]
 
     private var activeAudioPlayers: [AVAudioPlayer] = []
     private var preloadedSounds: [String: AVAudioPlayer] = [:]
@@ -194,6 +198,7 @@ class CSGameBoard: SKSpriteNode {
 
         switch direction {
         case "right":
+            oldBoard = gameBoard
             for r in 0..<rows {
                 var target = columns - 1
                 for c in stride(from: columns - 1, through: 0, by: -1) {
@@ -219,6 +224,7 @@ class CSGameBoard: SKSpriteNode {
                 }
             }
         case "left":
+            oldBoard = gameBoard
             for r in 0..<rows {
                 var target = 0
                 for c in 0..<columns {
@@ -244,6 +250,7 @@ class CSGameBoard: SKSpriteNode {
                 }
             }
         case "up":
+            oldBoard = gameBoard
             for c in 0..<columns {
                 var target = 0
                 for r in 0..<rows {
@@ -269,6 +276,7 @@ class CSGameBoard: SKSpriteNode {
                 }
             }
         case "down":
+            oldBoard = gameBoard
             for c in 0..<columns {
                 var target = rows - 1
                 for r in stride(from: rows - 1, through: 0, by: -1) {
@@ -296,10 +304,8 @@ class CSGameBoard: SKSpriteNode {
         default:
             break
         }
-        if !merged {
-            delay(0.1){
-                self.playSwipeSound()
-            }
+        if !merged && oldBoard != gameBoard {
+            playSwipeSound()
         }
         merged = false
 
@@ -321,7 +327,7 @@ class CSGameBoard: SKSpriteNode {
     // Handle swipe input
     func onUserInput(direction: String) {
         if powerUpActive || !canSwipe {
-            delay(0.1) {
+            delay(0.04) {
                 self.canSwipe = true
             }
             return
@@ -332,12 +338,12 @@ class CSGameBoard: SKSpriteNode {
         if newBoard != gameBoardMatrix {
             gameBoardMatrix = newBoard
             updateTiles()
-            delay(0.1) {
+            delay(0.05) {
                 self.addRandomTile()
                 self.updatePowerUps(scoreChange: 0)
             }
             
-            delay(0.2) {self.canSwipe = true}
+            delay(0.06) {self.canSwipe = true}
             gameScene.updateScoreLabel(newScore: score)
         }
 
@@ -614,7 +620,7 @@ class CSGameBoard: SKSpriteNode {
                     // Animate only if position changes
                     let targetPosition = calculateTilePosition(row: row, col: col)
                     if tileNode.position != targetPosition {
-                        let moveAction = SKAction.move(to: targetPosition, duration: 0.1)
+                        let moveAction = SKAction.move(to: targetPosition, duration: 0.05)
                         tileNode.run(moveAction)
                     }
                 }
