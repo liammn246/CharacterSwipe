@@ -184,9 +184,7 @@ class CSGameBoard: SKSpriteNode {
                     feedbackGenerator.impactOccurred()
                 }
                 // Play merge sound action
-                    let playMergeSound = SKAction.run {
-                        self.playMergeSound()
-                }
+                let playMergeSound = SKAction.playSoundFileNamed("CS_mergeSound.mp3",  waitForCompletion: false)
 
                 // Run animations with texture fade to half opacity, sound, haptic feedback, and ensure correct size
                 newTileNode.run(SKAction.sequence([bounce, textureChangeSequence, triggerHaptic, playMergeSound, ensureCorrectSize]))
