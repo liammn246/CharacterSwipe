@@ -21,7 +21,7 @@ class CSGameScene: SKScene {
     private var audioPlayer: AVAudioPlayer?
 
     // SwipeDetector instance
-    let swipeDetector = SwipeDetector()
+    let swipeDetector = CSSwipeDetector()
     
     init(context: CSGameContext, size: CGSize) {
         self.context = context

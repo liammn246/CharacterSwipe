@@ -7,14 +7,13 @@
 
 import SpriteKit
 
-class SwipeDetector {
-    // Closure properties to handle each swipe direction
+class CSSwipeDetector {
     var onSwipeUp: (() -> Void)?
     var onSwipeDown: (() -> Void)?
     var onSwipeLeft: (() -> Void)?
     var onSwipeRight: (() -> Void)?
     
-    // Attach gesture recognizers to the scene
+
     func addSwipeGestures(to scene: SKScene) {
         let directions: [UISwipeGestureRecognizer.Direction] = [.up, .down, .left, .right]
         
@@ -25,7 +24,6 @@ class SwipeDetector {
         }
     }
     
-    // Handle swipe gestures
     @objc private func handleSwipe(_ gesture: UISwipeGestureRecognizer) {
         switch gesture.direction {
         case .up: onSwipeUp?()

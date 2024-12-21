@@ -40,7 +40,6 @@ class CSGameBoard: SKSpriteNode {
     private var activeAudioPlayers: [AVAudioPlayer] = []
     private var preloadedSounds: [String: AVAudioPlayer] = [:]
 
-    // Initialize
     init(size: CGSize) {
         super.init(texture: nil, color: .clear, size: size)
         initializeBoardValues()
@@ -57,7 +56,7 @@ class CSGameBoard: SKSpriteNode {
     
     private func preloadSoundsInBackground() {
         DispatchQueue.global(qos: .background).async {
-            let soundFiles = ["swipeSound.mp3", "mergeSound.mp3", "lose.mp3","powerup_press.mp3","powerup_unlocked.mp3","powerup_place.mp3","powerup_delete.mp3","powerup_2x.mp3"]
+            let soundFiles = ["CS_swipeSound.mp3", "CS_mergeSound.mp3", "CS_lose.mp3","CS_powerup_press.mp3","CS_powerup_unlocked.mp3","CS_powerup_place.mp3","CS_powerup_delete.mp3","CS_powerup_2x.mp3"]
             for sound in soundFiles {
                 if let url = Bundle.main.url(forResource: sound, withExtension: nil) {
                     do {
@@ -72,8 +71,7 @@ class CSGameBoard: SKSpriteNode {
             }
         }
     }
-        
-    // Play preloaded sound
+
     private func playPreloadedSound(named name: String, volume: Float) {
         guard let player = preloadedSounds[name] else {
             print("Sound not found in preloaded list: \(name)")
@@ -100,32 +98,31 @@ class CSGameBoard: SKSpriteNode {
     }
 
 
-    // Specific sound playback methods
     func playSwipeSound() {
-        playPreloadedSound(named: "swipeSound.mp3", volume: 0.1)
+        playPreloadedSound(named: "CS_swipeSound.mp3", volume: 0.1)
     }
 
     func playMergeSound() {
-        playPreloadedSound(named: "mergeSound.mp3", volume: 0.2)
+        playPreloadedSound(named: "CS_mergeSound.mp3", volume: 0.2)
     }
 
     func playLoseSound() {
-        playPreloadedSound(named: "lose.mp3", volume: 0.4)
+        playPreloadedSound(named: "CS_lose.mp3", volume: 0.4)
     }
     func playUnlockSound() {
-        playPreloadedSound(named: "powerup_unlocked.mp3", volume: 0.8)
+        playPreloadedSound(named: "CS_powerup_unlocked.mp3", volume: 0.8)
     }
     func playPowerupSound() {
-        playPreloadedSound(named: "powerup_press.mp3", volume: 0.8)
+        playPreloadedSound(named: "CS_powerup_press.mp3", volume: 0.8)
     }
     func playPlaceSound() {
-        playPreloadedSound(named: "powerup_place.mp3", volume: 0.8)
+        playPreloadedSound(named: "CS_powerup_place.mp3", volume: 0.8)
     }
     func playDeleteSound() {
-        playPreloadedSound(named: "powerup_delete.mp3", volume: 0.8)
+        playPreloadedSound(named: "CS_powerup_delete.mp3", volume: 0.8)
     }
     func playUpgradeSound() {
-        playPreloadedSound(named: "powerup_2x.mp3", volume: 0.8)
+        playPreloadedSound(named: "CS_powerup_2x.mp3", volume: 0.8)
     }
 
     func boardMove(direction: String) -> [[Int]] {
