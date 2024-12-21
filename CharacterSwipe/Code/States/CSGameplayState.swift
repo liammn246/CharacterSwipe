@@ -14,7 +14,7 @@ class CSGameplayState: CSGameState {
         gameScene.showGameBoard()
         
         // Create background
-        let gameplayBackground = SKSpriteNode(imageNamed: "gameplayBackground")
+        let gameplayBackground = SKSpriteNode(imageNamed: "CS_gameplayBackground")
         gameplayBackground.position = CGPoint(x: gameScene.size.width / 2, y: gameScene.size.height / 2)
         gameplayBackground.size = gameScene.size // Fill the scene
         gameplayBackground.zPosition = -100
@@ -22,9 +22,9 @@ class CSGameplayState: CSGameState {
         gameScene.addChild(gameplayBackground)
 
         // Add title asset
-        let title_asset = SKSpriteNode(imageNamed: "title")
+        let title_asset = SKSpriteNode(imageNamed: "CS_title")
         title_asset.position = calculateTitlePosition()
-        title_asset.size = CGSize(width: 350, height: 150)
+        title_asset.size = CGSize(width: 350, height: 125)
         title_asset.zPosition = 11
         title_asset.name = "title"
         gameScene.addChild(title_asset)

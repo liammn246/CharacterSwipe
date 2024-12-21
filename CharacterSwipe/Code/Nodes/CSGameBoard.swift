@@ -686,20 +686,20 @@ class CSGameBoard: SKSpriteNode {
     // Return texture based on value (no changes)
     func getTextureForValue(_ value: Int) -> SKTexture? {
         let tileTextures: [Int: String] = [
-            0: "tile_0",
-            2: "tile_1",
-            4: "tile_2",
-            8: "tile_3",
-            16: "tile_4",
-            32: "tile_5",
-            64: "tile_6",
-            128: "tile_7",
-            256: "tile_8",
-            512: "tile_9",
-            1024: "tile_10",
-            2048: "tile_11",
-            4096: "tile_12",
-            8192: "tile_13",
+            0: "CS_tile_0",
+            2: "CS_tile_1",
+            4: "CS_tile_2",
+            8: "CS_tile_3",
+            16: "CS_tile_4",
+            32: "CS_tile_5",
+            64: "CS_tile_6",
+            128: "CS_tile_7",
+            256: "CS_tile_8",
+            512: "CS_tile_9",
+            1024: "CS_tile_10",
+            2048: "CS_tile_11",
+            4096: "CS_tile_12",
+            8192: "CS_tile_13",
         ]
         if let textureName = tileTextures[value] {
             return SKTexture(imageNamed: textureName)
@@ -783,15 +783,15 @@ class CSGameBoard: SKSpriteNode {
 
             if mynum == 0 {
                 print("x powerup")
-                powerUpNode = SKSpriteNode(imageNamed: "delete_powerup")
+                powerUpNode = SKSpriteNode(imageNamed: "CS_delete_powerup")
                 powerUpType = "XPowerup"
             } else if mynum == 1 {
                 print("")
-                powerUpNode = SKSpriteNode(imageNamed: "2xPowerup")
+                powerUpNode = SKSpriteNode(imageNamed: "CS_2xPowerup")
                 powerUpType = "2xPowerup"
             } else if maxValue() >= 8 {
                 print("Should do place tile image")
-                powerUpNode = SKSpriteNode(imageNamed: "place_tile"+String(maxValue()/4))
+                powerUpNode = SKSpriteNode(imageNamed: "CS_place_tile"+String(maxValue()/4))
                 powerUpType = "TileAddPowerup"
                 updatePowerup = true
             } else {
@@ -840,7 +840,7 @@ class CSGameBoard: SKSpriteNode {
         }
 
         if updatePowerup {
-            powerUpNode.texture = SKTexture(imageNamed: "place_tile" + String(maxValue()/4))
+            powerUpNode.texture = SKTexture(imageNamed: "CS_place_tile" + String(maxValue()/4))
         }
     }
     
@@ -989,7 +989,7 @@ class CSGameBoard: SKSpriteNode {
         progressBar.isHidden = true
         progressBarBackground.isHidden = true
         // Create the cancel button
-        cancelButton = SKSpriteNode(imageNamed: "cancel")
+        cancelButton = SKSpriteNode(imageNamed: "CS_cancel")
         cancelButton?.size = CGSize(width: size.width / 5, height: size.width / 5)
         cancelButton?.position = calculatePowerupPosition()
         cancelButton?.zPosition = 10
@@ -1113,7 +1113,7 @@ extension CSGameBoard {
         case "TileAddPowerup":
             print("Reinitializing TileAddPowerup.")
             updatePowerup = true
-            powerUpNode = SKSpriteNode(imageNamed: "place_tile" + String(maxValue() / 4))
+            powerUpNode = SKSpriteNode(imageNamed: "CS_place_tile" + String(maxValue() / 4))
         default:
             print("No active power-up to reinitialize.")
             return // Exit early if no valid power-up type
@@ -1318,7 +1318,7 @@ extension CSGameBoard {
 
     func setupProgressBar() {
         // Create the background asset
-        let assetTexture = SKTexture(imageNamed: "powerup_base_2")
+        let assetTexture = SKTexture(imageNamed: "CS_powerup_base")
         progressBarBackground = SKSpriteNode(texture: assetTexture, size: CGSize(width: size.width / 5, height: size.width / 5)) // A square size
         progressBarBackground.position = calculatePowerupPosition()
         progressBarBackground.zPosition = 10

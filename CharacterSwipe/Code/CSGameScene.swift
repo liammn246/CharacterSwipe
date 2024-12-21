@@ -51,7 +51,6 @@ class CSGameScene: SKScene {
 
     
     func calculateUnlockedIndex(for maxValue: Int) -> Int {
-        // Assuming tiles correspond to powers of 2 (e.g., tile_1 = 2, tile_2 = 4, etc.)
         return Int(log2(Double(maxValue)))
     }
     // Function to update tile opacity
@@ -133,7 +132,7 @@ class CSGameScene: SKScene {
 
         // Iterate through all children of background3
         for child in background3.children {
-            if let tile = child as? SKSpriteNode, tile.name?.starts(with: "tile_") == true {
+            if let tile = child as? SKSpriteNode, tile.name?.starts(with: "CS_tile_") == true {
                 tile.alpha = 0.3 // Set opacity to 0.3
             }
         }
@@ -224,7 +223,7 @@ class CSGameScene: SKScene {
 
         // Create and add tiles
         for i in 1...numberOfTiles {
-            let tileName = "tile_\(i)"
+            let tileName = "CS_tile_\(i)"
             let tile = SKSpriteNode(imageNamed: tileName)
             tile.size = CGSize(width: tileWidth, height: tileHeight)
             tile.position = CGPoint(
