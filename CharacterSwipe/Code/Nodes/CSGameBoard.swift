@@ -106,7 +106,7 @@ class CSGameBoard: SKSpriteNode {
 
 
     func playSwipeSound() {
-        playPreloadedSound(named: "CS_swipeSound.mp3", volume: 0.1)
+        playPreloadedSound(named: "CS_swipeSound.mp3", volume: 0.3)
     }
 
     func playMergeSound() {
